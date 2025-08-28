@@ -41,9 +41,15 @@ return [
                 'scheme' => env('PUSHER_SCHEME', 'http'),
                 'encrypted' => true,
                 'useTLS' => env('PUSHER_SCHEME', 'https') === 'https',
+                'timeout' => 30,
+                'activity_timeout' => 120,
+                'pong_timeout' => 30,
+                'max_reconnection_attempts' => 3,
+                'max_reconnect_gap_in_seconds' => 30,
             ],
             'client_options' => [
-                // Guzzle client options: https://docs.guzzlephp.org/en/stable/request-options.html
+                'timeout' => 30,
+                'connect_timeout' => 10,
             ],
         ],
 

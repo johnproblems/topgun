@@ -816,6 +816,11 @@ class Application extends BaseModel
         return $this->morphTo();
     }
 
+    public function organization()
+    {
+        return $this->hasOneThrough(Organization::class, Server::class, 'id', 'id', 'destination_id', 'organization_id');
+    }
+
     public function isDeploymentInprogress()
     {
         $deployments = ApplicationDeploymentQueue::where('application_id', $this->id)->whereIn('status', [ApplicationDeploymentStatus::IN_PROGRESS, ApplicationDeploymentStatus::QUEUED])->count();

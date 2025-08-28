@@ -147,6 +147,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/admin', TeamAdminView::class)->name('team.admin-view');
     });
 
+    Route::prefix('organizations')->group(function () {
+        Route::get('/', function () {
+            return view('organization.vue-manager');
+        })->name('organization.index');
+        Route::get('/livewire', \App\Livewire\Organization\OrganizationManager::class)->name('organization.livewire');
+        Route::get('/hierarchy', \App\Livewire\Organization\OrganizationHierarchy::class)->name('organization.hierarchy');
+        Route::get('/switcher', \App\Livewire\Organization\OrganizationSwitcher::class)->name('organization.switcher');
+        Route::get('/{organization}/users', \App\Livewire\Organization\UserManagement::class)->name('organization.users');
+    });
+
+    // Debug routes (only in development)
+    if (app()->environment('local', 'development')) {
+        Route::get('/debug/websocket', function () {
+            return view('debug.websocket-test');
+        })->name('debug.websocket');
+    }
+
     Route::get('/terminal', TerminalIndex::class)->name('terminal');
     Route::post('/terminal/auth', function () {
         if (auth()->check()) {
@@ -360,6 +377,27 @@ Route::middleware(['auth'])->group(function () {
             return response()->json(['message' => $e->getMessage()], 500);
         }
     })->name('download.backup');
+
+});
+
+// Organization API routes for Vue.js frontend - must be before catch-all route
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::prefix('internal-api/organizations')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\OrganizationController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\OrganizationController::class, 'store']);
+        Route::put('/{organization}', [App\Http\Controllers\Api\OrganizationController::class, 'update']);
+        Route::post('/switch', [App\Http\Controllers\Api\OrganizationController::class, 'switchOrganization']);
+        Route::get('/{organization}/hierarchy', [App\Http\Controllers\Api\OrganizationController::class, 'hierarchy']);
+        Route::get('/{organization}/users', [App\Http\Controllers\Api\OrganizationController::class, 'users']);
+        Route::post('/{organization}/users', [App\Http\Controllers\Api\OrganizationController::class, 'addUser']);
+        Route::put('/{organization}/users/{user}', [App\Http\Controllers\Api\OrganizationController::class, 'updateUser']);
+        Route::delete('/{organization}/users/{user}', [App\Http\Controllers\Api\OrganizationController::class, 'removeUser']);
+        Route::get('/roles-permissions', [App\Http\Controllers\Api\OrganizationController::class, 'rolesAndPermissions']);
+    });
+
+    Route::prefix('internal-api/users')->group(function () {
+        Route::get('/search', [App\Http\Controllers\Api\UserController::class, 'search']);
+    });
 
 });
 

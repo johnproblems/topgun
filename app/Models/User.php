@@ -203,6 +203,34 @@ class User extends Authenticatable implements SendsEmail
         return $this->belongsToMany(Team::class)->withPivot('role');
     }
 
+    public function organizations()
+    {
+        return $this->belongsToMany(Organization::class, 'organization_users')
+            ->using(OrganizationUser::class)
+            ->withPivot('role', 'permissions', 'is_active')
+            ->withTimestamps();
+    }
+
+    public function currentOrganization()
+    {
+        return $this->belongsTo(Organization::class, 'current_organization_id');
+    }
+
+    public function canPerformAction($action, $resource = null)
+    {
+        $organization = $this->currentOrganization;
+        if (! $organization) {
+            return false;
+        }
+
+        return $organization->canUserPerformAction($this, $action, $resource);
+    }
+
+    public function hasLicenseFeature($feature)
+    {
+        return $this->currentOrganization?->activeLicense?->hasFeature($feature) ?? false;
+    }
+
     public function getRecipients(): array
     {
         return [$this->email];

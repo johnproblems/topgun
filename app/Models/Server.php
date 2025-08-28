@@ -895,6 +895,33 @@ $schema://$host {
         return $this->belongsTo(Team::class);
     }
 
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class);
+    }
+
+    public function terraformDeployment()
+    {
+        return $this->hasOne(TerraformDeployment::class);
+    }
+
+    public function cloudProviderCredential()
+    {
+        return $this->belongsTo(CloudProviderCredential::class, 'provider_credential_id');
+    }
+
+    public function isProvisionedByTerraform()
+    {
+        return $this->terraformDeployment !== null;
+    }
+
+    public function canBeManaged()
+    {
+        // Check if server is reachable and user has permissions
+        return $this->settings->is_reachable &&
+               auth()->user()->canPerformAction('manage_server', $this);
+    }
+
     public function isProxyShouldRun()
     {
         // TODO: Do we need "|| $this->proxy->force_stop" here?

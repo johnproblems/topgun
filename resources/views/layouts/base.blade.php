@@ -102,30 +102,23 @@
             window.Pusher = Pusher;
             window.Echo = new Echo({
                 broadcaster: 'pusher',
-                cluster: "{{ config('constants.pusher.host') }}" || window.location.hostname,
+                cluster: 'mt1',
                 key: "{{ config('constants.pusher.app_key') }}" || 'coolify',
-                wsHost: "{{ config('constants.pusher.host') }}" || window.location.hostname,
+                wsHost: window.location.hostname,
                 wsPort: "{{ getRealtime() }}",
                 wssPort: "{{ getRealtime() }}",
                 forceTLS: false,
-                encrypted: true,
+                encrypted: false,
                 enableStats: false,
                 enableLogging: true,
                 enabledTransports: ['ws', 'wss'],
                 disableStats: true,
-                // Add auto reconnection settings
-                enabledTransports: ['ws', 'wss'],
-                disabledTransports: ['sockjs', 'xhr_streaming', 'xhr_polling'],
-                // Attempt to reconnect on connection lost
+                // Auto reconnection settings
                 autoReconnect: true,
-                // Wait 1 second before first reconnect attempt
                 reconnectionDelay: 1000,
-                // Maximum delay between reconnection attempts
-                maxReconnectionDelay: 1000,
-                // Multiply delay by this number for each reconnection attempt
-                reconnectionDelayGrowth: 1,
-                // Maximum number of reconnection attempts
-                maxAttempts: 15
+                maxReconnectionDelay: 5000,
+                reconnectionDelayGrowth: 1.5,
+                maxAttempts: 3
             });
             @endauth
             let checkHealthInterval = null;
