@@ -295,6 +295,18 @@ class OrganizationController extends Controller
         $currentOrg = OrganizationContext::current();
 
         if (! $currentOrg) {
+            // In development/testing, allow users to create top-level organizations
+            // In production, you might want to restrict this based on user permissions
+            if (app()->environment(['local', 'testing', 'development'])) {
+                return [
+                    'top_branch' => 'Top Branch',
+                    'master_branch' => 'Master Branch',
+                    'sub_user' => 'Sub User',
+                    'end_user' => 'End User',
+                ];
+            }
+
+            // In production, default to end_user for users without organizations
             return ['end_user' => 'End User'];
         }
 

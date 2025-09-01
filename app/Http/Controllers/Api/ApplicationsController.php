@@ -15,6 +15,7 @@ use App\Models\PrivateKey;
 use App\Models\Project;
 use App\Models\Server;
 use App\Models\Service;
+use App\Traits\LicenseValidation;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use OpenApi\Attributes as OA;
@@ -24,6 +25,8 @@ use Visus\Cuid2\Cuid2;
 
 class ApplicationsController extends Controller
 {
+    use LicenseValidation;
+
     private function removeSensitiveData($application)
     {
         $application->makeHidden([
@@ -733,6 +736,12 @@ class ApplicationsController extends Controller
 
     private function create_application(Request $request, $type)
     {
+        // Validate license for application deployment
+        $licenseCheck = $this->validateApplicationDeployment();
+        if ($licenseCheck) {
+            return $licenseCheck;
+        }
+
         $teamId = getTeamIdFromToken();
         if (is_null($teamId)) {
             return invalidTokenResponse();
@@ -1839,6 +1848,14 @@ class ApplicationsController extends Controller
     )]
     public function update_by_uuid(Request $request)
     {
+        // Validate license for domain management if domains are being updated
+        if ($request->has('domains') || $request->has('docker_compose_domains')) {
+            $licenseCheck = $this->validateDomainManagement();
+            if ($licenseCheck) {
+                return $licenseCheck;
+            }
+        }
+
         $teamId = getTeamIdFromToken();
         if (is_null($teamId)) {
             return invalidTokenResponse();
@@ -2864,12 +2881,33 @@ class ApplicationsController extends Controller
     )]
     public function action_deploy(Request $request)
     {
+        // Validate license for deployment action
+        $licenseCheck = $this->validateApplicationDeployment();
+        if ($licenseCheck) {
+            return $licenseCheck;
+        }
+
         $teamId = getTeamIdFromToken();
         if (is_null($teamId)) {
             return invalidTokenResponse();
         }
         $force = $request->query->get('force') ?? false;
         $instant_deploy = $request->query->get('instant_deploy') ?? false;
+
+        // Validate deployment options based on license
+        if ($force) {
+            $optionCheck = $this->validateDeploymentOption('force_rebuild');
+            if ($optionCheck) {
+                return $optionCheck;
+            }
+        }
+
+        if ($instant_deploy) {
+            $optionCheck = $this->validateDeploymentOption('instant_deployment');
+            if ($optionCheck) {
+                return $optionCheck;
+            }
+        }
         $uuid = $request->route('uuid');
         if (! $uuid) {
             return response()->json(['message' => 'UUID is required.'], 400);

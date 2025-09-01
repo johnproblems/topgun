@@ -39,6 +39,7 @@ class Kernel extends HttpKernel
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\CheckForcePasswordReset::class,
             \App\Http\Middleware\DecideWhatToDoWithUser::class,
+            \App\Http\Middleware\EnsureOrganizationContext::class,
 
         ],
 
@@ -71,5 +72,9 @@ class Kernel extends HttpKernel
         'ability' => \Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class,
         'api.ability' => \App\Http\Middleware\ApiAbility::class,
         'api.sensitive' => \App\Http\Middleware\ApiSensitiveData::class,
+        'license' => \App\Http\Middleware\ValidateLicense::class,
+        'api.license' => \App\Http\Middleware\ApiLicenseValidation::class,
+        'server.provision' => \App\Http\Middleware\ServerProvisioningLicense::class,
+        'license.validate' => \App\Http\Middleware\LicenseValidationMiddleware::class,
     ];
 }

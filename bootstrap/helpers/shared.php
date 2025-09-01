@@ -4276,3 +4276,201 @@ function parseDockerfileInterval(string $something)
 
     return $seconds;
 }
+
+/**
+ * Check if the current organization has a valid license for a specific feature
+ */
+function hasLicenseFeature(string $feature): bool
+{
+    $user = Auth::user();
+    if (! $user) {
+        return false;
+    }
+
+    $organization = $user->currentOrganization ?? $user->organizations()->first();
+    if (! $organization) {
+        return false;
+    }
+
+    return $organization->hasFeature($feature);
+}
+
+/**
+ * Check if the current organization can provision a specific resource type
+ */
+function canProvisionResource(string $resourceType): bool
+{
+    $user = Auth::user();
+    if (! $user) {
+        return false;
+    }
+
+    $organization = $user->currentOrganization ?? $user->organizations()->first();
+    if (! $organization) {
+        return false;
+    }
+
+    $license = $organization->activeLicense;
+    if (! $license) {
+        return false;
+    }
+
+    // Check feature availability
+    $featureMap = [
+        'servers' => 'server_management',
+        'applications' => 'application_deployment',
+        'domains' => 'domain_management',
+        'cloud_providers' => 'cloud_provisioning',
+    ];
+
+    $requiredFeature = $featureMap[$resourceType] ?? null;
+    if ($requiredFeature && ! $license->hasFeature($requiredFeature)) {
+        return false;
+    }
+
+    // Check usage limits
+    return $organization->isWithinLimits();
+}
+
+/**
+ * Get the current organization's license tier
+ */
+function getCurrentLicenseTier(): ?string
+{
+    $user = Auth::user();
+    if (! $user) {
+        return null;
+    }
+
+    $organization = $user->currentOrganization ?? $user->organizations()->first();
+    if (! $organization) {
+        return null;
+    }
+
+    return $organization->activeLicense?->license_tier;
+}
+
+/**
+ * Check if a deployment option is available in the current license
+ */
+function isDeploymentOptionAvailable(string $option): bool
+{
+    $licenseTier = getCurrentLicenseTier();
+    if (! $licenseTier) {
+        return false;
+    }
+
+    $tierOptions = [
+        'basic' => [
+            'docker_deployment',
+            'basic_monitoring',
+            'manual_scaling',
+        ],
+        'professional' => [
+            'docker_deployment',
+            'basic_monitoring',
+            'manual_scaling',
+            'advanced_monitoring',
+            'blue_green_deployment',
+            'auto_scaling',
+            'backup_management',
+            'force_rebuild',
+            'instant_deployment',
+        ],
+        'enterprise' => [
+            'docker_deployment',
+            'basic_monitoring',
+            'manual_scaling',
+            'advanced_monitoring',
+            'blue_green_deployment',
+            'auto_scaling',
+            'backup_management',
+            'force_rebuild',
+            'instant_deployment',
+            'multi_region_deployment',
+            'advanced_security',
+            'compliance_reporting',
+            'custom_integrations',
+            'canary_deployment',
+            'rollback_automation',
+        ],
+    ];
+
+    $availableOptions = $tierOptions[$licenseTier] ?? [];
+
+    return in_array($option, $availableOptions);
+}
+
+/**
+ * Get license-based resource limits for the current organization
+ */
+function getResourceLimits(): array
+{
+    $user = Auth::user();
+    if (! $user) {
+        return [];
+    }
+
+    $organization = $user->currentOrganization ?? $user->organizations()->first();
+    if (! $organization) {
+        return [];
+    }
+
+    $license = $organization->activeLicense;
+    if (! $license) {
+        return [];
+    }
+
+    $usage = $organization->getUsageMetrics();
+    $limits = $license->limits ?? [];
+
+    $resourceLimits = [];
+    foreach (['servers', 'applications', 'domains', 'cloud_providers'] as $resource) {
+        $limit = $limits[$resource] ?? null;
+        $current = $usage[$resource] ?? 0;
+
+        $resourceLimits[$resource] = [
+            'current' => $current,
+            'limit' => $limit,
+            'unlimited' => $limit === null,
+            'remaining' => $limit ? max(0, $limit - $current) : null,
+            'percentage_used' => $limit ? round(($current / $limit) * 100, 2) : 0,
+            'near_limit' => $limit ? ($current / $limit) >= 0.8 : false,
+        ];
+    }
+
+    return $resourceLimits;
+}
+
+/**
+ * Validate license before performing resource provisioning actions
+ */
+function validateLicenseForAction(string $action, ?string $resourceType = null): ?array
+{
+    $user = Auth::user();
+    if (! $user) {
+        return ['error' => 'Authentication required'];
+    }
+
+    $organization = $user->currentOrganization ?? $user->organizations()->first();
+    if (! $organization) {
+        return ['error' => 'No organization context found'];
+    }
+
+    $license = $organization->activeLicense;
+    if (! $license) {
+        return ['error' => 'Valid license required for this action'];
+    }
+
+    // Validate license status
+    if (! $license->isValid()) {
+        return ['error' => 'License is not valid or has expired'];
+    }
+
+    // Check resource-specific limits
+    if ($resourceType && ! canProvisionResource($resourceType)) {
+        return ['error' => "Cannot provision {$resourceType}: limit exceeded or feature not available"];
+    }
+
+    return null; // License is valid
+}

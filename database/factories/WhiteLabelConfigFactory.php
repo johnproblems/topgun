@@ -31,27 +31,13 @@ class WhiteLabelConfigFactory extends Factory
                 'text_color' => '#000000',
             ],
             'logo_url' => $this->faker->imageUrl(200, 100, 'business'),
-            'favicon_url' => $this->faker->imageUrl(32, 32, 'business'),
             'custom_css' => '',
             'custom_domains' => [
                 $this->faker->domainName(),
             ],
-            'email_config' => [
-                'from_name' => $this->faker->company(),
-                'from_email' => $this->faker->companyEmail(),
-            ],
-            'is_active' => true,
+            'custom_email_templates' => [],
+            'hide_coolify_branding' => false,
         ];
-    }
-
-    /**
-     * Indicate that the white label config is inactive.
-     */
-    public function inactive(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'is_active' => false,
-        ]);
     }
 
     /**

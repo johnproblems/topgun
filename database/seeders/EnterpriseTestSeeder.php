@@ -2,12 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\CloudProviderCredential;
 use App\Models\EnterpriseLicense;
 use App\Models\Organization;
-use App\Models\TerraformDeployment;
 use App\Models\User;
-use App\Models\WhiteLabelConfig;
 use Illuminate\Database\Seeder;
 
 class EnterpriseTestSeeder extends Seeder
@@ -34,16 +31,26 @@ class EnterpriseTestSeeder extends Seeder
             'name' => 'Test End User Organization',
         ]);
 
-        // Create test users
-        $adminUser = User::factory()->create([
-            'email' => 'admin@test.com',
-            'current_organization_id' => $topBranch->id,
-        ]);
+        // Use existing test users or create new ones
+        $adminUser = User::where('email', 'test@example.com')->first();
+        if (! $adminUser) {
+            $adminUser = User::factory()->create([
+                'email' => 'admin@test.com',
+                'current_organization_id' => $topBranch->id,
+            ]);
+        } else {
+            $adminUser->update(['current_organization_id' => $topBranch->id]);
+        }
 
-        $memberUser = User::factory()->create([
-            'email' => 'member@test.com',
-            'current_organization_id' => $masterBranch->id,
-        ]);
+        $memberUser = User::where('email', 'test2@example.com')->first();
+        if (! $memberUser) {
+            $memberUser = User::factory()->create([
+                'email' => 'member@test.com',
+                'current_organization_id' => $masterBranch->id,
+            ]);
+        } else {
+            $memberUser->update(['current_organization_id' => $masterBranch->id]);
+        }
 
         // Attach users to organizations
         $topBranch->users()->attach($adminUser->id, [
@@ -90,51 +97,7 @@ class EnterpriseTestSeeder extends Seeder
             ],
         ]);
 
-        // Create white label configs
-        WhiteLabelConfig::factory()->create([
-            'organization_id' => $topBranch->id,
-            'platform_name' => 'Enterprise Cloud Platform',
-            'theme_config' => [
-                'primary_color' => '#1f2937',
-                'secondary_color' => '#3b82f6',
-                'accent_color' => '#10b981',
-            ],
-        ]);
-
-        // Create cloud provider credentials
-        CloudProviderCredential::factory()->aws()->create([
-            'organization_id' => $topBranch->id,
-            'credential_name' => 'Test AWS Credentials',
-        ]);
-
-        CloudProviderCredential::factory()->gcp()->create([
-            'organization_id' => $topBranch->id,
-            'credential_name' => 'Test GCP Credentials',
-        ]);
-
-        CloudProviderCredential::factory()->digitalocean()->create([
-            'organization_id' => $masterBranch->id,
-            'credential_name' => 'Test DigitalOcean Credentials',
-        ]);
-
-        // Create terraform deployments
-        TerraformDeployment::factory()->completed()->create([
-            'organization_id' => $topBranch->id,
-            'deployment_name' => 'Production Infrastructure',
-            'provider_type' => 'aws',
-        ]);
-
-        TerraformDeployment::factory()->provisioning()->create([
-            'organization_id' => $masterBranch->id,
-            'deployment_name' => 'Staging Infrastructure',
-            'provider_type' => 'digitalocean',
-        ]);
-
-        TerraformDeployment::factory()->failed()->create([
-            'organization_id' => $masterBranch->id,
-            'deployment_name' => 'Failed Deployment',
-            'provider_type' => 'aws',
-            'error_message' => 'Invalid credentials provided',
-        ]);
+        // Note: White label configs, cloud provider credentials, and terraform deployments
+        // will be added in future iterations as those features are implemented
     }
 }

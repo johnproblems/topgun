@@ -11,6 +11,9 @@ This design document outlines the architectural transformation of Coolify into a
 3. **Multi-Tenant by Design**: Support hierarchical organizations with proper data isolation
 4. **API-First Architecture**: All functionality accessible via well-documented APIs
 5. **White-Label Ready**: Complete customization capabilities for resellers
+6. **Modern Frontend Stack**: Use Vue.js with Inertia.js for reactive, component-based UI development
+7. **Intelligent Resource Management**: Real-time monitoring, capacity planning, and automated resource optimization
+8. **Enterprise-Grade Scalability**: Support for high-load multi-tenant environments with predictive scaling
 
 ## Architecture
 
@@ -19,7 +22,7 @@ This design document outlines the architectural transformation of Coolify into a
 ```mermaid
 graph TB
     subgraph "Frontend Layer"
-        UI[Enhanced Livewire UI]
+        UI[Vue.js Frontend with Inertia.js]
         API[REST API Layer]
         WL[White-Label Engine]
     end
@@ -30,6 +33,8 @@ graph TB
         LIC[Licensing Engine]
         PAY[Payment Processing]
         DOM[Domain Management]
+        RES[Resource Management Engine]
+        CAP[Capacity Planning System]
     end
     
     subgraph "Infrastructure Layer"
@@ -51,14 +56,59 @@ graph TB
     AUTH --> LIC
     RBAC --> PAY
     LIC --> DOM
+    RES --> CAP
     
     PAY --> TF
     DOM --> COOL
     TF --> PROV
+    RES --> COOL
+    CAP --> TF
     
     AUTH --> PG
     RBAC --> REDIS
     COOL --> FILES
+```
+
+### Frontend Architecture
+
+The enterprise platform will use a modern frontend stack built on Vue.js with Inertia.js for seamless server-side rendering and client-side interactivity.
+
+#### Frontend Technology Stack
+
+- **Vue.js 3**: Component-based reactive frontend framework
+- **Inertia.js**: Modern monolith approach connecting Laravel backend with Vue.js frontend
+- **Tailwind CSS**: Utility-first CSS framework for consistent styling
+- **Vite**: Fast build tool and development server
+- **TypeScript**: Type-safe JavaScript for better development experience
+
+#### Component Architecture
+
+```
+Frontend Components/
+├── Organization/
+│   ├── OrganizationManager.vue
+│   ├── OrganizationHierarchy.vue
+│   └── OrganizationSwitcher.vue
+├── License/
+│   ├── LicenseManager.vue
+│   ├── LicenseStatus.vue
+│   └── UsageDashboard.vue
+├── Infrastructure/
+│   ├── TerraformManager.vue
+│   ├── CloudProviderCredentials.vue
+│   └── ProvisioningProgress.vue
+├── Payment/
+│   ├── PaymentManager.vue
+│   ├── BillingDashboard.vue
+│   └── SubscriptionManager.vue
+├── Domain/
+│   ├── DomainManager.vue
+│   ├── DNSManager.vue
+│   └── SSLCertificateManager.vue
+└── WhiteLabel/
+    ├── BrandingManager.vue
+    ├── ThemeCustomizer.vue
+    └── CustomCSSEditor.vue
 ```
 
 ### Enhanced Database Schema
@@ -156,6 +206,137 @@ CREATE TABLE terraform_deployments (
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
+
+-- Resource monitoring and metrics
+CREATE TABLE server_resource_metrics (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    server_id INTEGER REFERENCES servers(id) ON DELETE CASCADE,
+    organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
+    timestamp TIMESTAMP NOT NULL DEFAULT NOW(),
+    cpu_usage_percent DECIMAL(5,2) NOT NULL,
+    cpu_load_1min DECIMAL(8,2),
+    cpu_load_5min DECIMAL(8,2),
+    cpu_load_15min DECIMAL(8,2),
+    cpu_core_count INTEGER,
+    memory_total_mb BIGINT NOT NULL,
+    memory_used_mb BIGINT NOT NULL,
+    memory_available_mb BIGINT NOT NULL,
+    memory_usage_percent DECIMAL(5,2) NOT NULL,
+    swap_total_mb BIGINT,
+    swap_used_mb BIGINT,
+    disk_total_gb DECIMAL(10,2) NOT NULL,
+    disk_used_gb DECIMAL(10,2) NOT NULL,
+    disk_available_gb DECIMAL(10,2) NOT NULL,
+    disk_usage_percent DECIMAL(5,2) NOT NULL,
+    disk_io_read_mb_s DECIMAL(10,2),
+    disk_io_write_mb_s DECIMAL(10,2),
+    network_rx_bytes_s BIGINT,
+    network_tx_bytes_s BIGINT,
+    network_connections_active INTEGER,
+    network_connections_established INTEGER,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Indexes for performance
+CREATE INDEX idx_server_resource_metrics_server_timestamp ON server_resource_metrics(server_id, timestamp DESC);
+CREATE INDEX idx_server_resource_metrics_org_timestamp ON server_resource_metrics(organization_id, timestamp DESC);
+
+-- Build server queue and load tracking
+CREATE TABLE build_server_metrics (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    server_id INTEGER REFERENCES servers(id) ON DELETE CASCADE,
+    organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
+    timestamp TIMESTAMP NOT NULL DEFAULT NOW(),
+    queue_length INTEGER NOT NULL DEFAULT 0,
+    active_builds INTEGER NOT NULL DEFAULT 0,
+    completed_builds_last_hour INTEGER DEFAULT 0,
+    failed_builds_last_hour INTEGER DEFAULT 0,
+    average_build_duration_minutes DECIMAL(8,2),
+    load_score DECIMAL(8,2) NOT NULL,
+    can_accept_builds BOOLEAN NOT NULL DEFAULT true,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_build_server_metrics_server_timestamp ON build_server_metrics(server_id, timestamp DESC);
+
+-- Organization resource usage tracking
+CREATE TABLE organization_resource_usage (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
+    timestamp TIMESTAMP NOT NULL DEFAULT NOW(),
+    servers_count INTEGER NOT NULL DEFAULT 0,
+    applications_count INTEGER NOT NULL DEFAULT 0,
+    build_servers_count INTEGER NOT NULL DEFAULT 0,
+    cpu_cores_allocated DECIMAL(8,2) NOT NULL DEFAULT 0,
+    memory_mb_allocated BIGINT NOT NULL DEFAULT 0,
+    disk_gb_used DECIMAL(10,2) NOT NULL DEFAULT 0,
+    cpu_usage_percent_avg DECIMAL(5,2),
+    memory_usage_percent_avg DECIMAL(5,2),
+    disk_usage_percent_avg DECIMAL(5,2),
+    active_deployments INTEGER DEFAULT 0,
+    total_deployments_last_24h INTEGER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_org_resource_usage_org_timestamp ON organization_resource_usage(organization_id, timestamp DESC);
+
+-- Resource alerts and thresholds
+CREATE TABLE resource_alerts (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
+    server_id INTEGER REFERENCES servers(id) ON DELETE CASCADE,
+    alert_type VARCHAR(50) NOT NULL, -- cpu_high, memory_high, disk_high, build_queue_full, quota_exceeded
+    severity VARCHAR(20) NOT NULL DEFAULT 'warning', -- info, warning, critical
+    threshold_value DECIMAL(10,2),
+    current_value DECIMAL(10,2),
+    message TEXT NOT NULL,
+    is_resolved BOOLEAN DEFAULT false,
+    resolved_at TIMESTAMP,
+    notified_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_resource_alerts_org_unresolved ON resource_alerts(organization_id, is_resolved, created_at DESC);
+CREATE INDEX idx_resource_alerts_server_unresolved ON resource_alerts(server_id, is_resolved, created_at DESC);
+
+-- Capacity planning and predictions
+CREATE TABLE capacity_predictions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
+    server_id INTEGER REFERENCES servers(id) ON DELETE CASCADE,
+    prediction_type VARCHAR(50) NOT NULL, -- resource_exhaustion, scaling_needed, optimization_opportunity
+    predicted_date DATE,
+    confidence_percent DECIMAL(5,2),
+    resource_type VARCHAR(50), -- cpu, memory, disk, network
+    current_usage DECIMAL(10,2),
+    predicted_usage DECIMAL(10,2),
+    recommended_action TEXT,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_capacity_predictions_org_date ON capacity_predictions(organization_id, predicted_date);
+
+-- Application resource requirements tracking
+CREATE TABLE application_resource_requirements (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    application_id INTEGER NOT NULL, -- References applications table
+    organization_id UUID REFERENCES organizations(id) ON DELETE CASCADE,
+    cpu_cores_requested DECIMAL(8,2),
+    memory_mb_requested INTEGER,
+    disk_mb_estimated INTEGER,
+    build_cpu_percent_avg DECIMAL(5,2),
+    build_memory_mb_avg INTEGER,
+    build_duration_minutes_avg DECIMAL(8,2),
+    runtime_cpu_percent_avg DECIMAL(5,2),
+    runtime_memory_mb_avg INTEGER,
+    last_measured_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE(application_id)
+);
+
+CREATE INDEX idx_app_resource_requirements_org ON application_resource_requirements(organization_id);
 ```
 
 ### Integration with Existing Coolify Models
@@ -234,7 +415,486 @@ class Server extends BaseModel
 
 ## Components and Interfaces
 
-### 1. Terraform Integration Service
+### 1. Resource Management and Monitoring System
+
+#### System Resource Monitor
+
+```php
+interface SystemResourceMonitorInterface
+{
+    public function getSystemMetrics(Server $server): array;
+    public function getCpuUsage(Server $server): float;
+    public function getMemoryUsage(Server $server): array;
+    public function getNetworkStats(Server $server): array;
+    public function getDiskIOStats(Server $server): array;
+    public function getLoadAverage(Server $server): array;
+}
+
+class SystemResourceMonitor implements SystemResourceMonitorInterface
+{
+    public function getSystemMetrics(Server $server): array
+    {
+        return [
+            'timestamp' => now()->toISOString(),
+            'server_id' => $server->id,
+            'cpu' => [
+                'usage_percent' => $this->getCpuUsage($server),
+                'load_average' => $this->getLoadAverage($server),
+                'core_count' => $this->getCoreCount($server),
+            ],
+            'memory' => [
+                'total_mb' => $this->getTotalMemory($server),
+                'used_mb' => $this->getUsedMemory($server),
+                'available_mb' => $this->getAvailableMemory($server),
+                'usage_percent' => $this->getMemoryUsagePercent($server),
+                'swap_total_mb' => $this->getSwapTotal($server),
+                'swap_used_mb' => $this->getSwapUsed($server),
+            ],
+            'disk' => [
+                'total_gb' => $this->getTotalDisk($server),
+                'used_gb' => $this->getUsedDisk($server),
+                'available_gb' => $this->getAvailableDisk($server),
+                'usage_percent' => $this->getDiskUsagePercent($server),
+                'io_read_mb_s' => $this->getDiskReadRate($server),
+                'io_write_mb_s' => $this->getDiskWriteRate($server),
+            ],
+            'network' => [
+                'rx_bytes_s' => $this->getNetworkRxRate($server),
+                'tx_bytes_s' => $this->getNetworkTxRate($server),
+                'connections_active' => $this->getActiveConnections($server),
+                'connections_established' => $this->getEstablishedConnections($server),
+            ],
+        ];
+    }
+
+    private function getCpuUsage(Server $server): float
+    {
+        // Get CPU usage from /proc/stat or top command
+        $command = "grep 'cpu ' /proc/stat | awk '{usage=(\$2+\$4)*100/(\$2+\$3+\$4+\$5)} END {print usage}'";
+        return (float) instant_remote_process([$command], $server, false);
+    }
+
+    private function getMemoryUsage(Server $server): array
+    {
+        // Parse /proc/meminfo for detailed memory statistics
+        $command = "cat /proc/meminfo | grep -E '^(MemTotal|MemAvailable|MemFree|SwapTotal|SwapFree):' | awk '{print \$2}'";
+        $result = instant_remote_process([$command], $server, false);
+        $values = array_map('intval', explode("\n", trim($result)));
+        
+        return [
+            'total_kb' => $values[0] ?? 0,
+            'available_kb' => $values[1] ?? 0,
+            'free_kb' => $values[2] ?? 0,
+            'swap_total_kb' => $values[3] ?? 0,
+            'swap_free_kb' => $values[4] ?? 0,
+        ];
+    }
+
+    private function getNetworkStats(Server $server): array
+    {
+        // Parse /proc/net/dev for network interface statistics
+        $command = "cat /proc/net/dev | grep -E '(eth0|ens|enp)' | head -1 | awk '{print \$2,\$10}'";
+        $result = instant_remote_process([$command], $server, false);
+        [$rx_bytes, $tx_bytes] = explode(' ', trim($result));
+        
+        return [
+            'rx_bytes' => (int) $rx_bytes,
+            'tx_bytes' => (int) $tx_bytes,
+        ];
+    }
+}
+```
+
+#### Capacity Management System
+
+```php
+interface CapacityManagerInterface
+{
+    public function canServerHandleDeployment(Server $server, Application $app): bool;
+    public function selectOptimalServer(Collection $servers, array $requirements): ?Server;
+    public function predictResourceUsage(Application $app): array;
+    public function getServerCapacityScore(Server $server): float;
+    public function recommendServerUpgrade(Server $server): array;
+}
+
+class CapacityManager implements CapacityManagerInterface
+{
+    public function canServerHandleDeployment(Server $server, Application $app): bool
+    {
+        $serverMetrics = app(SystemResourceMonitor::class)->getSystemMetrics($server);
+        $appRequirements = $this->getApplicationRequirements($app);
+        
+        // Check CPU capacity (leave 20% buffer)
+        $cpuAvailable = (100 - $serverMetrics['cpu']['usage_percent']) * 0.8;
+        if ($appRequirements['cpu_percent'] > $cpuAvailable) {
+            return false;
+        }
+        
+        // Check memory capacity (leave 10% buffer)
+        $memoryAvailable = $serverMetrics['memory']['available_mb'] * 0.9;
+        if ($appRequirements['memory_mb'] > $memoryAvailable) {
+            return false;
+        }
+        
+        // Check disk capacity (leave 15% buffer)
+        $diskAvailable = ($serverMetrics['disk']['available_gb'] * 1024) * 0.85;
+        if ($appRequirements['disk_mb'] > $diskAvailable) {
+            return false;
+        }
+        
+        // Check if server is already overloaded
+        if ($this->isServerOverloaded($serverMetrics)) {
+            return false;
+        }
+        
+        return true;
+    }
+
+    public function selectOptimalServer(Collection $servers, array $requirements): ?Server
+    {
+        $viableServers = $servers->filter(function ($server) use ($requirements) {
+            return $this->canServerHandleDeployment($server, $requirements) && 
+                   $server->isFunctional() && 
+                   !$server->isBuildServer();
+        });
+        
+        if ($viableServers->isEmpty()) {
+            return null;
+        }
+        
+        // Select server with highest capacity score
+        return $viableServers->sortByDesc(function ($server) {
+            return $this->getServerCapacityScore($server);
+        })->first();
+    }
+
+    public function getServerCapacityScore(Server $server): float
+    {
+        $metrics = app(SystemResourceMonitor::class)->getSystemMetrics($server);
+        
+        // Calculate weighted capacity score (higher is better)
+        $cpuScore = (100 - $metrics['cpu']['usage_percent']) * 0.4;
+        $memoryScore = ($metrics['memory']['available_mb'] / $metrics['memory']['total_mb']) * 100 * 0.3;
+        $diskScore = ($metrics['disk']['available_gb'] / $metrics['disk']['total_gb']) * 100 * 0.2;
+        $loadScore = (5 - min(5, $metrics['cpu']['load_average'][0])) * 20 * 0.1; // 5-minute load average
+        
+        return $cpuScore + $memoryScore + $diskScore + $loadScore;
+    }
+
+    private function isServerOverloaded(array $metrics): bool
+    {
+        return $metrics['cpu']['usage_percent'] > 85 ||
+               $metrics['memory']['usage_percent'] > 90 ||
+               $metrics['disk']['usage_percent'] > 85 ||
+               $metrics['cpu']['load_average'][0] > ($metrics['cpu']['core_count'] * 2);
+    }
+
+    private function getApplicationRequirements(Application $app): array
+    {
+        return [
+            'cpu_percent' => $this->parseCpuRequirement($app->limits_cpus ?? '0.5'),
+            'memory_mb' => $this->parseMemoryRequirement($app->limits_memory ?? '512m'),
+            'disk_mb' => $this->estimateDiskRequirement($app),
+        ];
+    }
+}
+```
+
+#### Build Server Resource Manager
+
+```php
+interface BuildServerManagerInterface
+{
+    public function getBuildServerLoad(Server $buildServer): array;
+    public function selectLeastLoadedBuildServer(): ?Server;
+    public function estimateBuildResourceUsage(Application $app): array;
+    public function canBuildServerHandleBuild(Server $buildServer, Application $app): bool;
+    public function getActiveBuildCount(Server $buildServer): int;
+}
+
+class BuildServerManager implements BuildServerManagerInterface
+{
+    public function getBuildServerLoad(Server $buildServer): array
+    {
+        $metrics = app(SystemResourceMonitor::class)->getSystemMetrics($buildServer);
+        $queueLength = $this->getBuildQueueLength($buildServer);
+        $activeBuildCount = $this->getActiveBuildCount($buildServer);
+        
+        return [
+            'server_id' => $buildServer->id,
+            'cpu_usage' => $metrics['cpu']['usage_percent'],
+            'memory_usage' => $metrics['memory']['usage_percent'],
+            'disk_usage' => $metrics['disk']['usage_percent'],
+            'load_average' => $metrics['cpu']['load_average'],
+            'queue_length' => $queueLength,
+            'active_builds' => $activeBuildCount,
+            'load_score' => $this->calculateBuildLoadScore($metrics, $queueLength, $activeBuildCount),
+            'can_accept_builds' => $this->canAcceptNewBuilds($metrics, $queueLength, $activeBuildCount),
+        ];
+    }
+
+    public function selectLeastLoadedBuildServer(): ?Server
+    {
+        $buildServers = Server::where('is_build_server', true)
+            ->whereHas('settings', function ($query) {
+                $query->where('is_reachable', true)
+                      ->where('force_disabled', false);
+            })
+            ->get();
+            
+        if ($buildServers->isEmpty()) {
+            return null;
+        }
+        
+        $availableServers = $buildServers->filter(function ($server) {
+            $load = $this->getBuildServerLoad($server);
+            return $load['can_accept_builds'];
+        });
+        
+        if ($availableServers->isEmpty()) {
+            return null; // All build servers are overloaded
+        }
+        
+        return $availableServers->sortBy(function ($server) {
+            return $this->getBuildServerLoad($server)['load_score'];
+        })->first();
+    }
+
+    public function estimateBuildResourceUsage(Application $app): array
+    {
+        $baseRequirements = [
+            'cpu_percent' => 50,
+            'memory_mb' => 1024,
+            'disk_mb' => 2048,
+            'duration_minutes' => 5,
+        ];
+        
+        // Adjust based on build pack
+        switch ($app->build_pack) {
+            case 'dockerfile':
+                $baseRequirements['memory_mb'] *= 1.5;
+                $baseRequirements['duration_minutes'] *= 1.5;
+                break;
+            case 'nixpacks':
+                $baseRequirements['cpu_percent'] *= 1.2;
+                $baseRequirements['memory_mb'] *= 1.3;
+                break;
+            case 'static':
+                $baseRequirements['cpu_percent'] *= 0.5;
+                $baseRequirements['memory_mb'] *= 0.5;
+                $baseRequirements['duration_minutes'] *= 0.3;
+                break;
+        }
+        
+        // Adjust based on repository characteristics
+        if ($app->repository_size_mb > 100) {
+            $baseRequirements['duration_minutes'] *= 2;
+            $baseRequirements['disk_mb'] *= 1.5;
+        }
+        
+        if ($app->has_node_modules ?? false) {
+            $baseRequirements['memory_mb'] *= 2;
+            $baseRequirements['duration_minutes'] *= 1.5;
+        }
+        
+        return $baseRequirements;
+    }
+
+    private function calculateBuildLoadScore(array $metrics, int $queueLength, int $activeBuildCount): float
+    {
+        // Lower score is better for build server selection
+        return ($metrics['cpu']['usage_percent'] * 0.3) +
+               ($metrics['memory']['usage_percent'] * 0.3) +
+               ($metrics['disk']['usage_percent'] * 0.2) +
+               ($queueLength * 10) +
+               ($activeBuildCount * 15) +
+               (min(10, $metrics['cpu']['load_average'][0]) * 5);
+    }
+
+    private function canAcceptNewBuilds(array $metrics, int $queueLength, int $activeBuildCount): bool
+    {
+        return $metrics['cpu']['usage_percent'] < 80 &&
+               $metrics['memory']['usage_percent'] < 85 &&
+               $metrics['disk']['usage_percent'] < 90 &&
+               $queueLength < 5 &&
+               $activeBuildCount < 3;
+    }
+}
+```
+
+#### Organization Resource Manager
+
+```php
+interface OrganizationResourceManagerInterface
+{
+    public function getResourceUsage(Organization $organization): array;
+    public function enforceResourceQuotas(Organization $organization): bool;
+    public function canOrganizationDeploy(Organization $organization, array $requirements): bool;
+    public function getResourceUtilizationReport(Organization $organization): array;
+    public function predictResourceNeeds(Organization $organization, int $daysAhead = 30): array;
+}
+
+class OrganizationResourceManager implements OrganizationResourceManagerInterface
+{
+    public function getResourceUsage(Organization $organization): array
+    {
+        $servers = $organization->servers()->with('settings')->get();
+        $applications = $organization->applications();
+        
+        $totalUsage = [
+            'servers' => $servers->count(),
+            'applications' => $applications->count(),
+            'cpu_cores_allocated' => 0,
+            'memory_mb_allocated' => 0,
+            'disk_gb_used' => 0,
+            'cpu_usage_percent' => 0,
+            'memory_usage_percent' => 0,
+            'disk_usage_percent' => 0,
+            'build_servers' => $servers->where('is_build_server', true)->count(),
+            'active_deployments' => 0,
+        ];
+        
+        $totalCpuCores = 0;
+        $totalMemoryMb = 0;
+        $totalDiskGb = 0;
+        
+        foreach ($servers as $server) {
+            if (!$server->isFunctional()) continue;
+            
+            $metrics = app(SystemResourceMonitor::class)->getSystemMetrics($server);
+            
+            // Accumulate actual usage
+            $totalUsage['cpu_usage_percent'] += $metrics['cpu']['usage_percent'];
+            $totalUsage['memory_usage_percent'] += $metrics['memory']['usage_percent'];
+            $totalUsage['disk_usage_percent'] += $metrics['disk']['usage_percent'];
+            $totalUsage['disk_gb_used'] += $metrics['disk']['used_gb'];
+            
+            // Track total capacity
+            $totalCpuCores += $metrics['cpu']['core_count'];
+            $totalMemoryMb += $metrics['memory']['total_mb'];
+            $totalDiskGb += $metrics['disk']['total_gb'];
+        }
+        
+        // Calculate average usage percentages
+        $serverCount = $servers->where('is_reachable', true)->count();
+        if ($serverCount > 0) {
+            $totalUsage['cpu_usage_percent'] = round($totalUsage['cpu_usage_percent'] / $serverCount, 2);
+            $totalUsage['memory_usage_percent'] = round($totalUsage['memory_usage_percent'] / $serverCount, 2);
+            $totalUsage['disk_usage_percent'] = round($totalUsage['disk_usage_percent'] / $serverCount, 2);
+        }
+        
+        // Calculate allocated resources from application limits
+        foreach ($applications as $app) {
+            $totalUsage['cpu_cores_allocated'] += $this->parseCpuLimit($app->limits_cpus);
+            $totalUsage['memory_mb_allocated'] += $this->parseMemoryLimit($app->limits_memory);
+            
+            if ($app->isDeploymentInProgress()) {
+                $totalUsage['active_deployments']++;
+            }
+        }
+        
+        $totalUsage['total_cpu_cores'] = $totalCpuCores;
+        $totalUsage['total_memory_mb'] = $totalMemoryMb;
+        $totalUsage['total_disk_gb'] = $totalDiskGb;
+        
+        return $totalUsage;
+    }
+
+    public function enforceResourceQuotas(Organization $organization): bool
+    {
+        $license = $organization->activeLicense;
+        if (!$license) {
+            return false;
+        }
+        
+        $usage = $this->getResourceUsage($organization);
+        $limits = $license->limits ?? [];
+        
+        $violations = [];
+        
+        // Check hard limits
+        foreach (['max_servers', 'max_applications', 'max_cpu_cores', 'max_memory_gb', 'max_storage_gb'] as $limitType) {
+            if (!isset($limits[$limitType])) continue;
+            
+            $currentUsage = match($limitType) {
+                'max_servers' => $usage['servers'],
+                'max_applications' => $usage['applications'],
+                'max_cpu_cores' => $usage['cpu_cores_allocated'],
+                'max_memory_gb' => round($usage['memory_mb_allocated'] / 1024, 2),
+                'max_storage_gb' => $usage['disk_gb_used'],
+            };
+            
+            if ($currentUsage > $limits[$limitType]) {
+                $violations[] = [
+                    'type' => $limitType,
+                    'current' => $currentUsage,
+                    'limit' => $limits[$limitType],
+                    'message' => ucfirst(str_replace(['max_', '_'], ['', ' '], $limitType)) . 
+                               " ({$currentUsage}) exceeds limit ({$limits[$limitType]})",
+                ];
+            }
+        }
+        
+        if (!empty($violations)) {
+            logger()->warning('Organization resource quota violations', [
+                'organization_id' => $organization->id,
+                'violations' => $violations,
+                'usage' => $usage,
+            ]);
+            
+            // Optionally trigger enforcement actions
+            $this->handleQuotaViolations($organization, $violations);
+            
+            return false;
+        }
+        
+        return true;
+    }
+
+    public function canOrganizationDeploy(Organization $organization, array $requirements): bool
+    {
+        if (!$this->enforceResourceQuotas($organization)) {
+            return false;
+        }
+        
+        $usage = $this->getResourceUsage($organization);
+        $license = $organization->activeLicense;
+        $limits = $license->limits ?? [];
+        
+        // Check if new deployment would exceed limits
+        $projectedUsage = [
+            'applications' => $usage['applications'] + 1,
+            'cpu_cores' => $usage['cpu_cores_allocated'] + ($requirements['cpu_cores'] ?? 0.5),
+            'memory_gb' => ($usage['memory_mb_allocated'] + ($requirements['memory_mb'] ?? 512)) / 1024,
+        ];
+        
+        foreach ($projectedUsage as $type => $projected) {
+            $limitKey = "max_{$type}";
+            if (isset($limits[$limitKey]) && $projected > $limits[$limitKey]) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
+    private function handleQuotaViolations(Organization $organization, array $violations): void
+    {
+        // Send notifications to organization admins
+        $organization->users()->wherePivot('role', 'owner')->each(function ($user) use ($violations) {
+            // Send quota violation notification
+        });
+        
+        // Log for audit trail
+        logger()->warning('Resource quota violations detected', [
+            'organization_id' => $organization->id,
+            'violations' => $violations,
+        ]);
+    }
+}
+```
+
+### 2. Terraform Integration Service
 
 ```php
 interface TerraformServiceInterface

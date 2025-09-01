@@ -25,11 +25,24 @@ class CloudProviderCredentialFactory extends Factory
         return [
             'organization_id' => Organization::factory(),
             'provider_name' => $provider,
-            'credential_name' => $this->faker->words(2, true).' Credentials',
-            'encrypted_credentials' => $this->getCredentialsForProvider($provider),
+            'provider_region' => $this->getRegionForProvider($provider),
+            'credentials' => $this->getCredentialsForProvider($provider),
             'is_active' => true,
             'last_validated_at' => now(),
         ];
+    }
+
+    /**
+     * Get sample region for a provider.
+     */
+    protected function getRegionForProvider(string $provider): ?string
+    {
+        return match ($provider) {
+            'aws' => $this->faker->randomElement(['us-east-1', 'us-west-2', 'eu-west-1', 'ap-southeast-1']),
+            'gcp' => $this->faker->randomElement(['us-central1', 'us-east1', 'europe-west1', 'asia-southeast1']),
+            'azure' => $this->faker->randomElement(['East US', 'West US 2', 'West Europe', 'Southeast Asia']),
+            default => null,
+        };
     }
 
     /**
@@ -41,7 +54,6 @@ class CloudProviderCredentialFactory extends Factory
             'aws' => [
                 'access_key_id' => 'AKIA'.strtoupper($this->faker->bothify('??????????????')),
                 'secret_access_key' => $this->faker->bothify('????????????????????????????????????????'),
-                'region' => $this->faker->randomElement(['us-east-1', 'us-west-2', 'eu-west-1']),
             ],
             'gcp' => [
                 'project_id' => $this->faker->slug(),

@@ -11,12 +11,15 @@ use App\Models\Application;
 use App\Models\PrivateKey;
 use App\Models\Project;
 use App\Models\Server as ModelsServer;
+use App\Traits\LicenseValidation;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
 use Stringable;
 
 class ServersController extends Controller
 {
+    use LicenseValidation;
+
     private function removeSensitiveDataFromSettings($settings)
     {
         if (request()->attributes->get('can_read_sensitive', false) === false) {
@@ -284,6 +287,12 @@ class ServersController extends Controller
     )]
     public function domains_by_server(Request $request)
     {
+        // Validate license for domain management
+        $licenseCheck = $this->validateDomainManagement();
+        if ($licenseCheck) {
+            return $licenseCheck;
+        }
+
         $teamId = getTeamIdFromToken();
         if (is_null($teamId)) {
             return invalidTokenResponse();
@@ -451,6 +460,12 @@ class ServersController extends Controller
     )]
     public function create_server(Request $request)
     {
+        // Validate license for server creation
+        $licenseCheck = $this->validateServerCreation();
+        if ($licenseCheck) {
+            return $licenseCheck;
+        }
+
         $allowedFields = ['name', 'description', 'ip', 'port', 'user', 'private_key_uuid', 'is_build_server', 'instant_validate', 'proxy_type'];
 
         $teamId = getTeamIdFromToken();
@@ -542,9 +557,12 @@ class ServersController extends Controller
             ValidateServer::dispatch($server);
         }
 
-        return response()->json([
+        $responseData = $this->addLicenseInfoToResponse([
             'uuid' => $server->uuid,
-        ])->setStatusCode(201);
+            'message' => 'Server created successfully',
+        ]);
+
+        return response()->json($responseData)->setStatusCode(201);
     }
 
     #[OA\Patch(

@@ -51,9 +51,17 @@ return [
         ],
 
         'testing' => [
-            'driver' => 'sqlite',
-            'database' => ':memory:',
+            'driver' => 'pgsql',
+            'host' => 'postgres',
+            'port' => '5432',
+            'database' => 'coolify',
+            'username' => 'coolify',
+            'password' => '',
+            'charset' => 'utf8',
             'prefix' => '',
+            'prefix_indexes' => true,
+            'search_path' => 'public',
+            'sslmode' => 'prefer',
         ],
 
     ],

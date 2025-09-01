@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import { initializeTerminalComponent } from './terminal.js';
 import './websocket-fallback.js';
 import OrganizationManager from './components/OrganizationManager.vue'
+import LicenseManager from './components/License/LicenseManager.vue'
 
 // Initialize Vue apps
 document.addEventListener('DOMContentLoaded', () => {
@@ -9,6 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const orgManagerElement = document.getElementById('organization-manager-app')
     if (orgManagerElement) {
         createApp(OrganizationManager).mount('#organization-manager-app')
+    }
+
+    // License Manager
+    const licenseManagerElement = document.getElementById('license-manager-app')
+    if (licenseManagerElement) {
+        createApp(LicenseManager).mount('#license-manager-app')
     }
 });
 

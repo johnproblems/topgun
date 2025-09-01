@@ -249,7 +249,7 @@ export default {
       message: { text: '', type: '' },
       form: {
         name: '',
-        hierarchy_type: 'end_user',
+        hierarchy_type: 'top_branch',
         parent_organization_id: null,
         is_active: true
       },

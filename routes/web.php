@@ -258,10 +258,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/tasks/{task_uuid}', ScheduledTaskShow::class)->name('project.service.scheduled-tasks');
     });
 
-    Route::get('/servers', ServerIndex::class)->name('server.index');
+    Route::get('/servers', ServerIndex::class)->name('server.index')->middleware(['license']);
     // Route::get('/server/new', ServerCreate::class)->name('server.create');
 
-    Route::prefix('server/{server_uuid}')->group(function () {
+    Route::prefix('server/{server_uuid}')->middleware(['license:server_provisioning'])->group(function () {
         Route::get('/', ServerShow::class)->name('server.show');
         Route::get('/advanced', ServerAdvanced::class)->name('server.advanced');
         Route::get('/private-key', PrivateKeyShow::class)->name('server.private-key');
@@ -271,7 +271,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/destinations', ServerDestinations::class)->name('server.destinations');
         Route::get('/log-drains', LogDrains::class)->name('server.log-drains');
         Route::get('/metrics', ServerCharts::class)->name('server.charts');
-        Route::get('/danger', DeleteServer::class)->name('server.delete');
+        Route::get('/danger', DeleteServer::class)->name('server.delete')->middleware(['server.provision']);
         Route::get('/proxy', ProxyShow::class)->name('server.proxy');
         Route::get('/proxy/dynamic', ProxyDynamicConfigurations::class)->name('server.proxy.dynamic-confs');
         Route::get('/proxy/logs', ProxyLogs::class)->name('server.proxy.logs');
@@ -399,7 +399,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/search', [App\Http\Controllers\Api\UserController::class, 'search']);
     });
 
+    // License Management Routes for Vue.js frontend
+    Route::prefix('internal-api/licenses')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\LicenseController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\LicenseController::class, 'store']);
+        Route::get('/{id}', [App\Http\Controllers\Api\LicenseController::class, 'show']);
+        Route::post('/{id}/validate', [App\Http\Controllers\Api\LicenseController::class, 'validateLicense']);
+        Route::post('/{id}/suspend', [App\Http\Controllers\Api\LicenseController::class, 'suspend']);
+        Route::post('/{id}/reactivate', [App\Http\Controllers\Api\LicenseController::class, 'reactivate']);
+        Route::post('/{id}/revoke', [App\Http\Controllers\Api\LicenseController::class, 'revoke']);
+        Route::post('/{id}/renew', [App\Http\Controllers\Api\LicenseController::class, 'renew']);
+        Route::post('/{id}/upgrade', [App\Http\Controllers\Api\LicenseController::class, 'upgrade']);
+        Route::get('/{id}/usage-history', [App\Http\Controllers\Api\LicenseController::class, 'usageHistory']);
+        Route::get('/{id}/usage-stats', [App\Http\Controllers\Api\LicenseController::class, 'show']); // Reuse show method
+        Route::get('/{id}/usage-export', [App\Http\Controllers\Api\LicenseController::class, 'exportUsage']);
+        Route::get('/{id}/export', [App\Http\Controllers\Api\LicenseController::class, 'exportLicense']);
+    });
+
 });
+
+// Include license management routes
+require __DIR__.'/license.php';
 
 Route::any('/{any}', function () {
     if (auth()->user()) {

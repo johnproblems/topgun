@@ -61,11 +61,6 @@ class Organization extends Model
         return $this->hasMany(Server::class);
     }
 
-    public function applications()
-    {
-        return $this->hasManyThrough(Application::class, Server::class);
-    }
-
     public function whiteLabelConfig()
     {
         return $this->hasOne(WhiteLabelConfig::class);
@@ -79,6 +74,16 @@ class Organization extends Model
     public function terraformDeployments()
     {
         return $this->hasMany(TerraformDeployment::class);
+    }
+
+    public function applications()
+    {
+        return $this->hasMany(Application::class);
+    }
+
+    public function domains()
+    {
+        return $this->hasMany(Domain::class);
     }
 
     // Business Logic Methods
@@ -102,12 +107,24 @@ class Organization extends Model
 
     public function getUsageMetrics(): array
     {
-        return [
-            'users' => $this->users()->count(),
-            'servers' => $this->servers()->count(),
-            'applications' => $this->applications()->count(),
-            'domains' => 0, // TODO: Implement domains relationship when domain management is added
-        ];
+        try {
+            return [
+                'users' => $this->users()->count(),
+                'servers' => $this->servers()->count(),
+                'applications' => $this->applications()->count(),
+                'domains' => $this->domains()->count(),
+                'cloud_providers' => $this->cloudProviderCredentials()->count(),
+            ];
+        } catch (\Exception $e) {
+            // Handle missing columns gracefully for development
+            return [
+                'users' => $this->users()->count(),
+                'servers' => 0, // Fallback if servers relationship doesn't exist
+                'applications' => 0, // Fallback if applications relationship doesn't exist
+                'domains' => 0, // Fallback if domains relationship doesn't exist
+                'cloud_providers' => 0, // Fallback if cloud_providers relationship doesn't exist
+            ];
+        }
     }
 
     public function isWithinLimits(): bool

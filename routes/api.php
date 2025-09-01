@@ -31,7 +31,7 @@ Route::group([
     Route::get('/disable', [OtherController::class, 'disable_api']);
 });
 Route::group([
-    'middleware' => ['auth:sanctum', ApiAllowed::class, 'api.sensitive'],
+    'middleware' => ['auth:sanctum', ApiAllowed::class, 'api.sensitive', 'api.license'],
     'prefix' => 'v1',
 ], function () {
 
@@ -58,7 +58,7 @@ Route::group([
     Route::patch('/security/keys/{uuid}', [SecurityController::class, 'update_key'])->middleware(['api.ability:write']);
     Route::delete('/security/keys/{uuid}', [SecurityController::class, 'delete_key'])->middleware(['api.ability:write']);
 
-    Route::match(['get', 'post'], '/deploy', [DeployController::class, 'deploy'])->middleware(['api.ability:deploy']);
+    Route::match(['get', 'post'], '/deploy', [DeployController::class, 'deploy'])->middleware(['api.ability:deploy', 'api.license:server_provisioning']);
     Route::get('/deployments', [DeployController::class, 'deployments'])->middleware(['api.ability:read']);
     Route::get('/deployments/{uuid}', [DeployController::class, 'deployment_by_uuid'])->middleware(['api.ability:read']);
     Route::get('/deployments/applications/{uuid}', [DeployController::class, 'get_application_deployments'])->middleware(['api.ability:read']);
@@ -70,21 +70,46 @@ Route::group([
 
     Route::get('/servers/{uuid}/validate', [ServersController::class, 'validate_server'])->middleware(['api.ability:read']);
 
-    Route::post('/servers', [ServersController::class, 'create_server'])->middleware(['api.ability:read']);
-    Route::patch('/servers/{uuid}', [ServersController::class, 'update_server'])->middleware(['api.ability:write']);
-    Route::delete('/servers/{uuid}', [ServersController::class, 'delete_server'])->middleware(['api.ability:write']);
+    Route::post('/servers', [ServersController::class, 'create_server'])->middleware(['api.ability:read', 'server.provision']);
+    Route::patch('/servers/{uuid}', [ServersController::class, 'update_server'])->middleware(['api.ability:write', 'api.license:server_provisioning']);
+    Route::delete('/servers/{uuid}', [ServersController::class, 'delete_server'])->middleware(['api.ability:write', 'api.license:server_provisioning']);
 
     Route::get('/resources', [ResourcesController::class, 'resources'])->middleware(['api.ability:read']);
 
     Route::get('/applications', [ApplicationsController::class, 'applications'])->middleware(['api.ability:read']);
-    Route::post('/applications/public', [ApplicationsController::class, 'create_public_application'])->middleware(['api.ability:write']);
-    Route::post('/applications/private-github-app', [ApplicationsController::class, 'create_private_gh_app_application'])->middleware(['api.ability:write']);
-    Route::post('/applications/private-deploy-key', [ApplicationsController::class, 'create_private_deploy_key_application'])->middleware(['api.ability:write']);
-    Route::post('/applications/dockerfile', [ApplicationsController::class, 'create_dockerfile_application'])->middleware(['api.ability:write']);
-    Route::post('/applications/dockerimage', [ApplicationsController::class, 'create_dockerimage_application'])->middleware(['api.ability:write']);
-    Route::post('/applications/dockercompose', [ApplicationsController::class, 'create_dockercompose_application'])->middleware(['api.ability:write']);
+    Route::post('/applications/public', [ApplicationsController::class, 'create_public_application'])->middleware(['api.ability:write', 'api.license:server_provisioning']);
+    Route::post('/applications/private-github-app', [ApplicationsController::class, 'create_private_gh_app_application'])->middleware(['api.ability:write', 'api.license:server_provisioning']);
+    Route::post('/applications/private-deploy-key', [ApplicationsController::class, 'create_private_deploy_key_application'])->middleware(['api.ability:write', 'api.license:server_provisioning']);
+    Route::post('/applications/dockerfile', [ApplicationsController::class, 'create_dockerfile_application'])->middleware(['api.ability:write', 'api.license:server_provisioning']);
+    Route::post('/applications/dockerimage', [ApplicationsController::class, 'create_dockerimage_application'])->middleware(['api.ability:write', 'api.license:server_provisioning']);
+    Route::post('/applications/dockercompose', [ApplicationsController::class, 'create_dockercompose_application'])->middleware(['api.ability:write', 'api.license:server_provisioning']);
 
     Route::get('/applications/{uuid}', [ApplicationsController::class, 'application_by_uuid'])->middleware(['api.ability:read']);
+
+    // License Management Routes
+    Route::prefix('licenses')->middleware(['api.ability:read'])->group(function () {
+        Route::get('/', [\App\Http\Controllers\Api\LicenseController::class, 'index']);
+        Route::post('/', [\App\Http\Controllers\Api\LicenseController::class, 'store'])->middleware(['api.ability:write']);
+        Route::get('/{id}', [\App\Http\Controllers\Api\LicenseController::class, 'show']);
+        Route::post('/{id}/validate', [\App\Http\Controllers\Api\LicenseController::class, 'validateLicense'])->middleware(['api.ability:write']);
+        Route::post('/{id}/suspend', [\App\Http\Controllers\Api\LicenseController::class, 'suspend'])->middleware(['api.ability:write']);
+        Route::post('/{id}/reactivate', [\App\Http\Controllers\Api\LicenseController::class, 'reactivate'])->middleware(['api.ability:write']);
+        Route::post('/{id}/revoke', [\App\Http\Controllers\Api\LicenseController::class, 'revoke'])->middleware(['api.ability:write']);
+        Route::post('/{id}/renew', [\App\Http\Controllers\Api\LicenseController::class, 'renew'])->middleware(['api.ability:write']);
+        Route::post('/{id}/upgrade', [\App\Http\Controllers\Api\LicenseController::class, 'upgrade'])->middleware(['api.ability:write']);
+        Route::get('/{id}/usage-history', [\App\Http\Controllers\Api\LicenseController::class, 'usageHistory']);
+        Route::get('/{id}/usage-stats', [\App\Http\Controllers\Api\LicenseController::class, 'show']); // Reuse show method
+        Route::get('/{id}/usage-export', [\App\Http\Controllers\Api\LicenseController::class, 'exportUsage']);
+        Route::get('/{id}/export', [\App\Http\Controllers\Api\LicenseController::class, 'exportLicense']);
+    });
+
+    // License Status Routes
+    Route::prefix('license')->middleware(['api.ability:read'])->group(function () {
+        Route::get('/status', [\App\Http\Controllers\Api\LicenseStatusController::class, 'status']);
+        Route::get('/features/{feature}', [\App\Http\Controllers\Api\LicenseStatusController::class, 'checkFeature']);
+        Route::get('/deployment-options/{option}', [\App\Http\Controllers\Api\LicenseStatusController::class, 'checkDeploymentOption']);
+        Route::get('/limits', [\App\Http\Controllers\Api\LicenseStatusController::class, 'limits']);
+    });
     Route::patch('/applications/{uuid}', [ApplicationsController::class, 'update_by_uuid'])->middleware(['api.ability:write']);
     Route::delete('/applications/{uuid}', [ApplicationsController::class, 'delete_by_uuid'])->middleware(['api.ability:write']);
 

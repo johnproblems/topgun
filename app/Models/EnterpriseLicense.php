@@ -274,4 +274,42 @@ class EnterpriseLicense extends Model
         return $query->where('expires_at', '<=', now()->addDays($days))
             ->where('expires_at', '>', now());
     }
+
+    // Grace Period Methods
+    public function isWithinGracePeriod(): bool
+    {
+        if (! $this->isExpired()) {
+            return false;
+        }
+
+        $gracePeriodDays = config('licensing.grace_period_days', 7);
+        $daysExpired = abs($this->getDaysUntilExpiration());
+
+        return $daysExpired <= $gracePeriodDays;
+    }
+
+    public function getGracePeriodEndDate(): ?\Carbon\Carbon
+    {
+        if (! $this->expires_at) {
+            return null;
+        }
+
+        $gracePeriodDays = config('licensing.grace_period_days', 7);
+
+        return $this->expires_at->addDays($gracePeriodDays);
+    }
+
+    public function getDaysRemainingInGracePeriod(): ?int
+    {
+        if (! $this->isExpired()) {
+            return null;
+        }
+
+        $gracePeriodEnd = $this->getGracePeriodEndDate();
+        if (! $gracePeriodEnd) {
+            return null;
+        }
+
+        return max(0, now()->diffInDays($gracePeriodEnd, false));
+    }
 }
