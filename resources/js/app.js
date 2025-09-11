@@ -3,6 +3,7 @@ import { initializeTerminalComponent } from './terminal.js';
 import './websocket-fallback.js';
 import OrganizationManager from './components/OrganizationManager.vue'
 import LicenseManager from './components/License/LicenseManager.vue'
+import BrandingManager from './components/Enterprise/WhiteLabel/BrandingManager.vue'
 
 // Initialize Vue apps
 document.addEventListener('DOMContentLoaded', () => {
@@ -16,6 +17,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const licenseManagerElement = document.getElementById('license-manager-app')
     if (licenseManagerElement) {
         createApp(LicenseManager).mount('#license-manager-app')
+    }
+
+    // Branding Manager
+    const brandingManagerElement = document.getElementById('branding-manager-app')
+    if (brandingManagerElement) {
+        createApp(BrandingManager).mount('#branding-manager-app')
     }
 });
 

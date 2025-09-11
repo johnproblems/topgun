@@ -1,0 +1,11 @@
+# Task ID: 18
+# Title: Implement Advanced Rate Limiting
+# Status: pending
+# Dependencies: 17
+# Priority: medium
+# Description: Create sophisticated rate limiting based on organization tiers and usage patterns
+# Details:
+Build rate limiting middleware with tier-based limits (basic: 100/hour, pro: 1000/hour, enterprise: unlimited). Implement usage tracking with Redis-based counters and quota management. Add rate limit headers (X-RateLimit-Remaining, X-RateLimit-Reset) for client feedback. Create rate limit bypass for premium tiers and IP whitelisting.
+
+# Test Strategy:
+Rate limiting enforcement tests with various scenarios. Usage quota calculation tests. Rate limit header validation tests.

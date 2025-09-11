@@ -1,0 +1,11 @@
+# Task ID: 6
+# Title: Implement Terraform Service Core
+# Status: pending
+# Dependencies: 5
+# Priority: high
+# Description: Build core Terraform service for infrastructure provisioning with state management
+# Details:
+Create TerraformService interface and implementation with Terraform binary execution. Implement Terraform configuration generation for each cloud provider with modular templates. Create isolated execution environment with proper state file management. Add deployment tracking with TerraformDeployment model. Implement rollback and destroy capabilities with safety checks.
+
+# Test Strategy:
+Unit tests for Terraform config generation. Integration tests with Terraform binary using mock providers. State management validation tests.
