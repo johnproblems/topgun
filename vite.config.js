@@ -11,11 +11,20 @@ export default defineConfig(({ mode }) => {
                 ignored: [
                     "**/dev_*_data/**",
                     "**/storage/**",
+                    "**/vendor/**",
+                    "**/node_modules/**",
+                    "**/.git/**",
                 ],
             },
             host: "0.0.0.0",
+            port: 5173,
             hmr: {
-                host: env.VITE_HOST || '0.0.0.0'
+                host: 'localhost',
+                port: 5173,
+            },
+            cors: {
+                origin: ['http://localhost:8000', 'http://localhost:5173'],
+                credentials: true,
             },
         },
         plugins: [

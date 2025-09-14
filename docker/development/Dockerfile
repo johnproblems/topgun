@@ -53,10 +53,13 @@ RUN echo "alias ll='ls -al'" >> /etc/profile && \
 
 # Install Cloudflared based on architecture
 RUN mkdir -p /usr/local/bin && \
-    if [ "${TARGETPLATFORM}" = "linux/amd64" ]; then \
+    ARCH=$(uname -m) && \
+    if [ "${TARGETPLATFORM}" = "linux/amd64" ] || [ "$ARCH" = "x86_64" ]; then \
         curl -sSL "https://github.com/cloudflare/cloudflared/releases/download/${CLOUDFLARED_VERSION}/cloudflared-linux-amd64" -o /usr/local/bin/cloudflared; \
-    elif [ "${TARGETPLATFORM}" = "linux/arm64" ]; then \
+    elif [ "${TARGETPLATFORM}" = "linux/arm64" ] || [ "$ARCH" = "aarch64" ]; then \
         curl -sSL "https://github.com/cloudflare/cloudflared/releases/download/${CLOUDFLARED_VERSION}/cloudflared-linux-arm64" -o /usr/local/bin/cloudflared; \
+    else \
+        curl -sSL "https://github.com/cloudflare/cloudflared/releases/download/${CLOUDFLARED_VERSION}/cloudflared-linux-amd64" -o /usr/local/bin/cloudflared; \
     fi && \
     chmod +x /usr/local/bin/cloudflared
 
@@ -67,7 +70,8 @@ ENV PHP_OPCACHE_ENABLE=0
 # Configure Nginx and S6 overlay
 COPY docker/development/etc/nginx/conf.d/custom.conf /etc/nginx/conf.d/custom.conf
 COPY docker/development/etc/nginx/site-opts.d/http.conf /etc/nginx/site-opts.d/http.conf
-COPY --chmod=755 docker/development/etc/s6-overlay/ /etc/s6-overlay/
+COPY docker/development/etc/s6-overlay/ /etc/s6-overlay/
+RUN chmod -R 755 /etc/s6-overlay/
 
 RUN mkdir -p /etc/nginx/conf.d && \
     chown -R www-data:www-data /etc/nginx && \

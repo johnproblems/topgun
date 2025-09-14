@@ -37,7 +37,7 @@ inclusion: always
     where: { status: 'ACTIVE' }
   });
   
-  // Consider adding to [prisma.mdc](mdc:.cursor/rules/prisma.mdc):
+  // Consider adding to [prisma.md](.kiro/steering/prisma.md):
   // - Standard select fields
   // - Common where conditions
   // - Performance optimization patterns
@@ -67,4 +67,4 @@ inclusion: always
   - Update references to external docs
   - Maintain links between related rules
   - Document breaking changes
-Follow [cursor_rules.mdc](mdc:.cursor/rules/cursor_rules.mdc) for proper rule formatting and structure.
+Follow [kiro_rules.md](.kiro/steering/kiro_rules.md) for proper rule formatting and structure.

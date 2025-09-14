@@ -18,10 +18,13 @@ COPY docker/coolify-realtime/soketi-entrypoint.sh /soketi-entrypoint.sh
 COPY docker/coolify-realtime/terminal-server.js /terminal/terminal-server.js
 
 # Install Cloudflared based on architecture
-RUN if [ "${TARGETPLATFORM}" = "linux/amd64" ]; then \
+RUN ARCH=$(uname -m) && \
+    if [ "${TARGETPLATFORM}" = "linux/amd64" ] || [ "$ARCH" = "x86_64" ]; then \
         curl -sSL "https://github.com/cloudflare/cloudflared/releases/download/${CLOUDFLARED_VERSION}/cloudflared-linux-amd64" -o /usr/local/bin/cloudflared; \
-    elif [ "${TARGETPLATFORM}" = "linux/arm64" ]; then \
+    elif [ "${TARGETPLATFORM}" = "linux/arm64" ] || [ "$ARCH" = "aarch64" ]; then \
         curl -sSL "https://github.com/cloudflare/cloudflared/releases/download/${CLOUDFLARED_VERSION}/cloudflared-linux-arm64" -o /usr/local/bin/cloudflared; \
+    else \
+        curl -sSL "https://github.com/cloudflare/cloudflared/releases/download/${CLOUDFLARED_VERSION}/cloudflared-linux-amd64" -o /usr/local/bin/cloudflared; \
     fi && \
     chmod +x /usr/local/bin/cloudflared
 
