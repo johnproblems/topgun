@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Traits\ClearsGlobalSearchCache;
+use App\Traits\HasSafeStringAttribute;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(
@@ -19,6 +20,9 @@ use OpenApi\Attributes as OA;
 )]
 class Environment extends BaseModel
 {
+    use ClearsGlobalSearchCache;
+    use HasSafeStringAttribute;
+
     protected $guarded = [];
 
     protected static function booted()
@@ -119,10 +123,8 @@ class Environment extends BaseModel
         return $this->hasMany(Service::class);
     }
 
-    protected function name(): Attribute
+    protected function customizeName($value)
     {
-        return Attribute::make(
-            set: fn (string $value) => str($value)->lower()->trim()->replace('/', '-')->toString(),
-        );
+        return str($value)->lower()->trim()->replace('/', '-')->toString();
     }
 }

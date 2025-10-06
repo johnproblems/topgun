@@ -8,6 +8,13 @@
 				"--package=task-master-ai",
 				"task-master-ai"
 			]
+		},
+		"laravel-boost": {
+			"command": "php",
+			"args": [
+				"artisan",
+				"boost:mcp"
+			]
 		}
 	}
 }

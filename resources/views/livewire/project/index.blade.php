@@ -4,12 +4,14 @@
     </x-slot>
     <div class="flex gap-2">
         <h1>Projects</h1>
-        <x-modal-input buttonTitle="+ Add" title="New Project">
-            <livewire:project.add-empty />
-        </x-modal-input>
+        @can('createAnyResource')
+            <x-modal-input buttonTitle="+ Add" title="New Project">
+                <livewire:project.add-empty />
+            </x-modal-input>
+        @endcan
     </div>
     <div class="subtitle">All your projects are here.</div>
-    <div x-data="searchComponent()">
+    <div x-data="searchComponent()" class="-mt-1">
         <x-forms.input placeholder="Search for name, description..." x-model="search" id="null" />
         <div class="grid grid-cols-2 gap-4 pt-4">
             <template x-if="filteredProjects.length === 0">
@@ -24,8 +26,8 @@
                             <div x-text="project.description"></div>
                         </div>
                     </div>
-                    <div
-                        class="flex items-center justify-center gap-2 pt-4 pb-2 mr-4 text-xs lg:py-0 lg:justify-normal">
+                    <div class="flex items-center justify-center gap-2 pt-4 pb-2 mr-4 text-xs lg:py-0 lg:justify-normal"
+                        x-show="project.canUpdate">
                         <a class="mx-4 font-bold hover:underline" wire:click.stop
                             :href="`/project/${project.uuid}/edit`">
                             Settings

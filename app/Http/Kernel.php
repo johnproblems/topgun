@@ -76,5 +76,8 @@ class Kernel extends HttpKernel
         'api.license' => \App\Http\Middleware\ApiLicenseValidation::class,
         'server.provision' => \App\Http\Middleware\ServerProvisioningLicense::class,
         'license.validate' => \App\Http\Middleware\LicenseValidationMiddleware::class,
+        'can.create.resources' => \App\Http\Middleware\CanCreateResources::class,
+        'can.update.resource' => \App\Http\Middleware\CanUpdateResource::class,
+        'can.access.terminal' => \App\Http\Middleware\CanAccessTerminal::class,
     ];
 }

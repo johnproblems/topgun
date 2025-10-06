@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             DisableTwoStepConfirmationSeeder::class,
             SentinelSeeder::class,
             CaSslCertSeeder::class,
+            PersonalAccessTokenSeeder::class,
         ]);
 
         // Add enterprise test data when in testing environment
