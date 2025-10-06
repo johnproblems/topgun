@@ -127,8 +127,7 @@ topgun/
 │   ├── Enterprise/Feature/        # Enterprise feature tests
 │   ├── Enterprise/Unit/           # Enterprise unit tests
 │   └── Enterprise/Browser/        # Browser tests for Vue components
-├── .claude/                       # Claude Code configuration
-├── .taskmaster/                   # Task Master AI workflow
+├── .claude/                       # Claude Code configuration & PM workflow
 └── .kiro/specs/                   # Enterprise transformation specs
 ```
 
@@ -194,29 +193,31 @@ return Inertia::render('Enterprise/Organization/Index', [
 
 ## Development Workflow
 
-### Using Task Master AI
+### Using Claude Code PM Workflow
 
-This project uses Task Master AI for task management and workflow orchestration:
+This project uses Claude Code's PM (Project Management) workflow for epic and task tracking:
 
 ```bash
-# View current tasks
-task-master list
+# View project status
+/pm/status
+
+# List all epics
+/pm/epic-list
+
+# Show specific epic
+/pm/epic-show <epic-number>
+
+# Start working on an epic
+/pm/epic-start <epic-number>
 
 # Get next available task
-task-master next
+/pm/next
 
-# View task details
-task-master show <task-id>
-
-# Update task status
-task-master set-status --id=<task-id> --status=done
-
-# Analyze complexity and expand tasks
-task-master analyze-complexity --research
-task-master expand --id=<task-id> --research
+# View PRD status
+/pm/prd-status
 ```
 
-See [.taskmaster/CLAUDE.md](.taskmaster/CLAUDE.md) for complete Task Master integration guide.
+See [.claude/CCPM_README.md](.claude/CCPM_README.md) for complete PM workflow documentation.
 
 ### Development Guidelines
 
@@ -329,7 +330,7 @@ This project is built on Coolify's open-source foundation and is being transform
 - ⏳ Payment Processing (Planned)
 - ⏳ Advanced Resource Management (Planned)
 
-See [.taskmaster/tasks/tasks.json](.taskmaster/tasks/tasks.json) for detailed task breakdown and progress.
+See [.claude/epics/topgun/](.claude/epics/topgun/) for detailed epic and task breakdown.
 
 ## Acknowledgments
 
@@ -339,4 +340,4 @@ Built on the excellent foundation provided by [Coolify](https://coolify.io) - an
 
 **For detailed development guidelines, see [CLAUDE.md](CLAUDE.md)**
 
-**For Task Master AI workflow, see [.taskmaster/CLAUDE.md](.taskmaster/CLAUDE.md)**
+**For Claude Code PM workflow, see [.claude/CCPM_README.md](.claude/CCPM_README.md)**

@@ -2,10 +2,6 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Task Master AI Instructions
-**Import Task Master's development workflow commands and guidelines, treat as if import is in the main CLAUDE.md file.**
-@./.taskmaster/CLAUDE.md
-
 ## Project Overview
 
 This is a **Coolify Enterprise Transformation Project** - transforming the existing Coolify fork into a comprehensive enterprise-grade cloud deployment and management platform. This is NOT standard Coolify development but a major architectural transformation.
