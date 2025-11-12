@@ -44,6 +44,28 @@ class WhiteLabelService
     }
 
     /**
+     * Get organization theme variables for SASS compilation
+     *
+     * @return array<string, string>
+     */
+    public function getOrganizationThemeVariables(Organization $organization): array
+    {
+        $config = $this->getOrCreateConfig($organization);
+        $themeVariables = $config->getThemeVariables();
+        $defaults = config('enterprise.white_label.default_theme', []);
+
+        // Merge with defaults, ensuring all required variables are present
+        $variables = array_merge($defaults, $themeVariables);
+
+        // Ensure font_family is set
+        if (empty($variables['font_family'])) {
+            $variables['font_family'] = $defaults['font_family'] ?? 'Inter, sans-serif';
+        }
+
+        return $variables;
+    }
+
+    /**
      * Process and upload logo with validation and optimization
      */
     public function processLogo(UploadedFile $file, Organization $organization): string
