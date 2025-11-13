@@ -421,7 +421,8 @@ require __DIR__.'/license.php';
 // Dynamic asset routes (must be before catch-all route)
 Route::get('/branding/{organization}/styles.css',
     [App\Http\Controllers\Enterprise\DynamicAssetController::class, 'styles']
-)->name('enterprise.branding.styles');
+)->middleware(['throttle:branding'])
+  ->name('enterprise.branding.styles');
 
 Route::any('/{any}', function () {
     if (auth()->user()) {

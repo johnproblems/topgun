@@ -57,5 +57,26 @@ class RouteServiceProvider extends ServiceProvider
         RateLimiter::for('5', function (Request $request) {
             return Limit::perMinute(5)->by($request->user()?->id ?: $request->ip());
         });
+
+        // Branding CSS rate limiter
+        RateLimiter::for('branding', function (Request $request) {
+            $organization = $request->route('organization');
+
+            // Higher limit for authenticated users
+            if ($request->user()) {
+                return Limit::perMinute(100)
+                    ->by($request->user()->id.':'.$organization);
+            }
+
+            // Lower limit for guests
+            return Limit::perMinute(30)
+                ->by($request->ip().':'.$organization)
+                ->response(function () {
+                    return response(
+                        '/* Rate limit exceeded - please try again later */',
+                        429
+                    )->header('Content-Type', 'text/css; charset=UTF-8');
+                });
+        });
     }
 }

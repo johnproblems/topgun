@@ -13,6 +13,7 @@ class Organization extends Model
     protected $fillable = [
         'name',
         'slug',
+        'whitelabel_public_access',
         'hierarchy_type',
         'hierarchy_level',
         'parent_organization_id',
@@ -25,6 +26,7 @@ class Organization extends Model
         'branding_config' => 'array',
         'feature_flags' => 'array',
         'is_active' => 'boolean',
+        'whitelabel_public_access' => 'boolean',
     ];
 
     // Relationships

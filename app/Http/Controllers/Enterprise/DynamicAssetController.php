@@ -4,19 +4,27 @@ namespace App\Http\Controllers\Enterprise;
 
 use App\Http\Controllers\Controller;
 use App\Models\Organization;
+use App\Services\Enterprise\CssValidationService;
 use App\Services\Enterprise\WhiteLabelService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use ScssPhp\ScssPhp\Compiler;
 use ScssPhp\ScssPhp\Exception\SassException;
 use ScssPhp\ScssPhp\ValueConverter;
 
 class DynamicAssetController extends Controller
 {
+    private const CACHE_VERSION = 'v1';
+    private const CACHE_PREFIX = 'branding';
+    private const CUSTOM_CSS_COMMENT = '/* Custom CSS */';
+    private const ORG_LOOKUP_CACHE_TTL = 300; // 5 minutes
+
     public function __construct(
-        private WhiteLabelService $whiteLabelService
+        private WhiteLabelService $whiteLabelService,
+        private CssValidationService $cssValidator
     ) {
     }
 
@@ -28,37 +36,26 @@ class DynamicAssetController extends Controller
      */
     public function styles(string $organization): Response
     {
-        $organizationSlug = $organization;
-
         try {
-            // 1. Retrieve organization by slug or ID (UUID)
-            $organizationModel = null;
-            
-            // Try to find by ID first if it looks like a UUID (contains hyphens in UUID format)
-            // UUIDs have format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx (36 chars with 4 hyphens)
-            // Or if it's numeric (for integer IDs)
-            $isUuidFormat = preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $organization);
-            if ($isUuidFormat || is_numeric($organization)) {
-                $organizationModel = Organization::find($organization);
-            }
-            
-            // If not found by ID, try slug
-            if (! $organizationModel) {
-                $organizationModel = Organization::where('slug', $organization)->first();
-            }
+            // 1. Find organization (with caching)
+            $organizationModel = $this->findOrganization($organization);
 
             if (! $organizationModel) {
-                return response('/* Organization not found */', 404)
-                    ->header('Content-Type', 'text/css; charset=UTF-8');
+                return $this->errorResponse('Organization not found', 404);
+            }
+
+            // 2. Check authorization
+            if (! $this->canAccessBranding($organizationModel)) {
+                return $this->unauthorizedResponse();
             }
 
             $organizationSlug = $organizationModel->slug ?? $organization;
 
-            // 2. Get white-label configuration
+            // 3. Get white-label configuration (eager loaded)
             $config = $this->whiteLabelService->getOrCreateConfig($organizationModel);
             $themeVariables = $this->whiteLabelService->getOrganizationThemeVariables($organizationModel);
 
-            // 3. Check cache
+            // 4. Check cache
             $cacheKey = $this->getCacheKey($organizationSlug, $config->updated_at?->timestamp ?? 0);
             $etag = $this->generateEtag($themeVariables, $config->custom_css);
 
@@ -74,15 +71,20 @@ class DynamicAssetController extends Controller
             $css = Cache::get($cacheKey);
 
             if (! $css) {
-                // 4. Compile SASS with organization variables
+                // 5. Compile SASS with organization variables
                 $css = $this->compileSass($themeVariables, $config->custom_css ?? '');
+
+                // Minify CSS in production
+                if (app()->environment('production')) {
+                    $css = $this->minifyCss($css);
+                }
 
                 // Cache the compiled CSS
                 $ttl = config('enterprise.white_label.cache_ttl', 3600);
                 Cache::put($cacheKey, $css, $ttl);
             }
 
-            // 5. Return response with caching headers
+            // 6. Return response with caching headers
             return response($css, 200)
                 ->header('Content-Type', 'text/css; charset=UTF-8')
                 ->header('Cache-Control', $this->getCacheControlHeader())
@@ -91,24 +93,26 @@ class DynamicAssetController extends Controller
                 ->header('X-Content-Type-Options', 'nosniff');
         } catch (SassException $e) {
             Log::error('SASS compilation failed', [
-                'organization' => $organizationSlug,
+                'organization' => $organization ?? 'unknown',
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
 
             // Return default CSS as fallback
-            return response($this->getDefaultCss(), 200)
-                ->header('Content-Type', 'text/css; charset=UTF-8')
-                ->header('Cache-Control', 'no-cache');
+            return $this->errorResponse('SASS compilation failed', 500, $this->getDefaultCss());
         } catch (\Exception $e) {
             Log::error('CSS generation failed', [
-                'organization' => $organizationSlug,
+                'organization' => $organization ?? 'unknown',
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return response('/* Error generating CSS */', 500)
-                ->header('Content-Type', 'text/css; charset=UTF-8');
+            // Send to monitoring if available
+            if (app()->bound('sentry')) {
+                app('sentry')->captureException($e);
+            }
+
+            return $this->errorResponse('Error generating CSS', 500);
         }
     }
 
@@ -169,9 +173,10 @@ class DynamicAssetController extends Controller
             }
         }
 
-        // Append custom CSS if provided
+        // Append custom CSS if provided (sanitized)
         if (! empty($customCss)) {
-            $css .= "\n\n/* Custom CSS */\n".$customCss;
+            $sanitizedCss = $this->cssValidator->sanitize($customCss);
+            $css .= "\n\n".self::CUSTOM_CSS_COMMENT."\n".$sanitizedCss;
         }
 
         return $css;
@@ -266,6 +271,90 @@ class DynamicAssetController extends Controller
     }
 
     /**
+     * Find organization by ID or slug (with caching)
+     *
+     * @param  string  $identifier
+     * @return Organization|null
+     */
+    private function findOrganization(string $identifier): ?Organization
+    {
+        $cacheKey = "org:lookup:{$identifier}";
+
+        return Cache::remember($cacheKey, self::ORG_LOOKUP_CACHE_TTL, function () use ($identifier) {
+            // Single optimized query
+            return Organization::with('whiteLabelConfig')
+                ->where(function ($query) use ($identifier) {
+                    if (Str::isUuid($identifier)) {
+                        $query->where('id', $identifier);
+                    } else {
+                        $query->where('slug', $identifier);
+                    }
+                })
+                ->first();
+        });
+    }
+
+    /**
+     * Check if user can access organization branding
+     *
+     * @param  Organization  $org
+     * @return bool
+     */
+    private function canAccessBranding(Organization $org): bool
+    {
+        // Public access allowed
+        if ($org->whitelabel_public_access) {
+            return true;
+        }
+
+        // Require authentication for private branding
+        if (! auth()->check()) {
+            return false;
+        }
+
+        // Check organization membership directly
+        $user = auth()->user();
+        if (! $user) {
+            return false;
+        }
+
+        // Check if user is a member of the organization
+        return $org->users()->where('user_id', $user->id)->exists();
+    }
+
+    /**
+     * Return unauthorized response
+     *
+     * @return Response
+     */
+    private function unauthorizedResponse(): Response
+    {
+        return $this->errorResponse('Unauthorized: Branding access requires authentication', 403);
+    }
+
+    /**
+     * Generate consistent error response
+     *
+     * @param  string  $message
+     * @param  int  $status
+     * @param  string|null  $fallbackCss
+     * @return Response
+     */
+    private function errorResponse(string $message, int $status, ?string $fallbackCss = null): Response
+    {
+        $css = $fallbackCss ?? sprintf(
+            "/* Coolify Branding Error: %s (HTTP %d) */\n:root { --error: true; }",
+            $message,
+            $status
+        );
+
+        return response($css, $status)
+            ->header('Content-Type', 'text/css; charset=UTF-8')
+            ->header('X-Branding-Error', strtolower(str_replace(' ', '-', $message)))
+            ->header('Cache-Control', 'no-cache, no-store, must-revalidate');
+    }
+
+    /**
      * Get cache key for organization CSS
      *
      * @param  string  $organizationSlug
@@ -274,7 +363,13 @@ class DynamicAssetController extends Controller
      */
     private function getCacheKey(string $organizationSlug, int $updatedTimestamp = 0): string
     {
-        return "branding:{$organizationSlug}:css:v1:{$updatedTimestamp}";
+        return sprintf(
+            '%s:%s:css:%s:%d',
+            self::CACHE_PREFIX,
+            $organizationSlug,
+            self::CACHE_VERSION,
+            $updatedTimestamp
+        );
     }
 
     /**
@@ -314,5 +409,24 @@ class DynamicAssetController extends Controller
         $defaults = config('enterprise.white_label.default_theme', []);
 
         return $this->generateCssVariables($defaults);
+    }
+
+    /**
+     * Minify CSS for production
+     *
+     * @param  string  $css
+     * @return string
+     */
+    private function minifyCss(string $css): string
+    {
+        // Remove comments (preserving license comments)
+        $css = preg_replace('!/\*(?![!*])(.*?)\*/!s', '', $css);
+
+        // Remove unnecessary whitespace
+        $css = str_replace(["\r\n", "\r", "\n", "\t"], '', $css);
+        $css = preg_replace('/\s+/', ' ', $css);
+        $css = preg_replace('/\s*([{}:;,])\s*/', '$1', $css);
+
+        return trim($css);
     }
 }
