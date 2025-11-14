@@ -8,7 +8,10 @@ use Illuminate\Support\Facades\Cache;
 uses(RefreshDatabase::class);
 
 it('serves custom CSS for organization', function () {
-    $org = Organization::factory()->create(['slug' => 'acme-corp']);
+    $org = Organization::factory()->create([
+        'slug' => 'acme-corp',
+        'whitelabel_public_access' => true,
+    ]);
 
     WhiteLabelConfig::factory()->create([
         'organization_id' => $org->id,
@@ -37,7 +40,10 @@ it('returns 404 for non-existent organization', function () {
 });
 
 it('supports ETag caching', function () {
-    $org = Organization::factory()->create(['slug' => 'test-org']);
+    $org = Organization::factory()->create([
+        'slug' => 'test-org',
+        'whitelabel_public_access' => true,
+    ]);
     WhiteLabelConfig::factory()->create([
         'organization_id' => $org->id,
         'theme_config' => [
@@ -60,7 +66,10 @@ it('supports ETag caching', function () {
 it('caches compiled CSS', function () {
     Cache::flush();
 
-    $org = Organization::factory()->create(['slug' => 'cache-test']);
+    $org = Organization::factory()->create([
+        'slug' => 'cache-test',
+        'whitelabel_public_access' => true,
+    ]);
     WhiteLabelConfig::factory()->create([
         'organization_id' => $org->id,
         'theme_config' => [
@@ -81,7 +90,10 @@ it('caches compiled CSS', function () {
 });
 
 it('includes custom CSS in response', function () {
-    $org = Organization::factory()->create(['slug' => 'custom-css']);
+    $org = Organization::factory()->create([
+        'slug' => 'custom-css',
+        'whitelabel_public_access' => true,
+    ]);
     WhiteLabelConfig::factory()->create([
         'organization_id' => $org->id,
         'theme_config' => [
@@ -98,7 +110,10 @@ it('includes custom CSS in response', function () {
 });
 
 it('returns appropriate cache headers', function () {
-    $org = Organization::factory()->create(['slug' => 'headers-test']);
+    $org = Organization::factory()->create([
+        'slug' => 'headers-test',
+        'whitelabel_public_access' => true,
+    ]);
     WhiteLabelConfig::factory()->create([
         'organization_id' => $org->id,
     ]);
@@ -113,7 +128,10 @@ it('returns appropriate cache headers', function () {
 });
 
 it('handles missing white label config gracefully', function () {
-    $org = Organization::factory()->create(['slug' => 'no-config']);
+    $org = Organization::factory()->create([
+        'slug' => 'no-config',
+        'whitelabel_public_access' => true,
+    ]);
 
     // Organization exists but no WhiteLabelConfig
     $response = $this->get('/branding/no-config/styles.css');
@@ -124,7 +142,10 @@ it('handles missing white label config gracefully', function () {
 });
 
 it('supports organization lookup by ID', function () {
-    $org = Organization::factory()->create(['slug' => 'id-test']);
+    $org = Organization::factory()->create([
+        'slug' => 'id-test',
+        'whitelabel_public_access' => true,
+    ]);
     WhiteLabelConfig::factory()->create([
         'organization_id' => $org->id,
         'theme_config' => [

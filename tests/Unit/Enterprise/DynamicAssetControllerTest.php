@@ -13,9 +13,8 @@ use Tests\TestCase;
 uses(TestCase::class, RefreshDatabase::class);
 
 beforeEach(function () {
-    // Create a mock WhiteLabelService to avoid dependency resolution issues
-    $this->whiteLabelService = \Mockery::mock(WhiteLabelService::class);
-    $this->controller = new DynamicAssetController($this->whiteLabelService);
+    // Use container resolution to get controller with all dependencies
+    $this->controller = app(DynamicAssetController::class);
 });
 
 it('compiles SASS with organization variables', function () {

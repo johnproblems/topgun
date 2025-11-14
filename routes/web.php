@@ -419,10 +419,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
 require __DIR__.'/license.php';
 
 // Dynamic asset routes (must be before catch-all route)
+// Note: Using withoutMiddleware to exclude web middleware group (session, CSRF, etc.)
+// This route is a public API endpoint that should work without session context
 Route::get('/branding/{organization}/styles.css',
     [App\Http\Controllers\Enterprise\DynamicAssetController::class, 'styles']
-)->middleware(['throttle:branding'])
-  ->name('enterprise.branding.styles');
+)->withoutMiddleware([
+    \App\Http\Middleware\DecideWhatToDoWithUser::class,
+    \App\Http\Middleware\EnsureOrganizationContext::class,
+    \App\Http\Middleware\CheckForcePasswordReset::class,
+    \App\Http\Middleware\VerifyCsrfToken::class,
+])
+->middleware(['throttle:branding'])
+->name('enterprise.branding.styles');
 
 Route::any('/{any}', function () {
     if (auth()->user()) {

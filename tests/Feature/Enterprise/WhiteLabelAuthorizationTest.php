@@ -43,11 +43,19 @@ it('allows public access when configured', function () {
 
 it('allows access for organization members', function () {
     $user = User::factory()->create();
+    
+    // Create a team for the user (required by Coolify)
+    $team = \App\Models\Team::factory()->create();
+    $user->teams()->attach($team->id, ['role' => 'admin']);
+    
     $org = Organization::factory()->create([
         'whitelabel_public_access' => false,
     ]);
 
     $org->users()->attach($user->id, ['role' => 'member']);
+    
+    // Set current organization for the user
+    $user->update(['current_organization_id' => $org->id]);
 
     WhiteLabelConfig::factory()->create([
         'organization_id' => $org->id,
@@ -65,11 +73,22 @@ it('allows access for organization members', function () {
 
 it('denies access to unauthorized organizations', function () {
     $user = User::factory()->create();
+    
+    // Create a team for the user (required by Coolify)
+    $team = \App\Models\Team::factory()->create();
+    $user->teams()->attach($team->id, ['role' => 'admin']);
+    
+    // Create a separate organization that user is NOT a member of
     $org = Organization::factory()->create([
         'whitelabel_public_access' => false,
     ]);
+    
+    // Create user's own organization for context
+    $userOrg = Organization::factory()->create();
+    $userOrg->users()->attach($user->id, ['role' => 'admin']);
+    $user->update(['current_organization_id' => $userOrg->id]);
 
-    // User is NOT a member of this organization
+    // User is NOT a member of $org (only member of $userOrg)
     WhiteLabelConfig::factory()->create([
         'organization_id' => $org->id,
     ]);

@@ -46,6 +46,20 @@ RUN apk add --no-cache \
     lsof \
     vim
 
+# Install PHP GD extension (required for image manipulation in white-label branding)
+# Update apk cache and install GD dependencies
+RUN apk update && \
+    apk add --no-cache --force-broken-world \
+        libpng \
+        libjpeg-turbo \
+        freetype \
+        libpng-dev \
+        libjpeg-turbo-dev \
+        freetype-dev && \
+    docker-php-ext-configure gd --with-freetype --with-jpeg && \
+    docker-php-ext-install -j$(nproc) gd && \
+    apk del --no-cache libpng-dev libjpeg-turbo-dev freetype-dev
+
 # Configure shell aliases
 RUN echo "alias ll='ls -al'" >> /etc/profile && \
     echo "alias a='php artisan'" >> /etc/profile && \
