@@ -428,8 +428,10 @@ Route::get('/branding/{organization}/styles.css',
     \App\Http\Middleware\EnsureOrganizationContext::class,
     \App\Http\Middleware\CheckForcePasswordReset::class,
     \App\Http\Middleware\VerifyCsrfToken::class,
+])->middleware([
+    'throttle:branding',
+    'cache.headers:public;max_age=3600;etag'
 ])
-->middleware(['throttle:branding'])
 ->name('enterprise.branding.styles');
 
 Route::any('/{any}', function () {

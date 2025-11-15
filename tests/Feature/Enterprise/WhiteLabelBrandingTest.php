@@ -24,7 +24,7 @@ it('serves custom CSS for organization', function () {
         'platform_name' => 'Acme Platform',
     ]);
 
-    $response = $this->get("/branding/acme-corp/styles.css");
+    $response = $this->get('/branding/acme-corp/styles.css');
 
     $response->assertOk()
         ->assertHeader('Content-Type', 'text/css; charset=UTF-8')

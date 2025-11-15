@@ -3,18 +3,17 @@
 namespace App\Services\Enterprise;
 
 use App\Models\WhiteLabelConfig;
-use Illuminate\Support\Facades\View;
-use Illuminate\Support\Str;
 use TijsVerkoyen\CssToInlineStyles\CssToInlineStyles;
 
 class EmailTemplateService
 {
     protected CssToInlineStyles $cssInliner;
+
     protected array $defaultVariables = [];
 
     public function __construct()
     {
-        $this->cssInliner = new CssToInlineStyles();
+        $this->cssInliner = new CssToInlineStyles;
         $this->setDefaultVariables();
     }
 
@@ -82,6 +81,7 @@ class EmailTemplateService
         // Check for custom template
         if ($config->hasCustomEmailTemplate($templateName)) {
             $customTemplate = $config->getEmailTemplate($templateName);
+
             return $customTemplate['content'] ?? $this->getDefaultTemplate($templateName);
         }
 
@@ -117,7 +117,7 @@ class EmailTemplateService
         foreach ($variables as $key => $value) {
             if (is_string($value) || is_numeric($value)) {
                 $template = str_replace(
-                    ['{{' . $key . '}}', '{{ ' . $key . ' }}'],
+                    ['{{'.$key.'}}', '{{ '.$key.' }}'],
                     $value,
                     $template
                 );
@@ -158,7 +158,7 @@ class EmailTemplateService
             $condition = $matches[1];
             $content = $matches[2];
 
-            if (!isset($variables[$condition]) || !$variables[$condition]) {
+            if (! isset($variables[$condition]) || ! $variables[$condition]) {
                 return $content;
             }
 
@@ -180,7 +180,7 @@ class EmailTemplateService
             $itemName = trim($matches[2]);
             $content = $matches[3];
 
-            if (!isset($variables[$arrayName]) || !is_array($variables[$arrayName])) {
+            if (! isset($variables[$arrayName]) || ! is_array($variables[$arrayName])) {
                 return '';
             }
 
@@ -191,7 +191,7 @@ class EmailTemplateService
                     foreach ($item as $key => $value) {
                         if (is_string($value) || is_numeric($value)) {
                             $itemContent = str_replace(
-                                ['{{' . $itemName . '.' . $key . '}}', '{{ ' . $itemName . '.' . $key . ' }}'],
+                                ['{{'.$itemName.'.'.$key.'}}', '{{ '.$itemName.'.'.$key.' }}'],
                                 $value,
                                 $itemContent
                             );
@@ -199,7 +199,7 @@ class EmailTemplateService
                     }
                 } else {
                     $itemContent = str_replace(
-                        ['{{' . $itemName . '}}', '{{ ' . $itemName . ' }}'],
+                        ['{{'.$itemName.'}}', '{{ '.$itemName.' }}'],
                         $item,
                         $itemContent
                     );
@@ -333,7 +333,7 @@ class EmailTemplateService
 
         // Add custom CSS if provided
         if ($config->custom_css) {
-            $styles .= "\n/* Custom CSS */\n" . $config->custom_css;
+            $styles .= "\n/* Custom CSS */\n".$config->custom_css;
         }
 
         return $styles;
@@ -352,7 +352,7 @@ class EmailTemplateService
         $html = preg_replace('/<style[^>]*>.*?<\/style>/si', '', $html);
 
         // Inline the CSS
-        if (!empty($css)) {
+        if (! empty($css)) {
             $html = $this->cssInliner->convert($html, $css);
         }
 
@@ -883,18 +883,18 @@ class EmailTemplateService
     protected function getTemplateSubject(string $templateName, array $data): string
     {
         $subjects = [
-            'welcome' => 'Welcome to ' . ($data['platform_name'] ?? 'Our Platform'),
+            'welcome' => 'Welcome to '.($data['platform_name'] ?? 'Our Platform'),
             'password_reset' => 'Password Reset Request',
             'email_verification' => 'Verify Your Email Address',
-            'invitation' => 'You\'ve Been Invited to Join ' . ($data['organization_name'] ?? 'Our Organization'),
-            'deployment_success' => 'Deployment Successful: ' . ($data['application_name'] ?? 'Your Application'),
-            'deployment_failure' => 'Deployment Failed: ' . ($data['application_name'] ?? 'Your Application'),
-            'server_unreachable' => 'Server Alert: ' . ($data['server_name'] ?? 'Server') . ' is Unreachable',
+            'invitation' => 'You\'ve Been Invited to Join '.($data['organization_name'] ?? 'Our Organization'),
+            'deployment_success' => 'Deployment Successful: '.($data['application_name'] ?? 'Your Application'),
+            'deployment_failure' => 'Deployment Failed: '.($data['application_name'] ?? 'Your Application'),
+            'server_unreachable' => 'Server Alert: '.($data['server_name'] ?? 'Server').' is Unreachable',
             'backup_success' => 'Backup Completed Successfully',
             'backup_failure' => 'Backup Failed: Action Required',
         ];
 
-        return $subjects[$templateName] ?? 'Notification from ' . ($data['platform_name'] ?? 'Platform');
+        return $subjects[$templateName] ?? 'Notification from '.($data['platform_name'] ?? 'Platform');
     }
 
     /**

@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Enterprise;
 use App\Http\Controllers\Controller;
 use App\Models\Organization;
 use App\Models\WhiteLabelConfig;
-use App\Services\Enterprise\WhiteLabelService;
 use App\Services\Enterprise\BrandingCacheService;
 use App\Services\Enterprise\DomainValidationService;
 use App\Services\Enterprise\EmailTemplateService;
+use App\Services\Enterprise\WhiteLabelService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
@@ -17,8 +17,11 @@ use Inertia\Response;
 class BrandingController extends Controller
 {
     protected WhiteLabelService $whiteLabelService;
+
     protected BrandingCacheService $cacheService;
+
     protected DomainValidationService $domainService;
+
     protected EmailTemplateService $emailService;
 
     public function __construct(
@@ -219,7 +222,7 @@ class BrandingController extends Controller
             $organization->id
         );
 
-        if (!$validation['valid']) {
+        if (! $validation['valid']) {
             return response()->json([
                 'success' => false,
                 'validation' => $validation,
@@ -373,7 +376,7 @@ class BrandingController extends Controller
         $exportData = $this->whiteLabelService->exportConfiguration($config);
 
         return response()->json($exportData)
-            ->header('Content-Disposition', 'attachment; filename="branding-config-' . $organization->id . '.json"');
+            ->header('Content-Disposition', 'attachment; filename="branding-config-'.$organization->id.'.json"');
     }
 
     /**

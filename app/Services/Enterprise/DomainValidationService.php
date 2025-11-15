@@ -8,8 +8,11 @@ use Illuminate\Support\Facades\Log;
 class DomainValidationService
 {
     protected const DNS_RECORD_TYPES = ['A', 'AAAA', 'CNAME'];
+
     protected const SSL_PORT = 443;
+
     protected const DNS_TIMEOUT = 5;
+
     protected const SSL_TIMEOUT = 10;
 
     /**
@@ -28,7 +31,7 @@ class DomainValidationService
             // Check various DNS record types
             foreach (self::DNS_RECORD_TYPES as $type) {
                 $records = $this->getDnsRecords($domain, $type);
-                if (!empty($records)) {
+                if (! empty($records)) {
                     $results['records'][$type] = $records;
                 }
             }
@@ -54,7 +57,7 @@ class DomainValidationService
             $this->checkNameservers($domain, $results);
 
         } catch (\Exception $e) {
-            $results['errors'][] = 'DNS validation error: ' . $e->getMessage();
+            $results['errors'][] = 'DNS validation error: '.$e->getMessage();
             Log::error('DNS validation failed', [
                 'domain' => $domain,
                 'error' => $e->getMessage(),
@@ -106,6 +109,7 @@ class DomainValidationService
 
         if (empty($serverIps)) {
             $results['warnings'][] = 'Server IP verification not configured';
+
             return;
         }
 
@@ -127,10 +131,10 @@ class DomainValidationService
         array_shift($parts); // Remove subdomain
         $parentDomain = implode('.', $parts);
 
-        $wildcardDomain = '*.' . $parentDomain;
-        $ip = gethostbyname('test-' . uniqid() . '.' . $parentDomain);
+        $wildcardDomain = '*.'.$parentDomain;
+        $ip = gethostbyname('test-'.uniqid().'.'.$parentDomain);
 
-        if ($ip !== 'test-' . uniqid() . '.' . $parentDomain) {
+        if ($ip !== 'test-'.uniqid().'.'.$parentDomain) {
             $results['wildcard_dns'] = true;
             $results['info'][] = 'Wildcard DNS is configured for parent domain';
         }
@@ -143,7 +147,7 @@ class DomainValidationService
     {
         $nsRecords = dns_get_record($domain, DNS_NS);
 
-        if (!empty($nsRecords)) {
+        if (! empty($nsRecords)) {
             $results['nameservers'] = array_map(function ($record) {
                 return $record['target'] ?? null;
             }, $nsRecords);
@@ -180,7 +184,7 @@ class DomainValidationService
             $this->checkSslConfiguration($domain, $results);
 
         } catch (\Exception $e) {
-            $results['errors'][] = 'SSL validation error: ' . $e->getMessage();
+            $results['errors'][] = 'SSL validation error: '.$e->getMessage();
             Log::error('SSL validation failed', [
                 'domain' => $domain,
                 'error' => $e->getMessage(),
@@ -205,7 +209,7 @@ class DomainValidationService
         ]);
 
         $stream = @stream_socket_client(
-            "ssl://{$domain}:" . self::SSL_PORT,
+            "ssl://{$domain}:".self::SSL_PORT,
             $errno,
             $errstr,
             self::SSL_TIMEOUT,
@@ -213,21 +217,21 @@ class DomainValidationService
             $context
         );
 
-        if (!$stream) {
+        if (! $stream) {
             return null;
         }
 
         $params = stream_context_get_params($stream);
         fclose($stream);
 
-        if (!isset($params['options']['ssl']['peer_certificate'])) {
+        if (! isset($params['options']['ssl']['peer_certificate'])) {
             return null;
         }
 
         $cert = $params['options']['ssl']['peer_certificate'];
         $certInfo = openssl_x509_parse($cert);
 
-        if (!$certInfo) {
+        if (! $certInfo) {
             return null;
         }
 
@@ -275,16 +279,16 @@ class DomainValidationService
 
         // Check if certificate is valid for domain
         $validForDomain = false;
-        if ($certInfo['subject'] === $domain || $certInfo['subject'] === '*.' . substr($domain, strpos($domain, '.') + 1)) {
+        if ($certInfo['subject'] === $domain || $certInfo['subject'] === '*.'.substr($domain, strpos($domain, '.') + 1)) {
             $validForDomain = true;
         } elseif (in_array($domain, $certInfo['san'])) {
             $validForDomain = true;
-        } elseif (in_array('*.' . substr($domain, strpos($domain, '.') + 1), $certInfo['san'])) {
+        } elseif (in_array('*.'.substr($domain, strpos($domain, '.') + 1), $certInfo['san'])) {
             $validForDomain = true;
         }
 
         $results['checks']['domain_match'] = $validForDomain;
-        if (!$validForDomain) {
+        if (! $validForDomain) {
             $results['errors'][] = 'Certificate is not valid for this domain';
             $results['valid'] = false;
         }
@@ -372,7 +376,7 @@ class DomainValidationService
                 }
             }
 
-            if (!$found) {
+            if (! $found) {
                 $results['security_headers'][$name] = false;
                 $results['warnings'][] = "Missing security header: {$name}";
             }
@@ -400,7 +404,7 @@ class DomainValidationService
      */
     public function generateVerificationToken(string $domain, string $organizationId): string
     {
-        return hash('sha256', $domain . $organizationId . config('app.key'));
+        return hash('sha256', $domain.$organizationId.config('app.key'));
     }
 
     /**
@@ -427,9 +431,10 @@ class DomainValidationService
 
         // Check domain availability
         $results['checks']['available'] = $this->isDomainAvailable($domain);
-        if (!$results['checks']['available']) {
+        if (! $results['checks']['available']) {
             $results['valid'] = false;
             $results['errors'][] = 'Domain is already in use by another organization';
+
             return $results;
         }
 
@@ -464,21 +469,21 @@ class DomainValidationService
     {
         $recommendations = [];
 
-        if (!$results['checks']['ownership']) {
+        if (! $results['checks']['ownership']) {
             $recommendations[] = [
                 'type' => 'dns_txt',
-                'message' => 'Add TXT record with value: coolify-verify=' . $results['verification_token'],
+                'message' => 'Add TXT record with value: coolify-verify='.$results['verification_token'],
             ];
         }
 
-        if (!$results['checks']['ssl']['valid']) {
+        if (! $results['checks']['ssl']['valid']) {
             $recommendations[] = [
                 'type' => 'ssl',
                 'message' => 'Install a valid SSL certificate for the domain',
             ];
         }
 
-        if (isset($results['checks']['dns']['server_pointing']) && !$results['checks']['dns']['server_pointing']) {
+        if (isset($results['checks']['dns']['server_pointing']) && ! $results['checks']['dns']['server_pointing']) {
             $recommendations[] = [
                 'type' => 'dns_a',
                 'message' => 'Point domain A record to application servers',

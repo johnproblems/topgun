@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property-read WhiteLabelConfig|null $whiteLabelConfig
+ */
 class Organization extends Model
 {
     use HasFactory, HasUuids;

@@ -35,15 +35,15 @@ it('enforces rate limits for guests', function () {
 
 it('allows higher rate limits for authenticated users', function () {
     $user = \App\Models\User::factory()->create();
-    
+
     // Create a team for the user (required by Coolify)
     $team = \App\Models\Team::factory()->create();
     $user->teams()->attach($team->id, ['role' => 'admin']);
-    
+
     $org = Organization::factory()->create(['whitelabel_public_access' => true]);
 
     $org->users()->attach($user->id, ['role' => 'member']);
-    
+
     // Set current organization for the user
     $user->update(['current_organization_id' => $org->id]);
 

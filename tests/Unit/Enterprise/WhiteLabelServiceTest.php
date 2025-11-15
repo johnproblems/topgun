@@ -18,8 +18,11 @@ class WhiteLabelServiceTest extends TestCase
     use RefreshDatabase;
 
     protected WhiteLabelService $service;
+
     protected Organization $organization;
+
     protected WhiteLabelConfig $config;
+
     protected $cacheServiceMock;
 
     protected function setUp(): void
@@ -29,7 +32,7 @@ class WhiteLabelServiceTest extends TestCase
         Storage::fake('public');
 
         $this->cacheServiceMock = $this->mock(BrandingCacheService::class);
-        
+
         $this->service = new WhiteLabelService(
             $this->cacheServiceMock,
             $this->mock(DomainValidationService::class),
@@ -242,13 +245,13 @@ class WhiteLabelServiceTest extends TestCase
         $method = $reflection->getMethod('minifyCss');
         $method->setAccessible(true);
 
-        $css = "
+        $css = '
             /* Comment */
             .test {
                 color: red;
                 background: blue;
             }
-        ";
+        ';
 
         $result = $method->invoke($this->service, $css);
 

@@ -8,9 +8,13 @@ use Illuminate\Support\Facades\Redis;
 class BrandingCacheService
 {
     protected const CACHE_PREFIX = 'branding:';
+
     protected const THEME_CACHE_PREFIX = 'theme:';
+
     protected const DOMAIN_CACHE_PREFIX = 'domain:';
+
     protected const ASSET_CACHE_PREFIX = 'asset:';
+
     protected const CACHE_TTL = 86400; // 24 hours
 
     /**
@@ -54,7 +58,7 @@ class BrandingCacheService
      */
     protected function cacheThemeVersion(string $organizationId, string $hash): void
     {
-        $key = self::CACHE_PREFIX . 'version:' . $organizationId;
+        $key = self::CACHE_PREFIX.'version:'.$organizationId;
         Cache::put($key, $hash, self::CACHE_TTL);
     }
 
@@ -63,7 +67,8 @@ class BrandingCacheService
      */
     public function getThemeVersion(string $organizationId): ?string
     {
-        $key = self::CACHE_PREFIX . 'version:' . $organizationId;
+        $key = self::CACHE_PREFIX.'version:'.$organizationId;
+
         return Cache::get($key);
     }
 
@@ -82,6 +87,7 @@ class BrandingCacheService
     public function getCachedAssetUrl(string $organizationId, string $assetType): ?string
     {
         $key = $this->getAssetCacheKey($organizationId, $assetType);
+
         return Cache::get($key);
     }
 
@@ -90,7 +96,7 @@ class BrandingCacheService
      */
     public function cacheDomainMapping(string $domain, string $organizationId): void
     {
-        $key = self::DOMAIN_CACHE_PREFIX . $domain;
+        $key = self::DOMAIN_CACHE_PREFIX.$domain;
 
         Cache::put($key, $organizationId, self::CACHE_TTL);
 
@@ -105,7 +111,7 @@ class BrandingCacheService
      */
     public function getOrganizationByDomain(string $domain): ?string
     {
-        $key = self::DOMAIN_CACHE_PREFIX . $domain;
+        $key = self::DOMAIN_CACHE_PREFIX.$domain;
 
         // Try Redis first
         if ($this->isRedisAvailable()) {
@@ -123,13 +129,13 @@ class BrandingCacheService
      */
     public function cacheBrandingConfig(string $organizationId, array $config): void
     {
-        $key = self::CACHE_PREFIX . 'config:' . $organizationId;
+        $key = self::CACHE_PREFIX.'config:'.$organizationId;
 
         Cache::put($key, $config, self::CACHE_TTL);
 
         // Store individual config elements for partial retrieval
         foreach ($config as $configKey => $value) {
-            $elementKey = self::CACHE_PREFIX . "config:{$organizationId}:{$configKey}";
+            $elementKey = self::CACHE_PREFIX."config:{$organizationId}:{$configKey}";
             Cache::put($elementKey, $value, self::CACHE_TTL);
         }
     }
@@ -140,11 +146,13 @@ class BrandingCacheService
     public function getCachedBrandingConfig(string $organizationId, ?string $configKey = null): mixed
     {
         if ($configKey) {
-            $key = self::CACHE_PREFIX . "config:{$organizationId}:{$configKey}";
+            $key = self::CACHE_PREFIX."config:{$organizationId}:{$configKey}";
+
             return Cache::get($key);
         }
 
-        $key = self::CACHE_PREFIX . 'config:' . $organizationId;
+        $key = self::CACHE_PREFIX.'config:'.$organizationId;
+
         return Cache::get($key);
     }
 
@@ -154,8 +162,8 @@ class BrandingCacheService
     public function clearOrganizationCache(string $organizationId): void
     {
         $themeKey = $this->getThemeCacheKey($organizationId);
-        $versionKey = self::CACHE_PREFIX . 'version:' . $organizationId;
-        $configKey = self::CACHE_PREFIX . 'config:' . $organizationId;
+        $versionKey = self::CACHE_PREFIX.'version:'.$organizationId;
+        $configKey = self::CACHE_PREFIX.'config:'.$organizationId;
 
         // Clear theme cache from Laravel Cache
         Cache::forget($themeKey);
@@ -164,10 +172,10 @@ class BrandingCacheService
 
         // Clear individual config element caches
         $configKeys = [
-            self::CACHE_PREFIX . "config:{$organizationId}:platform_name",
-            self::CACHE_PREFIX . "config:{$organizationId}:primary_color",
-            self::CACHE_PREFIX . "config:{$organizationId}:secondary_color",
-            self::CACHE_PREFIX . "config:{$organizationId}:accent_color",
+            self::CACHE_PREFIX."config:{$organizationId}:platform_name",
+            self::CACHE_PREFIX."config:{$organizationId}:primary_color",
+            self::CACHE_PREFIX."config:{$organizationId}:secondary_color",
+            self::CACHE_PREFIX."config:{$organizationId}:accent_color",
         ];
         foreach ($configKeys as $key) {
             Cache::forget($key);
@@ -184,9 +192,9 @@ class BrandingCacheService
             Redis::del($configKey);
 
             // Also clear any pattern-matched keys
-            $pattern = self::CACHE_PREFIX . "*{$organizationId}*";
+            $pattern = self::CACHE_PREFIX."*{$organizationId}*";
             $keys = Redis::keys($pattern);
-            if (!empty($keys)) {
+            if (! empty($keys)) {
                 Redis::del($keys);
             }
 
@@ -199,7 +207,7 @@ class BrandingCacheService
         }
 
         // Trigger cache warming in background (skip in testing to avoid interference)
-        if (!app()->environment('testing')) {
+        if (! app()->environment('testing')) {
             $this->warmCache($organizationId);
         }
     }
@@ -209,7 +217,7 @@ class BrandingCacheService
      */
     public function clearDomainCache(string $domain): void
     {
-        $key = self::DOMAIN_CACHE_PREFIX . $domain;
+        $key = self::DOMAIN_CACHE_PREFIX.$domain;
 
         Cache::forget($key);
 
@@ -281,8 +289,8 @@ class BrandingCacheService
         $count = 0;
 
         if ($this->isRedisAvailable()) {
-            $keys = Redis::keys(self::CACHE_PREFIX . $pattern);
-            if (!empty($keys)) {
+            $keys = Redis::keys(self::CACHE_PREFIX.$pattern);
+            if (! empty($keys)) {
                 $count = Redis::del($keys);
             }
         }
@@ -302,17 +310,17 @@ class BrandingCacheService
     public function cacheCompiledCss(string $organizationId, string $css, array $metadata = []): void
     {
         $version = $metadata['version'] ?? time();
-        $key = self::THEME_CACHE_PREFIX . "{$organizationId}:v{$version}";
+        $key = self::THEME_CACHE_PREFIX."{$organizationId}:v{$version}";
 
         // Store with version
         Cache::put($key, $css, self::CACHE_TTL);
 
         // Update current version pointer
-        Cache::put(self::THEME_CACHE_PREFIX . "{$organizationId}:current", $version, self::CACHE_TTL);
+        Cache::put(self::THEME_CACHE_PREFIX."{$organizationId}:current", $version, self::CACHE_TTL);
 
         // Store metadata
-        if (!empty($metadata)) {
-            Cache::put(self::THEME_CACHE_PREFIX . "{$organizationId}:meta", $metadata, self::CACHE_TTL);
+        if (! empty($metadata)) {
+            Cache::put(self::THEME_CACHE_PREFIX."{$organizationId}:meta", $metadata, self::CACHE_TTL);
         }
     }
 
@@ -321,10 +329,10 @@ class BrandingCacheService
      */
     public function getCurrentCssVersion(string $organizationId): ?string
     {
-        $version = Cache::get(self::THEME_CACHE_PREFIX . "{$organizationId}:current");
+        $version = Cache::get(self::THEME_CACHE_PREFIX."{$organizationId}:current");
 
         if ($version) {
-            return Cache::get(self::THEME_CACHE_PREFIX . "{$organizationId}:v{$version}");
+            return Cache::get(self::THEME_CACHE_PREFIX."{$organizationId}:v{$version}");
         }
 
         return null;
@@ -335,7 +343,7 @@ class BrandingCacheService
      */
     protected function getThemeCacheKey(string $organizationId): string
     {
-        return self::THEME_CACHE_PREFIX . $organizationId;
+        return self::THEME_CACHE_PREFIX.$organizationId;
     }
 
     /**
@@ -343,7 +351,7 @@ class BrandingCacheService
      */
     protected function getAssetCacheKey(string $organizationId, string $assetType): string
     {
-        return self::ASSET_CACHE_PREFIX . "{$organizationId}:{$assetType}";
+        return self::ASSET_CACHE_PREFIX."{$organizationId}:{$assetType}";
     }
 
     /**
@@ -353,6 +361,7 @@ class BrandingCacheService
     {
         try {
             Redis::ping();
+
             return true;
         } catch (\Exception $e) {
             return false;
@@ -372,6 +381,6 @@ class BrandingCacheService
             $i++;
         }
 
-        return round($bytes, 2) . ' ' . $units[$i];
+        return round($bytes, 2).' '.$units[$i];
     }
 }

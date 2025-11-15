@@ -6,7 +6,7 @@ use Tests\TestCase;
 uses(TestCase::class);
 
 it('strips @import rules', function () {
-    $service = new CssValidationService();
+    $service = new CssValidationService;
 
     $maliciousCss = '@import url("malicious.css"); body { color: red; }';
     $sanitized = $service->sanitize($maliciousCss);
@@ -17,7 +17,7 @@ it('strips @import rules', function () {
 });
 
 it('removes javascript protocol handlers', function () {
-    $service = new CssValidationService();
+    $service = new CssValidationService;
 
     $maliciousCss = 'body { background: url(javascript:alert("XSS")); }';
     $sanitized = $service->sanitize($maliciousCss);
@@ -26,7 +26,7 @@ it('removes javascript protocol handlers', function () {
 });
 
 it('removes expression patterns', function () {
-    $service = new CssValidationService();
+    $service = new CssValidationService;
 
     $maliciousCss = 'body { width: expression(document.body.clientWidth); }';
     $sanitized = $service->sanitize($maliciousCss);
@@ -35,7 +35,7 @@ it('removes expression patterns', function () {
 });
 
 it('removes vbscript protocol handlers', function () {
-    $service = new CssValidationService();
+    $service = new CssValidationService;
 
     $maliciousCss = 'body { background: url(vbscript:alert("XSS")); }';
     $sanitized = $service->sanitize($maliciousCss);
@@ -44,7 +44,7 @@ it('removes vbscript protocol handlers', function () {
 });
 
 it('removes HTML script tags', function () {
-    $service = new CssValidationService();
+    $service = new CssValidationService;
 
     $maliciousCss = '<script>alert("XSS")</script> body { color: red; }';
     $sanitized = $service->sanitize($maliciousCss);
@@ -55,7 +55,7 @@ it('removes HTML script tags', function () {
 });
 
 it('removes event handlers', function () {
-    $service = new CssValidationService();
+    $service = new CssValidationService;
 
     $maliciousCss = 'body { color: red; } <div onclick="alert(\'XSS\')">';
     $sanitized = $service->sanitize($maliciousCss);
@@ -64,7 +64,7 @@ it('removes event handlers', function () {
 });
 
 it('validates CSS and returns errors', function () {
-    $service = new CssValidationService();
+    $service = new CssValidationService;
 
     $invalidCss = 'body { color: ; }'; // Invalid CSS
     $result = $service->validate($invalidCss);
@@ -76,7 +76,7 @@ it('validates CSS and returns errors', function () {
 });
 
 it('allows valid CSS to pass through', function () {
-    $service = new CssValidationService();
+    $service = new CssValidationService;
 
     $validCss = 'body { color: red; background: #fff; }';
     $sanitized = $service->sanitize($validCss);
@@ -87,7 +87,7 @@ it('allows valid CSS to pass through', function () {
 });
 
 it('handles empty CSS gracefully', function () {
-    $service = new CssValidationService();
+    $service = new CssValidationService;
 
     $sanitized = $service->sanitize('');
 

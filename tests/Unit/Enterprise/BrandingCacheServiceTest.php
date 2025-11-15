@@ -4,20 +4,20 @@ namespace Tests\Unit\Services\Enterprise;
 
 use App\Services\Enterprise\BrandingCacheService;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Redis;
 use Tests\TestCase;
 
 class BrandingCacheServiceTest extends TestCase
 {
     protected BrandingCacheService $service;
+
     protected string $organizationId;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->service = new BrandingCacheService();
-        $this->organizationId = 'test-org-' . uniqid();
+        $this->service = new BrandingCacheService;
+        $this->organizationId = 'test-org-'.uniqid();
 
         Cache::flush();
     }

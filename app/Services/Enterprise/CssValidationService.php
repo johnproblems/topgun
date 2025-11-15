@@ -25,6 +25,7 @@ class CssValidationService
         try {
             if (class_exists(\Sabberworm\CSS\Parser::class)) {
                 $parsed = $this->parseAndValidate($sanitized);
+
                 return $parsed;
             }
 
@@ -59,7 +60,7 @@ class CssValidationService
 
     private function parseAndValidate(string $css): string
     {
-        if (!class_exists(\Sabberworm\CSS\Parser::class)) {
+        if (! class_exists(\Sabberworm\CSS\Parser::class)) {
             return $css;
         }
 

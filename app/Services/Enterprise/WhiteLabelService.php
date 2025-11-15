@@ -7,13 +7,14 @@ use App\Models\WhiteLabelConfig;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Intervention\Image\Laravel\Facades\Image;
 
 class WhiteLabelService
 {
     protected BrandingCacheService $cacheService;
+
     protected DomainValidationService $domainService;
+
     protected EmailTemplateService $emailService;
 
     public function __construct(
@@ -107,7 +108,7 @@ class WhiteLabelService
     {
         $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml', 'image/webp'];
 
-        if (!in_array($file->getMimeType(), $allowedMimes)) {
+        if (! in_array($file->getMimeType(), $allowedMimes)) {
             throw new \InvalidArgumentException('Invalid file type. Allowed types: JPG, PNG, GIF, SVG, WebP');
         }
 
@@ -124,7 +125,7 @@ class WhiteLabelService
     {
         $extension = $file->getClientOriginalExtension();
         $timestamp = now()->format('YmdHis');
-        $hash = substr(md5($organization->id . $timestamp), 0, 8);
+        $hash = substr(md5($organization->id.$timestamp), 0, 8);
 
         return "logo_{$timestamp}_{$hash}.{$extension}";
     }
@@ -191,7 +192,7 @@ class WhiteLabelService
 
         // Add custom CSS if provided
         if ($config->custom_css) {
-            $css .= "\n/* Custom CSS */\n" . $config->custom_css;
+            $css .= "\n/* Custom CSS */\n".$config->custom_css;
         }
 
         // Minify CSS in production
@@ -213,7 +214,7 @@ class WhiteLabelService
         $css = ":root {\n";
 
         foreach ($variables as $key => $value) {
-            $cssVar = '--' . str_replace('_', '-', $key);
+            $cssVar = '--'.str_replace('_', '-', $key);
             $css .= "  {$cssVar}: {$value};\n";
 
             // Generate RGB versions for opacity support
@@ -272,7 +273,7 @@ class WhiteLabelService
         // Invert or adjust colors for dark mode
         $darkVariables = $this->generateDarkModeVariables($variables);
         foreach ($darkVariables as $key => $value) {
-            $cssVar = '--' . str_replace('_', '-', $key);
+            $cssVar = '--'.str_replace('_', '-', $key);
             $css .= "    {$cssVar}: {$value};\n";
         }
 
@@ -281,7 +282,7 @@ class WhiteLabelService
 
         $css .= ".dark {\n";
         foreach ($darkVariables as $key => $value) {
-            $cssVar = '--' . str_replace('_', '-', $key);
+            $cssVar = '--'.str_replace('_', '-', $key);
             $css .= "  {$cssVar}: {$value};\n";
         }
         $css .= "}\n";
@@ -304,7 +305,7 @@ class WhiteLabelService
 
         // Keep accent colors but adjust brightness
         foreach (['primary', 'secondary', 'accent', 'success', 'warning', 'error', 'info'] as $colorName) {
-            $key = $colorName . '_color';
+            $key = $colorName.'_color';
             if (isset($variables[$key])) {
                 $darkVariables[$key] = $this->adjustColorBrightness($variables[$key], 20);
             }
@@ -321,14 +322,14 @@ class WhiteLabelService
         $css = "  /* Derived Colors */\n";
 
         foreach (['primary', 'secondary', 'accent'] as $colorName) {
-            $key = $colorName . '_color';
+            $key = $colorName.'_color';
             if (isset($variables[$key])) {
                 $baseColor = $variables[$key];
 
                 // Generate lighter and darker variants
-                $css .= "  --{$colorName}-color-light: " . $this->adjustColorBrightness($baseColor, 20) . ";\n";
-                $css .= "  --{$colorName}-color-dark: " . $this->adjustColorBrightness($baseColor, -20) . ";\n";
-                $css .= "  --{$colorName}-color-alpha: " . $this->addAlphaToColor($baseColor, 0.1) . ";\n";
+                $css .= "  --{$colorName}-color-light: ".$this->adjustColorBrightness($baseColor, 20).";\n";
+                $css .= "  --{$colorName}-color-dark: ".$this->adjustColorBrightness($baseColor, -20).";\n";
+                $css .= "  --{$colorName}-color-alpha: ".$this->addAlphaToColor($baseColor, 0.1).";\n";
             }
         }
 
@@ -357,13 +358,13 @@ class WhiteLabelService
     public function setCustomDomain(WhiteLabelConfig $config, string $domain): array
     {
         // Validate domain format
-        if (!$config->isValidDomain($domain)) {
+        if (! $config->isValidDomain($domain)) {
             throw new \InvalidArgumentException('Invalid domain format');
         }
 
         // Check DNS configuration
         $dnsValidation = $this->domainService->validateDns($domain);
-        if (!$dnsValidation['valid']) {
+        if (! $dnsValidation['valid']) {
             return [
                 'success' => false,
                 'message' => 'DNS validation failed',
@@ -373,7 +374,7 @@ class WhiteLabelService
 
         // Check SSL certificate
         $sslValidation = $this->domainService->validateSsl($domain);
-        if (!$sslValidation['valid'] && app()->environment('production')) {
+        if (! $sslValidation['valid'] && app()->environment('production')) {
             return [
                 'success' => false,
                 'message' => 'SSL validation failed',
@@ -446,11 +447,11 @@ class WhiteLabelService
      */
     protected function validateImportData(array $data): void
     {
-        if (!isset($data['version'])) {
+        if (! isset($data['version'])) {
             throw new \InvalidArgumentException('Invalid import file: missing version');
         }
 
-        if (!isset($data['exported_at'])) {
+        if (! isset($data['exported_at'])) {
             throw new \InvalidArgumentException('Invalid import file: missing export timestamp');
         }
     }
@@ -471,7 +472,7 @@ class WhiteLabelService
         $hex = ltrim($hex, '#');
 
         if (strlen($hex) === 3) {
-            $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+            $hex = $hex[0].$hex[0].$hex[1].$hex[1].$hex[2].$hex[2];
         }
 
         $r = hexdec(substr($hex, 0, 2));
@@ -489,7 +490,7 @@ class WhiteLabelService
         $hex = ltrim($hex, '#');
 
         if (strlen($hex) === 3) {
-            $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+            $hex = $hex[0].$hex[0].$hex[1].$hex[1].$hex[2].$hex[2];
         }
 
         $r = hexdec(substr($hex, 0, 2));
@@ -500,9 +501,9 @@ class WhiteLabelService
         $g = max(0, min(255, $g + ($g * $percent / 100)));
         $b = max(0, min(255, $b + ($b * $percent / 100)));
 
-        return '#' . str_pad(dechex($r), 2, '0', STR_PAD_LEFT)
-                  . str_pad(dechex($g), 2, '0', STR_PAD_LEFT)
-                  . str_pad(dechex($b), 2, '0', STR_PAD_LEFT);
+        return '#'.str_pad(dechex($r), 2, '0', STR_PAD_LEFT)
+                  .str_pad(dechex($g), 2, '0', STR_PAD_LEFT)
+                  .str_pad(dechex($b), 2, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -511,6 +512,7 @@ class WhiteLabelService
     protected function addAlphaToColor(string $hex, float $alpha): string
     {
         $rgb = $this->hexToRgb($hex);
+
         return "rgba({$rgb}, {$alpha})";
     }
 }
