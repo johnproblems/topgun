@@ -31,6 +31,16 @@ use Spatie\Url\Url;
 use Symfony\Component\Yaml\Yaml;
 use Visus\Cuid2\Cuid2;
 
+/**
+ * @property \App\Models\ServerSetting $settings
+ * @property \App\Models\PrivateKey $privateKey
+ * @property \App\Models\Team $team
+ * @property \App\Models\Organization $organization
+ * @property \App\Models\TerraformDeployment|null $terraformDeployment
+ * @property \App\Models\CloudProviderCredential|null $cloudProviderCredential
+ * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\SwarmDocker> $swarmDockers
+ * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\StandaloneDocker> $standaloneDockers
+ */
 #[OA\Schema(
     description: 'Server model',
     type: 'object',

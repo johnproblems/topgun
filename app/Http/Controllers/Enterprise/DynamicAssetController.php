@@ -34,8 +34,6 @@ class DynamicAssetController extends Controller
      * Generate and serve organization-specific CSS
      *
      * @param  string  $organization  Organization slug or ID
-     * @throws \ScssPhp\ScssPhp\Exception\SassException
-     * @throws \Exception
      */
     public function styles(string $organization): Response
     {
@@ -109,6 +107,9 @@ class DynamicAssetController extends Controller
         }
     }
 
+    /**
+     * @throws \Exception
+     */
     private function buildCssResponse(WhiteLabelConfig $config): string
     {
         $css = $this->sassService->compile($config);

@@ -19,7 +19,7 @@ it('requires authentication for private branding', function () {
     $response = $this->get("/branding/{$org->slug}/styles.css");
 
     $response->assertForbidden()
-        ->assertHeader('X-Branding-Error', 'unauthorized:-branding-access-requires-authentication')
+        ->assertHeader('X-Branding-Error', 'unauthorized-branding-access-requires-authentication')
         ->assertHeader('Content-Type', 'text/css; charset=UTF-8');
 });
 
@@ -97,7 +97,7 @@ it('denies access to unauthorized organizations', function () {
         ->get("/branding/{$org->slug}/styles.css");
 
     $response->assertForbidden()
-        ->assertHeader('X-Branding-Error');
+        ->assertHeader('X-Branding-Error', 'unauthorized-branding-access-requires-authentication');
 });
 
 it('supports organization lookup by UUID with authorization', function () {
