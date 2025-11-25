@@ -2,6 +2,445 @@
 
 All notable changes to this project will be documented in this file.
 
+## [unreleased]
+
+### 🐛 Bug Fixes
+
+- Update syncData method to use data_get for safer property access
+- Update version numbers to 4.0.0-beta.441 and 4.0.0-beta.442
+- Enhance menu item styles and update theme color meta tag
+- Clean up input attributes for PostgreSQL settings in general.blade.php
+- Update docker stop command to use --time instead of --timeout
+- Clean up utility classes and improve readability in Blade templates
+- Enhance styling for page width component in Blade template
+- Remove debugging output from StartPostgresql command handling
+
+### 📚 Documentation
+
+- Update changelog
+
+## [4.0.0-beta.440] - 2025-11-04
+
+### 🐛 Bug Fixes
+
+- Fix SPA toggle nginx regeneration and add confirmation modal
+
+### 📚 Documentation
+
+- Update changelog
+
+## [4.0.0-beta.439] - 2025-11-03
+
+### 📚 Documentation
+
+- Update changelog
+
+## [4.0.0-beta.438] - 2025-10-29
+
+### 🚀 Features
+
+- Display service logos in original colors with consistent sizing
+- Add warnings for system-wide GitHub Apps
+- Show message when no resources use GitHub App
+- Add dynamic viewport-based height for compose editor
+- Add funding information for Coollabs including sponsorship plans and channels
+- Update Evolution API slogan to better reflect its capabilities
+- *(templates)* Update plane compose to v1.0.0
+- Add token validation functionality for Hetzner and DigitalOcean providers
+- Add dev_helper_version to instance settings and update related functionality
+- Add RestoreDatabase command for PostgreSQL dump restoration
+- Update ApplicationSetting model to include additional boolean casts
+- Enhance General component with additional properties and validation rules
+- Update version numbers to 4.0.0-beta.440 and 4.0.0-beta.441
+
+### 🐛 Bug Fixes
+
+- Handle redis_password in API database creation
+- Make modals scrollable on small screens
+- Resolve Livewire wire:model binding error in domains input
+- Make environment variable forms responsive
+- Make proxy logs page responsive
+- Improve proxy logs form layout for better responsive behavior
+- Prevent horizontal overflow in log text
+- Use break-all to force line wrapping in logs
+- Ensure deployment failure notifications are sent reliably
+- GitHub source creation and configuration issues
+- Make system-wide warning reactive in Create view
+- Prevent system-wide warning callout from making modal too wide
+- Constrain callout width with max-w-2xl and wrap text properly
+- Center system-wide warning callout in modal
+- Left-align callout on regular view, keep centered in modal
+- Allow callout to take full width in regular view
+- Change app_id and installation_id to integer values in createGithubAppManually method
+- Use x-cloak instead of inline style to prevent FOUC
+- Clarify warning message for allowed IPs configuration
+- Server URL generation in ServerPatchCheck notification
+- Monaco editor empty for docker compose applications
+- Update sponsor link from Darweb to Dade2 in README
+- *(database)* Prevent malformed URLs when server IP is empty
+- Optimize caching in Dockerfile and GitHub Actions workflow
+- Remove wire:ignore from modal and add wire:key to EditCompose component
+- Add wire:ignore directive to modal component for improved functionality
+- Clean up formatting and remove unnecessary key binding in stack form component
+- Add null checks and validation to OAuth bulk update method
+- *(docs)* Update documentation URL to version 2 in evolution-api.yaml
+- *(templates)* Remove volumes from Plane's compose
+- *(templates)* Add redis env to live service in Plane
+- *(templates)* Update minio image to use coollabsio fork in Plane
+- Prevent login rate limit bypass via spoofed headers
+- Correct login rate limiter key format to include IP address
+- Change SMTP port input type to number for better validation
+- Remove unnecessary step attribute from maximum storage input fields
+- Update boarding flow logic to complete onboarding when server is created
+- Convert network aliases to string for display
+- Improve custom_network_aliases handling and testing
+- Remove duplicate custom_labels from config hash calculation
+- Improve run script and enhance sticky header style
+
+### 💼 Other
+
+- *(deps-dev)* Bump vite from 6.3.6 to 6.4.1
+
+### 🚜 Refactor
+
+- Remove deprecated next() method
+- Replace allowed IPs validation logic with regex
+- Remove redundant
+- Streamline allowed IPs validation and enhance UI warnings for API access
+- Remove staging URL logic from ServerPatchCheck constructor
+- Streamline Docker build process with matrix strategy for multi-architecture support
+- Simplify project data retrieval and enhance OAuth settings handling
+- Improve handling of custom network aliases
+- Remove unused submodules
+- Update subproject commit hashes
+- Remove SynchronizesModelData trait and implement syncData method for model synchronization
+
+### 📚 Documentation
+
+- Update changelog
+- Update changelog
+- Update changelog
+- Update changelog
+- Update changelog
+- Update changelog
+- Update changelog
+- Add service & database deployment logging plan
+
+### 🧪 Testing
+
+- Add unit tests for ServerPatchCheck notification URL generation
+- Fix ServerPatchCheckNotification tests to avoid global state pollution
+
+### ⚙️ Miscellaneous Tasks
+
+- Add category field to siyuan.yaml
+- Update siyuan category in service templates
+- Add spacing and format callout text in modal
+- Update version numbers to 4.0.0-beta.439 and 4.0.0-beta.440
+- Add .workspaces to .gitignore
+
+## [4.0.0-beta.437] - 2025-10-21
+
+### 🚀 Features
+
+- *(templates)* Add sparkyfitness compose template and logo
+- *(servide)* Add siyuan template
+- Add onboarding guide link to global search no results state
+- Add category filter dropdown to service selection
+
+### 🐛 Bug Fixes
+
+- *(service)* Update image version & healthcheck start period
+- Filter deprecated server types for Hetzner
+- Eliminate dark mode white screen flicker on page transitions
+
+### 💼 Other
+
+- Preserve clean docker_compose_raw without Coolify additions
+
+### 📚 Documentation
+
+- Update changelog
+- Update changelog
+
+## [4.0.0-beta.435] - 2025-10-15
+
+### 🚀 Features
+
+- *(docker)* Enhance Docker image handling with new validation and parsing logic
+- *(docker)* Improve Docker image submission logic with enhanced parsing
+- *(docker)* Refine Docker image processing in application creation
+- Add Ente Photos service template
+- *(storage)* Add read-only volume handling and UI notifications
+- *(service)* Add Elasticsearch password handling in extraFields method
+- *(application)* Add default NIXPACKS_NODE_VERSION environment variable for Nixpacks applications
+- *(proxy)* Enhance proxy configuration regeneration by extracting custom commands
+- *(backup)* Enhance backup job with S3 upload handling and notifications
+- *(storage)* Implement transaction handling in storage settings submission
+- *(project)* Enhance project index with resource creation capabilities
+- *(dashboard)* Enhance project and server sections with modal input for resource creation
+- *(global-search)* Enhance resource creation functionality in search modal
+- *(global-search)* Add navigation routes and enhance search functionality
+- *(conductor)* Add setup script and configuration file
+- *(conductor)* Add run script and update runScriptMode configuration
+- *(docker-compose)* Add image specifications for coolify, soketi, and testing-host services
+- *(cleanup)* Add force deletion of stuck servers and orphaned SSL certificates
+- *(deployment)* Save build-time .env file before build and enhance logging for Dockerfile
+- Implement Hetzner deletion failure notification system with email and messaging support
+- Enhance proxy status notifications with detailed messages for various states
+- Add retry functionality for server validation process
+- Add retry mechanism with rate limit handling to API requests in HetznerService
+- Implement ValidHostname validation rule and integrate it into server creation process
+- Add support for selecting additional SSH keys from Hetzner in server creation form
+- Enhance datalist component with unified input container and improved option handling
+- Add modal support for creating private keys in server creation form and enhance UI for private key selection
+- Add IPv4/IPv6 network configuration for Hetzner server creation
+- Add pricing display to Hetzner server creation button
+- Add cloud-init script support for Hetzner server creation
+- Add cloud-init scripts management UI in Security section
+- Add cloud-init scripts to global search
+- Add artisan command to clear global search cache
+- Add YAML validation for cloud-init scripts
+- Add clear button for cloud-init script dropdown
+- Add custom webhook notification support
+- Add webhook placeholder to Test notification
+- Add WebhookChannel placeholder implementation
+- Implement actual webhook delivery
+- Implement actual webhook delivery with Ray debugging
+- Improve webhook URL field UI
+- Add UUIDs and URLs to webhook notifications
+- *(onboarding)* Redesign user onboarding flow with modern UI/UX
+- Replace terminal dropdown with searchable datalist component
+- *(onboarding)* Add Hetzner integration and fix navigation issues
+- Use new homarr image
+- *(templates)* Actually use the new image now
+- *(templates)* Pin homarr image version to v1.40.0
+- *(template)* Added newapi
+- Add mail environment variables to docmost.yaml
+- Add Email Envs, Install more required packages by pdsadmin
+- Make an empty pds.env file to trick pdsadmin into working correctly
+- Not many know how to setup this without reading pds docs
+- Make the other email env also required
+- *(templates)* Added Lobe Chat service
+- *(service)* Add Gramps Web template
+- *(campfire)* Add Docker Compose configuration for Once Campfire service
+- Add Hetzner affiliate link to token form
+- Update Hetzner affiliate link text and URL
+- Add CPU vendor information to server types in Hetzner integration
+- Implement TrustHosts middleware to handle FQDN and IP address trust logic
+- Implement TrustHosts middleware to handle FQDN and IP address trust logic
+- Allow safe environment variable defaults in array-format volumes
+- Add signoz template
+- *(signoz)* Replace png icon by svg icon
+- *(signoz)* Remove explicit 'networks' setting
+- *(signoz)* Add predefined environment variables to configure Telemetry, SMTP and email sending for Alert Manager
+- *(signoz)* Generate URLs for `otel-collector` service
+- *(signoz)* Update documentation link
+- *(signoz)* Add healthcheck to otel-collector service
+- *(signoz)* Use latest tag instead of hardcoded versions
+- *(signoz)* Remove redundant users.xml volume from clickhouse container
+- *(signoz)* Replace clickhouse' config.xml volume with simpler configuration
+- *(signoz)* Remove deprecated parameters of signoz container
+- *(signoz)* Remove volumes from signoz.yaml
+- *(signoz)* Assume there is a single zookeeper container
+- *(signoz)* Update Clickhouse config to include all settings required by Signoz
+- *(signoz)* Update config.xml and users.xml to ensure clickhouse boots correctly
+- *(signoz)* Update otel-collector configuration to match upstream
+- *(signoz)* Fix otel-collector config for version v0.128.0
+- *(signoz)* Remove unecessary port mapping for otel-collector
+- *(signoz)* Add SIGNOZ_JWT_SECRET env var generation
+- *(signoz)* Upgrade clickhouse image to 25.5.6
+- *(signoz)* Use latest tag for signoz/zookeeper
+- *(signoz)* Update variables for SMTP configuration
+- *(signoz)* Replace deprecated `TELEMETRY_ENABLED` by `SIGNOZ_STATSREPORTER_ENABLED`
+- *(signoz)* Pin service image tags and `exclude_from_hc` flag to services excluded from health checks
+- *(templates)* Add SMTP configuration to ente-photos compose templates
+- *(templates)* Add SMTP encryption configuration to ente-photos compose templates
+
+### 🐛 Bug Fixes
+
+- Region env variable
+- Ente photos
+- *(elasticsearch)* Update Elasticsearch and Kibana configuration for enhanced security and setup
+- *(ui)* Make the deployments indicator toast in the bottom-left above the sidebar
+- *(environment)* Clear computed property cache after adding environment variables
+- *(backup)* Update backup job to use backup_log_uuid for container naming
+- *(core)* Set default base_directory and include in submit method
+- *(deployment)* Add warning for NIXPACKS_NODE_VERSION in node configurations
+- *(deployment)* Save runtime environment variables when skipping build
+- *(job)* Correct build logs URL structure in ApplicationPullRequestUpdateJob
+- *(tests)* Update Docker command for running feature tests without `-it` flag
+- On team creation, redirect to the new team instantly
+- *(project)* Update redirect logic after resource creation to include environment UUID
+- *(dashboard)* Add cursor pointer to modal input buttons for better UX
+- *(modal-confirmation)* Refine escape key handling to ensure modal closes only when open
+- *(conductor-setup)* Update script permissions for execution
+- *(conductor)* Update run script command to 'spin up'
+- *(conductor)* Update run script to include 'spin down' command
+- *(docker-compose)* Set pull_policy to 'never' for coolify, soketi, and testing-host services
+- *(migration)* Disable transaction for concurrent index creation
+- Properly handle transaction for concurrent index operations
+- Use correct property declaration for withinTransaction
+- *(api-tokens)* Update settings link for API enablement message
+- *(css)* Update success color to match design specifications
+- *(css)* Update focus styles for input and button utilities to improve accessibility
+- *(css)* Remove unnecessary tracking classes from status components for consistency
+- *(css)* Update focus styles for Checkbox and modal input components to enhance accessibility
+- Refresh server data before showing notification to ensure accurate proxy status
+- Update Hetzner server status handling to prevent unnecessary database updates and improve UI responsiveness
+- Improve error logging and handling in ServerConnectionCheckJob for Hetzner server status
+- Correct dispatch logic for Hetzner server status refresh in checkHetznerServerStatus method
+- Streamline proxy status handling in StartProxy and Navbar components
+- Improve placeholder text for token name input in cloud provider token form
+- Update cloud provider token form with improved placeholder and guidance for API token creation
+- *(ci)* Sanitize branch names for Docker tag compatibility
+- Set cloud-init script dropdown to empty by default
+- Reset cloud-init fields when closing server creation modal
+- Improve cloud-init scripts UI styling and behavior
+- Allow typing in global search while data loads
+- Hide 'No results found' message while data is loading
+- Populate webhook notification settings for existing teams
+- Register WebhookNotificationSettings with NotificationPolicy
+- Add missing server_patch_webhook_notifications field
+- Move POST badge before input field
+- Use btn-primary for POST badge background
+- *(onboarding)* Auto-select first SSH key for better UX
+- Prevent container name conflict when updating database port mappings
+- Missing 422 error code in openapi spec
+- Allow all environment variable fields in API endpoints
+- Fixed version
+- Fix documentation url
+- Bluesky PDS template
+- Bluesky PDS template finally works normally
+- Add back template info
+- Now it automatically generates the JWT secret and the PLC rotation key
+- Syntax error on vars
+- Remove the SERVICE_EMAIL_ADMIN and make it normal
+- Both email envs are needed in order for the PDS to start, so set the other one as required
+- Add back template info
+- Healthcheck doesn’t need to be 5s
+- Make email envs not required
+- Domain on coolify
+- *(templates)* Update Lobe-chat openai base_url env + required envs
+- *(templates)* Lobechat environnement variable
+- *(lobe-chat)* Update Docker image tag to a specific version 1.135.5
+- Enable docker network connection for pgadmin service
+- *(template/filebrowser)* Correct routing and healthcheck for Filebrowser
+- *(template/filebrowser)* Correct healthcheck for Filebrowser
+- *(campfire)* Update port configuration from 80 to 3000 in Docker Compose file
+- *(campfire)* Correct port comment from 3000 to 80 in Docker Compose file
+- *(campfire)* Update service definition to use image instead of build in Docker Compose file
+- *(templates)* Remove mattermost healthcheck command according to lack of shell in new version
+- Prevent duplicate services on image change and enable real-time UI refresh
+- Enhance run script to remove existing containers before starting
+- Prevent TypeError in database General components with null server
+- Add authorization checks to database Livewire components
+- Add missing save_runtime_environment_variables() in deploy_simple_dockerfile
+- *(git)* Handle Git redirects and improve URL parsing for tangled.sh and other Git hosts
+- Improve logging and add shell escaping for git ls-remote
+- Update run script to use bun for development
+- Restore original run script functionality in conductor.json
+- Use computed imageTag variable for digest-based Docker images
+- Improve Docker image digest handling and add auto-parse feature
+- 'new image' quick action not progressing to resource selection
+- Use wasChanged() instead of isDirty() in updated hooks
+- Prevent command injection in git ls-remote operations
+- Handle null environment variable values in bash escaping
+- Critical privilege escalation in team invitation system
+- Add authentication context to TeamPolicyTest
+- Ensure negative cache results are stored in TrustHosts middleware
+- Use wasChanged() instead of isDirty() in updated hook
+- Prevent command injection in Docker Compose parsing - add pre-save validation
+- Use canonical parser for Windows path validation
+- Correct variable name typo in generateGitLsRemoteCommands method
+- Update version numbers to 4.0.0-beta.436 and 4.0.0-beta.437
+- Ensure authorization checks are in place for viewing and updating the application
+- Ensure authorization check is performed during component mount
+- *(signoz)* Remove example secrets to avoid triggering GitGuardian
+- *(signoz)* Remove hardcoded container names
+- *(signoz)* Remove HTTP collector FQDN in otel-collector
+- *(n8n)* Add DB_SQLITE_POOL_SIZE environment variable for configuration
+- *(template)* Remove default values for environment variables
+- Update metamcp image version and clean up environment variable syntax
+
+### 💼 Other
+
+- Ente config
+- Cofig variables
+- Lean Config
+- Env
+- Services & Env variables
+- Product hunt Ente Logo
+- Remove volumes
+- Add ray logging for Hetzner createServer API request/response
+- Escape all shell directory paths in Git deployment commands
+- Remove content from docker_compose_raw to prevent file overwrites
+- *(templates)* Metamcp app
+
+### 🚜 Refactor
+
+- *(environment-variables)* Adjust ordering logic for environment variables
+- Update ente photos configuration for improved service management
+- *(deployment)* Streamline environment variable generation in ApplicationDeploymentJob
+- *(deployment)* Enhance deployment data retrieval and relationships
+- *(deployment)* Standardize environment variable handling in ApplicationDeploymentJob
+- *(deployment)* Update environment variable handling for Docker builds
+- *(navbar, app)* Improve layout and styling for better responsiveness
+- *(switch-team)* Remove label from team selection component for cleaner UI
+- *(global-search, environment)* Streamline environment retrieval with new query method
+- *(backup)* Make backup_log_uuid initialization lazy
+- *(checkbox, utilities, global-search)* Enhance focus styles for better accessibility
+- *(forms)* Simplify wire:dirty class bindings for input, select, and textarea components
+- Replace direct SslCertificate queries with server relationship methods for consistency
+- *(ui)* Improve cloud-init script save checkbox visibility and styling
+- Enable cloud-init save checkbox at all times with backend validation
+- Improve cloud-init script UX and remove description field
+- Improve cloud-init script management UI and cache control
+- Remove debug sleep from global search modal
+- Reduce cloud-init label width for better layout
+- Remove SendsWebhook interface
+- Reposition POST badge as button
+- Migrate database components from legacy model binding to explicit properties
+- Volumes set back to ./pds-data:/pds
+- *(campfire)* Streamline environment variable definitions in Docker Compose file
+- Improve validation error handling and coding standards
+- Preserve exception chain in validation error handling
+- Harden and deduplicate validateShellSafePath
+- Replace random ID generation with Cuid2 for unique HTML IDs in form components
+
+### 📚 Documentation
+
+- Update changelog
+- Update changelog
+- Update changelog
+- Update changelog
+- Update changelog
+- *(tests)* Update testing guidelines for unit and feature tests
+- *(sync)* Create AI Instructions Synchronization Guide and update CLAUDE.md references
+- *(database-patterns)* Add critical note on mass assignment protection for new columns
+- Clarify cloud-init script compatibility
+- Update changelog
+- Update changelog
+
+### 🎨 Styling
+
+- *(campfire)* Format environment variables for better readability in Docker Compose file
+- *(campfire)* Update comment for DISABLE_SSL environment variable for clarity
+
+### 🧪 Testing
+
+- Improve Git ls-remote parsing tests with uppercase SHA and negative cases
+- Add coverage for newline and tab rejection in volume strings
+
+### ⚙️ Miscellaneous Tasks
+
+- *(versions)* Update Coolify version numbers to 4.0.0-beta.435 and 4.0.0-beta.436
+- Update package-lock.json
+- *(service)* Update convex template and image
+- *(signoz)* Remove unused ports
+- *(signoz)* Bump version to 0.77.0
+- *(signoz)* Bump version to 0.78.1
+
 ## [4.0.0-beta.434] - 2025-10-03
 
 ### 🚀 Features
@@ -431,24 +870,55 @@ All notable changes to this project will be documented in this file.
 
 ## [4.0.0-beta.424] - 2025-08-27
 
-### 🐛 Bug Fixes
+### 💼 Other
 
-- *(parsers)* Do not modify service names, only for getting fqdns and related envs
-- *(compose)* Temporary allow to edit volumes in apps (compose based) and services
+- Allow deploy from container image hash
 
 ### 📚 Documentation
 
 - Update changelog
 - Update changelog
 
-### ⚙️ Miscellaneous Tasks
-
-- Update coolify version to 4.0.0-beta.424 and nightly version to 4.0.0-beta.425
-
 ## [4.0.0-beta.423] - 2025-08-27
+
+### 📚 Documentation
+
+- Update changelog
+
+## [4.0.0-beta.422] - 2025-08-27
+
+### 📚 Documentation
+
+- Update changelog
+
+## [4.0.0-beta.421] - 2025-08-26
+
+### 📚 Documentation
+
+- Update changelog
+
+## [4.0.0-beta.420.9] - 2025-08-26
+
+### 🚀 Features
+
+- *(policies)* Add EnvironmentVariablePolicy for managing environment variables ( it was missing )
+
+### 🐛 Bug Fixes
+
+- *(backups)* S3 backup upload is failing
+- *(backups)* Rollback helper update for now
+- *(parsers)* Replace hyphens with underscores in service names for consistency. this allows to properly parse custom domains in docker compose based applications
+- *(parsers)* Implement parseDockerVolumeString function to handle various Docker volume formats and modes, including environment variables and Windows paths. Add unit tests for comprehensive coverage.
+- *(git)* Submodule update command uses an unsupported option (#6454)
+- *(service)* Swap URL for FQDN on matrix template (#6466)
+- *(parsers)* Enhance volume string handling by preserving mode in application and service parsers. Update related unit tests for validation.
+- *(docker)* Update parser version in FQDN generation for service-specific URLs
+- *(parsers)* Do not modify service names, only for getting fqdns and related envs
+- *(compose)* Temporary allow to edit volumes in apps (compose based) and services
 
 ### 🚜 Refactor
 
+- *(git)* Improve submodule cloning
 - *(parsers)* Remove unnecessary hyphen-to-underscore replacement for service names in serviceParser function
 
 ### 📚 Documentation
@@ -457,64 +927,13 @@ All notable changes to this project will be documented in this file.
 
 ### ⚙️ Miscellaneous Tasks
 
-- Update coolify version to 4.0.0-beta.423 and nightly version to 4.0.0-beta.424
-
-## [4.0.0-beta.422] - 2025-08-27
-
-### 🐛 Bug Fixes
-
-- *(parsers)* Replace hyphens with underscores in service names for consistency. this allows to properly parse custom domains in docker compose based applications
-- *(parsers)* Implement parseDockerVolumeString function to handle various Docker volume formats and modes, including environment variables and Windows paths. Add unit tests for comprehensive coverage.
-- *(git)* Submodule update command uses an unsupported option (#6454)
-- *(service)* Swap URL for FQDN on matrix template (#6466)
-- *(parsers)* Enhance volume string handling by preserving mode in application and service parsers. Update related unit tests for validation.
-- *(docker)* Update parser version in FQDN generation for service-specific URLs
-
-### 🚜 Refactor
-
-- *(git)* Improve submodule cloning
-
-### 📚 Documentation
-
-- Update changelog
-
-### ⚙️ Miscellaneous Tasks
-
-- Update version
-- Update development node version
-
-## [4.0.0-beta.421] - 2025-08-26
-
-### 🚀 Features
-
-- *(policies)* Add EnvironmentVariablePolicy for managing environment variables ( it was missing )
-
-### 🐛 Bug Fixes
-
-- *(backups)* Rollback helper update for now
-
-### 📚 Documentation
-
-- Update changelog
-
-### ⚙️ Miscellaneous Tasks
-
+- *(core)* Update version
 - *(core)* Update version
 - *(versions)* Update coolify version to 4.0.0-beta.421 and nightly version to 4.0.0-beta.422
-
-## [4.0.0-beta.420.9] - 2025-08-26
-
-### 🐛 Bug Fixes
-
-- *(backups)* S3 backup upload is failing
-
-### 📚 Documentation
-
-- Update changelog
-
-### ⚙️ Miscellaneous Tasks
-
-- *(core)* Update version
+- Update version
+- Update development node version
+- Update coolify version to 4.0.0-beta.423 and nightly version to 4.0.0-beta.424
+- Update coolify version to 4.0.0-beta.424 and nightly version to 4.0.0-beta.425
 
 ## [4.0.0-beta.420.8] - 2025-08-26
 

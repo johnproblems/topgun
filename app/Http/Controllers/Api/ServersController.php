@@ -456,6 +456,10 @@ class ServersController extends Controller
                 response: 404,
                 ref: '#/components/responses/404',
             ),
+            new OA\Response(
+                response: 422,
+                ref: '#/components/responses/422',
+            ),
         ]
     )]
     public function create_server(Request $request)
@@ -622,6 +626,10 @@ class ServersController extends Controller
                 response: 404,
                 ref: '#/components/responses/404',
             ),
+            new OA\Response(
+                response: 422,
+                ref: '#/components/responses/422',
+            ),
         ]
     )]
     public function update_server(Request $request)
@@ -740,6 +748,10 @@ class ServersController extends Controller
                 response: 404,
                 ref: '#/components/responses/404',
             ),
+            new OA\Response(
+                response: 422,
+                ref: '#/components/responses/422',
+            ),
         ]
     )]
     public function delete_server(Request $request)
@@ -764,7 +776,13 @@ class ServersController extends Controller
             return response()->json(['message' => 'Local server cannot be deleted.'], 400);
         }
         $server->delete();
-        DeleteServer::dispatch($server);
+        DeleteServer::dispatch(
+            $server->id,
+            false, // Don't delete from Hetzner via API
+            $server->hetzner_server_id,
+            $server->cloud_provider_token_id,
+            $server->team_id
+        );
 
         return response()->json(['message' => 'Server deleted.']);
     }
@@ -807,6 +825,10 @@ class ServersController extends Controller
             new OA\Response(
                 response: 404,
                 ref: '#/components/responses/404',
+            ),
+            new OA\Response(
+                response: 422,
+                ref: '#/components/responses/422',
             ),
         ]
     )]

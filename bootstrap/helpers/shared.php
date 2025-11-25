@@ -104,6 +104,48 @@ function sanitize_string(?string $input = null): ?string
     return $sanitized;
 }
 
+/**
+ * Validate that a path or identifier is safe for use in shell commands.
+ *
+ * This function prevents command injection by rejecting strings that contain
+ * shell metacharacters or command substitution patterns.
+ *
+ * @param  string  $input  The path or identifier to validate
+ * @param  string  $context  Descriptive name for error messages (e.g., 'volume source', 'service name')
+ * @return string The validated input (unchanged if valid)
+ *
+ * @throws \Exception If dangerous characters are detected
+ */
+function validateShellSafePath(string $input, string $context = 'path'): string
+{
+    // List of dangerous shell metacharacters that enable command injection
+    $dangerousChars = [
+        '`' => 'backtick (command substitution)',
+        '$(' => 'command substitution',
+        '${' => 'variable substitution with potential command injection',
+        '|' => 'pipe operator',
+        '&' => 'background/AND operator',
+        ';' => 'command separator',
+        "\n" => 'newline (command separator)',
+        "\r" => 'carriage return',
+        "\t" => 'tab (token separator)',
+        '>' => 'output redirection',
+        '<' => 'input redirection',
+    ];
+
+    // Check for dangerous characters
+    foreach ($dangerousChars as $char => $description) {
+        if (str_contains($input, $char)) {
+            throw new \Exception(
+                "Invalid {$context}: contains forbidden character '{$char}' ({$description}). ".
+                'Shell metacharacters are not allowed for security reasons.'
+            );
+        }
+    }
+
+    return $input;
+}
+
 function generate_readme_file(string $name, string $updated_at): string
 {
     $name = sanitize_string($name);
@@ -199,10 +241,9 @@ function get_latest_sentinel_version(): string
 function get_latest_version_of_coolify(): string
 {
     try {
-        $versions = File::get(base_path('versions.json'));
-        $versions = json_decode($versions, true);
+        $versions = get_versions_data();
 
-        return data_get($versions, 'coolify.v4.version');
+        return data_get($versions, 'coolify.v4.version', '0.0.0');
     } catch (\Throwable $e) {
 
         return '0.0.0';
@@ -1285,6 +1326,12 @@ function parseDockerComposeFile(Service|Application $resource, bool $isNew = fal
                 if ($serviceLabels->count() > 0) {
                     $removedLabels = collect([]);
                     $serviceLabels = $serviceLabels->filter(function ($serviceLabel, $serviceLabelName) use ($removedLabels) {
+                        // Handle array values from YAML (e.g., "traefik.enable: true" becomes an array)
+                        if (is_array($serviceLabel)) {
+                            $removedLabels->put($serviceLabelName, $serviceLabel);
+
+                            return false;
+                        }
                         if (! str($serviceLabel)->contains('=')) {
                             $removedLabels->put($serviceLabelName, $serviceLabel);
 
@@ -1294,6 +1341,10 @@ function parseDockerComposeFile(Service|Application $resource, bool $isNew = fal
                         return $serviceLabel;
                     });
                     foreach ($removedLabels as $removedLabelName => $removedLabel) {
+                        // Convert array values to strings
+                        if (is_array($removedLabel)) {
+                            $removedLabel = (string) collect($removedLabel)->first();
+                        }
                         $serviceLabels->push("$removedLabelName=$removedLabel");
                     }
                 }
@@ -1301,52 +1352,70 @@ function parseDockerComposeFile(Service|Application $resource, bool $isNew = fal
 
                 // Decide if the service is a database
                 $image = data_get_str($service, 'image');
-                $isDatabase = isDatabaseImage($image, $service);
-                data_set($service, 'is_database', $isDatabase);
 
-                // Create new serviceApplication or serviceDatabase
-                if ($isDatabase) {
-                    if ($isNew) {
-                        $savedService = ServiceDatabase::create([
-                            'name' => $serviceName,
-                            'image' => $image,
-                            'service_id' => $resource->id,
-                        ]);
-                    } else {
-                        $savedService = ServiceDatabase::where([
-                            'name' => $serviceName,
-                            'service_id' => $resource->id,
-                        ])->first();
-                    }
+                // Check for manually migrated services first (respects user's conversion choice)
+                $migratedApp = ServiceApplication::where('name', $serviceName)
+                    ->where('service_id', $resource->id)
+                    ->where('is_migrated', true)
+                    ->first();
+                $migratedDb = ServiceDatabase::where('name', $serviceName)
+                    ->where('service_id', $resource->id)
+                    ->where('is_migrated', true)
+                    ->first();
+
+                if ($migratedApp || $migratedDb) {
+                    // Use the migrated service type, ignoring image detection
+                    $isDatabase = (bool) $migratedDb;
+                    $savedService = $migratedApp ?: $migratedDb;
                 } else {
-                    if ($isNew) {
-                        $savedService = ServiceApplication::create([
-                            'name' => $serviceName,
-                            'image' => $image,
-                            'service_id' => $resource->id,
-                        ]);
-                    } else {
-                        $savedService = ServiceApplication::where([
-                            'name' => $serviceName,
-                            'service_id' => $resource->id,
-                        ])->first();
-                    }
-                }
-                if (is_null($savedService)) {
+                    // Use image detection for non-migrated services
+                    $isDatabase = isDatabaseImage($image, $service);
+
+                    // Create new serviceApplication or serviceDatabase
                     if ($isDatabase) {
-                        $savedService = ServiceDatabase::create([
-                            'name' => $serviceName,
-                            'image' => $image,
-                            'service_id' => $resource->id,
-                        ]);
+                        if ($isNew) {
+                            $savedService = ServiceDatabase::create([
+                                'name' => $serviceName,
+                                'image' => $image,
+                                'service_id' => $resource->id,
+                            ]);
+                        } else {
+                            $savedService = ServiceDatabase::where([
+                                'name' => $serviceName,
+                                'service_id' => $resource->id,
+                            ])->first();
+                            if (is_null($savedService)) {
+                                $savedService = ServiceDatabase::create([
+                                    'name' => $serviceName,
+                                    'image' => $image,
+                                    'service_id' => $resource->id,
+                                ]);
+                            }
+                        }
                     } else {
-                        $savedService = ServiceApplication::create([
-                            'name' => $serviceName,
-                            'image' => $image,
-                            'service_id' => $resource->id,
-                        ]);
+                        if ($isNew) {
+                            $savedService = ServiceApplication::create([
+                                'name' => $serviceName,
+                                'image' => $image,
+                                'service_id' => $resource->id,
+                            ]);
+                        } else {
+                            $savedService = ServiceApplication::where([
+                                'name' => $serviceName,
+                                'service_id' => $resource->id,
+                            ])->first();
+                            if (is_null($savedService)) {
+                                $savedService = ServiceApplication::create([
+                                    'name' => $serviceName,
+                                    'image' => $image,
+                                    'service_id' => $resource->id,
+                                ]);
+                            }
+                        }
                     }
                 }
+
+                data_set($service, 'is_database', $isDatabase);
 
                 // Check if image changed
                 if ($savedService->image !== $image) {
@@ -2006,6 +2075,12 @@ function parseDockerComposeFile(Service|Application $resource, bool $isNew = fal
             if ($serviceLabels->count() > 0) {
                 $removedLabels = collect([]);
                 $serviceLabels = $serviceLabels->filter(function ($serviceLabel, $serviceLabelName) use ($removedLabels) {
+                    // Handle array values from YAML (e.g., "traefik.enable: true" becomes an array)
+                    if (is_array($serviceLabel)) {
+                        $removedLabels->put($serviceLabelName, $serviceLabel);
+
+                        return false;
+                    }
                     if (! str($serviceLabel)->contains('=')) {
                         $removedLabels->put($serviceLabelName, $serviceLabel);
 
@@ -2015,6 +2090,10 @@ function parseDockerComposeFile(Service|Application $resource, bool $isNew = fal
                     return $serviceLabel;
                 });
                 foreach ($removedLabels as $removedLabelName => $removedLabel) {
+                    // Convert array values to strings
+                    if (is_array($removedLabel)) {
+                        $removedLabel = (string) collect($removedLabel)->first();
+                    }
                     $serviceLabels->push("$removedLabelName=$removedLabel");
                 }
             }
@@ -2818,6 +2897,18 @@ function instanceSettings()
     return InstanceSettings::get();
 }
 
+function getHelperVersion(): string
+{
+    $settings = instanceSettings();
+
+    // In development mode, use the dev_helper_version if set, otherwise fallback to config
+    if (isDev() && ! empty($settings->dev_helper_version)) {
+        return $settings->dev_helper_version;
+    }
+
+    return config('constants.coolify.helper_version');
+}
+
 function loadConfigFromGit(string $repository, string $branch, string $base_directory, int $server_id, int $team_id)
 {
     $server = Server::find($server_id)->where('team_id', $team_id)->first();
@@ -3259,4 +3350,47 @@ function generateDockerComposeServiceName(mixed $services, int $pullRequestId = 
     }
 
     return $collection;
+}
+
+/**
+ * Transform colon-delimited status format to human-readable parentheses format.
+ *
+ * Handles Docker container status formats with optional health check status and exclusion modifiers.
+ *
+ * Examples:
+ * - running:healthy → Running (healthy)
+ * - running:unhealthy:excluded → Running (unhealthy, excluded)
+ * - exited:excluded → Exited (excluded)
+ * - Proxy:running → Proxy:running (preserved as-is for headline formatting)
+ * - running → Running
+ *
+ * @param  string  $status  The status string to format
+ * @return string The formatted status string
+ */
+function formatContainerStatus(string $status): string
+{
+    // Preserve Proxy statuses as-is (they follow different format)
+    if (str($status)->startsWith('Proxy')) {
+        return str($status)->headline()->value();
+    }
+
+    // Check for :excluded suffix
+    $isExcluded = str($status)->endsWith(':excluded');
+    $parts = explode(':', $status);
+
+    if ($isExcluded) {
+        if (count($parts) === 3) {
+            // Has health status: running:unhealthy:excluded → Running (unhealthy, excluded)
+            return str($parts[0])->headline().' ('.$parts[1].', excluded)';
+        } else {
+            // No health status: exited:excluded → Exited (excluded)
+            return str($parts[0])->headline().' (excluded)';
+        }
+    } elseif (count($parts) >= 2) {
+        // Regular colon format: running:healthy → Running (healthy)
+        return str($parts[0])->headline().' ('.$parts[1].')';
+    } else {
+        // Simple status: running → Running
+        return str($status)->headline()->value();
+    }
 }

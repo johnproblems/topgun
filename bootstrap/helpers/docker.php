@@ -17,24 +17,44 @@ function getCurrentApplicationContainerStatus(Server $server, int $id, ?int $pul
     if (! $server->isSwarm()) {
         $containers = instant_remote_process(["docker ps -a --filter='label=coolify.applicationId={$id}' --format '{{json .}}' "], $server);
         $containers = format_docker_command_output_to_json($containers);
+
         $containers = $containers->map(function ($container) use ($pullRequestId, $includePullrequests) {
             $labels = data_get($container, 'Labels');
-            if (! str($labels)->contains('coolify.pullRequestId=')) {
-                data_set($container, 'Labels', $labels.",coolify.pullRequestId={$pullRequestId}");
+            $containerName = data_get($container, 'Names');
+            $hasPrLabel = str($labels)->contains('coolify.pullRequestId=');
+            $prLabelValue = null;
 
+            if ($hasPrLabel) {
+                preg_match('/coolify\.pullRequestId=(\d+)/', $labels, $matches);
+                $prLabelValue = $matches[1] ?? null;
+            }
+
+            // Treat pullRequestId=0 or missing label as base deployment (convention: 0 = no PR)
+            $isBaseDeploy = ! $hasPrLabel || (int) $prLabelValue === 0;
+
+            // If we're looking for a specific PR and this is a base deployment, exclude it
+            if ($pullRequestId !== null && $pullRequestId !== 0 && $isBaseDeploy) {
+                return null;
+            }
+
+            // If this is a base deployment, include it when not filtering for PRs
+            if ($isBaseDeploy) {
                 return $container;
             }
+
             if ($includePullrequests) {
                 return $container;
             }
-            if (str($labels)->contains("coolify.pullRequestId=$pullRequestId")) {
+            if ($pullRequestId !== null && $pullRequestId !== 0 && str($labels)->contains("coolify.pullRequestId={$pullRequestId}")) {
                 return $container;
             }
 
             return null;
         });
 
-        return $containers->filter();
+        $filtered = $containers->filter();
+
+        return $filtered;
     }
 
     return $containers;
@@ -378,6 +398,16 @@ function fqdnLabelsForTraefik(string $uuid, Collection $domains, bool $is_force_
 
     if ($serviceLabels) {
         $middlewares_from_labels = $serviceLabels->map(function ($item) {
+            // Handle array values from YAML parsing (e.g., "traefik.enable: true" becomes an array)
+            if (is_array($item)) {
+                // Convert array to string format "key=value"
+                $key = collect($item)->keys()->first();
+                $value = collect($item)->values()->first();
+                $item = "$key=$value";
+            }
+            if (! is_string($item)) {
+                return null;
+            }
             if (preg_match('/traefik\.http\.middlewares\.(.*?)(\.|$)/', $item, $matches)) {
                 return $matches[1];
             }
@@ -1053,6 +1083,44 @@ function generateCustomDockerRunOptionsForDatabases($docker_run_options, $docker
     return $docker_compose;
 }
 
+/**
+ * Remove Coolify's custom Docker Compose fields from parsed YAML array
+ *
+ * Coolify extends Docker Compose with custom fields that are processed during
+ * parsing and deployment but must be removed before sending to Docker.
+ *
+ * Custom fields:
+ * - exclude_from_hc (service-level): Exclude service from health check monitoring
+ * - content (volume-level): Auto-create file with specified content during init
+ * - isDirectory / is_directory (volume-level): Mark bind mount as directory
+ *
+ * @param  array  $yamlCompose  Parsed Docker Compose array
+ * @return array Cleaned Docker Compose array with custom fields removed
+ */
+function stripCoolifyCustomFields(array $yamlCompose): array
+{
+    foreach ($yamlCompose['services'] ?? [] as $serviceName => $service) {
+        // Remove service-level custom fields
+        unset($yamlCompose['services'][$serviceName]['exclude_from_hc']);
+
+        // Remove volume-level custom fields (only for long syntax - arrays)
+        if (isset($service['volumes'])) {
+            foreach ($service['volumes'] as $volumeName => $volume) {
+                // Skip if volume is string (short syntax like 'db-data:/var/lib/postgresql/data')
+                if (! is_array($volume)) {
+                    continue;
+                }
+
+                unset($yamlCompose['services'][$serviceName]['volumes'][$volumeName]['content']);
+                unset($yamlCompose['services'][$serviceName]['volumes'][$volumeName]['isDirectory']);
+                unset($yamlCompose['services'][$serviceName]['volumes'][$volumeName]['is_directory']);
+            }
+        }
+    }
+
+    return $yamlCompose;
+}
+
 function validateComposeFile(string $compose, int $server_id): string|Throwable
 {
     $uuid = Str::random(18);
@@ -1062,13 +1130,10 @@ function validateComposeFile(string $compose, int $server_id): string|Throwable
             throw new \Exception('Server not found');
         }
         $yaml_compose = Yaml::parse($compose);
-        foreach ($yaml_compose['services'] as $service_name => $service) {
-            foreach ($service['volumes'] as $volume_name => $volume) {
-                if (data_get($volume, 'type') === 'bind' && data_get($volume, 'content')) {
-                    unset($yaml_compose['services'][$service_name]['volumes'][$volume_name]['content']);
-                }
-            }
-        }
+
+        // Remove Coolify's custom fields before Docker validation
+        $yaml_compose = stripCoolifyCustomFields($yaml_compose);
+
         $base64_compose = base64_encode(Yaml::dump($yaml_compose));
         instant_remote_process([
             "echo {$base64_compose} | base64 -d | tee /tmp/{$uuid}.yml > /dev/null",
@@ -1121,10 +1186,81 @@ function escapeDollarSign($value)
 }
 
 /**
+ * Escape a value for use in a bash .env file that will be sourced with 'source' command
+ * Wraps the value in single quotes and escapes any single quotes within the value
+ *
+ * @param  string|null  $value  The value to escape
+ * @return string The escaped value wrapped in single quotes
+ */
+function escapeBashEnvValue(?string $value): string
+{
+    // Handle null or empty values
+    if ($value === null || $value === '') {
+        return "''";
+    }
+
+    // Replace single quotes with '\'' (end quote, escaped quote, start quote)
+    // This is the standard way to escape single quotes in bash single-quoted strings
+    $escaped = str_replace("'", "'\\''", $value);
+
+    // Wrap in single quotes
+    return "'{$escaped}'";
+}
+
+/**
+ * Escape a value for bash double-quoted strings (allows $VAR expansion)
+ *
+ * This function wraps values in double quotes while escaping special characters,
+ * but preserves valid bash variable references like $VAR and ${VAR}.
+ *
+ * @param  string|null  $value  The value to escape
+ * @return string The escaped value wrapped in double quotes
+ */
+function escapeBashDoubleQuoted(?string $value): string
+{
+    // Handle null or empty values
+    if ($value === null || $value === '') {
+        return '""';
+    }
+
+    // Step 1: Escape backslashes first (must be done before other escaping)
+    $escaped = str_replace('\\', '\\\\', $value);
+
+    // Step 2: Escape double quotes
+    $escaped = str_replace('"', '\\"', $escaped);
+
+    // Step 3: Escape backticks (command substitution)
+    $escaped = str_replace('`', '\\`', $escaped);
+
+    // Step 4: Escape invalid $ patterns while preserving valid variable references
+    // Valid patterns to keep:
+    //   - $VAR_NAME (alphanumeric + underscore, starting with letter or _)
+    //   - ${VAR_NAME} (brace expansion)
+    //   - $0-$9 (positional parameters)
+    // Invalid patterns to escape: $&, $#, $$, $*, $@, $!, $(, etc.
+
+    // Match $ followed by anything that's NOT a valid variable start
+    // Valid variable starts: letter, underscore, digit (for $0-$9), or open brace
+    $escaped = preg_replace(
+        '/\$(?![a-zA-Z_0-9{])/',
+        '\\\$',
+        $escaped
+    );
+
+    // Preserve pre-escaped dollars inside double quotes: turn \\$ back into \$
+    // (keeps tests like "path\\to\\file" intact while restoring \$ semantics)
+    $escaped = preg_replace('/\\\\(?=\$)/', '\\\\', $escaped);
+
+    // Wrap in double quotes
+    return "\"{$escaped}\"";
+}
+
+/**
  * Generate Docker build arguments from environment variables collection
+ * Returns only keys (no values) since values are sourced from environment via export
  *
  * @param  \Illuminate\Support\Collection|array  $variables  Collection of variables with 'key', 'value', and optionally 'is_multiline'
- * @return \Illuminate\Support\Collection Collection of formatted --build-arg strings
+ * @return \Illuminate\Support\Collection Collection of formatted --build-arg strings (keys only)
  */
 function generateDockerBuildArgs($variables): \Illuminate\Support\Collection
 {
@@ -1132,21 +1268,9 @@ function generateDockerBuildArgs($variables): \Illuminate\Support\Collection
 
     return $variables->map(function ($var) {
         $key = is_array($var) ? data_get($var, 'key') : $var->key;
-        $value = is_array($var) ? data_get($var, 'value') : $var->value;
-        $isMultiline = is_array($var) ? data_get($var, 'is_multiline', false) : ($var->is_multiline ?? false);
 
-        if ($isMultiline) {
-            // For multiline variables, strip surrounding quotes and escape for bash
-            $raw_value = trim($value, "'");
-            $escaped_value = str_replace(['\\', '"', '$', '`'], ['\\\\', '\\"', '\\$', '\\`'], $raw_value);
-
-            return "--build-arg {$key}=\"{$escaped_value}\"";
-        }
-
-        // For regular variables, use escapeshellarg for security
-        $value = escapeshellarg($value);
-
-        return "--build-arg {$key}={$value}";
+        // Only return the key - Docker will get the value from the environment
+        return "--build-arg {$key}";
     });
 }
 
@@ -1179,4 +1303,37 @@ function generateDockerEnvFlags($variables): string
             return "-e {$key}={$escaped_value}";
         })
         ->implode(' ');
+}
+
+/**
+ * Auto-inject -f and --env-file flags into a docker compose command if not already present
+ *
+ * @param  string  $command  The docker compose command to modify
+ * @param  string  $composeFilePath  The path to the compose file
+ * @param  string  $envFilePath  The path to the .env file
+ * @return string The modified command with injected flags
+ *
+ * @example
+ * Input:  "docker compose build"
+ * Output: "docker compose -f ./docker-compose.yml --env-file .env build"
+ */
+function injectDockerComposeFlags(string $command, string $composeFilePath, string $envFilePath): string
+{
+    $dockerComposeReplacement = 'docker compose';
+
+    // Add -f flag if not present (checks for both -f and --file with various formats)
+    // Detects: -f path, -f=path, -fpath (concatenated with path chars: . / ~), --file path, --file=path
+    // Note: Uses [.~/]|$ instead of \S to prevent false positives with flags like -foo, -from, -feature
+    if (! preg_match('/(?:^|\s)(?:-f(?:[=\s]|[.\/~]|$)|--file(?:=|\s))/', $command)) {
+        $dockerComposeReplacement .= " -f {$composeFilePath}";
+    }
+
+    // Add --env-file flag if not present (checks for --env-file with various formats)
+    // Detects: --env-file path, --env-file=path with any whitespace
+    if (! preg_match('/(?:^|\s)--env-file(?:=|\s)/', $command)) {
+        $dockerComposeReplacement .= " --env-file {$envFilePath}";
+    }
+
+    // Replace only first occurrence to avoid modifying comments/strings/chained commands
+    return preg_replace('/docker\s+compose/', $dockerComposeReplacement, $command, 1);
 }

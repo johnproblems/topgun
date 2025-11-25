@@ -17,6 +17,7 @@ use App\Models\Server;
 use App\Models\Service;
 use App\Rules\ValidGitBranch;
 use App\Rules\ValidGitRepositoryUrl;
+use App\Services\DockerImageParser;
 use App\Traits\LicenseValidation;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -1521,9 +1522,33 @@ class ApplicationsController extends Controller
             if ($return instanceof \Illuminate\Http\JsonResponse) {
                 return $return;
             }
-            if (! $request->docker_registry_image_tag) {
-                $request->offsetSet('docker_registry_image_tag', 'latest');
+            // Process docker image name and tag using DockerImageParser
+            $dockerImageName = $request->docker_registry_image_name;
+            $dockerImageTag = $request->docker_registry_image_tag;
+
+            // Build the full Docker image string for parsing
+            if ($dockerImageTag) {
+                $dockerImageString = $dockerImageName.':'.$dockerImageTag;
+            } else {
+                $dockerImageString = $dockerImageName;
             }
+
+            // Parse using DockerImageParser to normalize the image reference
+            $parser = new DockerImageParser;
+            $parser->parse($dockerImageString);
+
+            // Get normalized image name and tag
+            $normalizedImageName = $parser->getFullImageNameWithoutTag();
+
+            // Append @sha256 to image name if using digest
+            if ($parser->isImageHash() && ! str_ends_with($normalizedImageName, '@sha256')) {
+                $normalizedImageName .= '@sha256';
+            }
+
+            // Set processed values back to request
+            $request->offsetSet('docker_registry_image_name', $normalizedImageName);
+            $request->offsetSet('docker_registry_image_tag', $parser->getTag());
+
             $application = new Application;
             removeUnnecessaryFieldsFromRequest($request);
 
@@ -1877,7 +1902,6 @@ class ApplicationsController extends Controller
     public function delete_by_uuid(Request $request)
     {
         $teamId = getTeamIdFromToken();
-        $cleanup = filter_var($request->query->get('cleanup', true), FILTER_VALIDATE_BOOLEAN);
         if (is_null($teamId)) {
             return invalidTokenResponse();
         }
@@ -1896,10 +1920,10 @@ class ApplicationsController extends Controller
 
         DeleteResourceJob::dispatch(
             resource: $application,
-            deleteVolumes: $request->query->get('delete_volumes', true),
-            deleteConnectedNetworks: $request->query->get('delete_connected_networks', true),
-            deleteConfigurations: $request->query->get('delete_configurations', true),
-            dockerCleanup: $request->query->get('docker_cleanup', true)
+            deleteVolumes: $request->boolean('delete_volumes', true),
+            deleteConnectedNetworks: $request->boolean('delete_connected_networks', true),
+            deleteConfigurations: $request->boolean('delete_configurations', true),
+            dockerCleanup: $request->boolean('docker_cleanup', true)
         );
 
         return response()->json([
@@ -2486,7 +2510,7 @@ class ApplicationsController extends Controller
     )]
     public function update_env_by_uuid(Request $request)
     {
-        $allowedFields = ['key', 'value', 'is_preview', 'is_literal'];
+        $allowedFields = ['key', 'value', 'is_preview', 'is_literal', 'is_multiline', 'is_shown_once', 'is_runtime', 'is_buildtime'];
         $teamId = getTeamIdFromToken();
 
         if (is_null($teamId)) {
@@ -2514,6 +2538,8 @@ class ApplicationsController extends Controller
             'is_literal' => 'boolean',
             'is_multiline' => 'boolean',
             'is_shown_once' => 'boolean',
+            'is_runtime' => 'boolean',
+            'is_buildtime' => 'boolean',
         ]);
 
         $extraFields = array_diff(array_keys($request->all()), $allowedFields);
@@ -2709,7 +2735,7 @@ class ApplicationsController extends Controller
             ], 400);
         }
         $bulk_data = collect($bulk_data)->map(function ($item) {
-            return collect($item)->only(['key', 'value', 'is_preview',  'is_literal']);
+            return collect($item)->only(['key', 'value', 'is_preview', 'is_literal', 'is_multiline', 'is_shown_once', 'is_runtime', 'is_buildtime']);
         });
         $returnedEnvs = collect();
         foreach ($bulk_data as $item) {
@@ -2720,6 +2746,8 @@ class ApplicationsController extends Controller
                 'is_literal' => 'boolean',
                 'is_multiline' => 'boolean',
                 'is_shown_once' => 'boolean',
+                'is_runtime' => 'boolean',
+                'is_buildtime' => 'boolean',
             ]);
             if ($validator->fails()) {
                 return response()->json([
@@ -2879,7 +2907,7 @@ class ApplicationsController extends Controller
     )]
     public function create_env(Request $request)
     {
-        $allowedFields = ['key', 'value', 'is_preview',  'is_literal'];
+        $allowedFields = ['key', 'value', 'is_preview', 'is_literal', 'is_multiline', 'is_shown_once', 'is_runtime', 'is_buildtime'];
         $teamId = getTeamIdFromToken();
 
         if (is_null($teamId)) {
@@ -2902,6 +2930,8 @@ class ApplicationsController extends Controller
             'is_literal' => 'boolean',
             'is_multiline' => 'boolean',
             'is_shown_once' => 'boolean',
+            'is_runtime' => 'boolean',
+            'is_buildtime' => 'boolean',
         ]);
 
         $extraFields = array_diff(array_keys($request->all()), $allowedFields);
@@ -3147,6 +3177,7 @@ class ApplicationsController extends Controller
         if (is_null($teamId)) {
             return invalidTokenResponse();
         }
+<<<<<<< HEAD
         $force = $request->query->get('force') ?? false;
         $instant_deploy = $request->query->get('instant_deploy') ?? false;
 
@@ -3164,6 +3195,10 @@ class ApplicationsController extends Controller
                 return $optionCheck;
             }
         }
+=======
+        $force = $request->boolean('force', false);
+        $instant_deploy = $request->boolean('instant_deploy', false);
+>>>>>>> upstream/v4.x
         $uuid = $request->route('uuid');
         if (! $uuid) {
             return response()->json(['message' => 'UUID is required.'], 400);
