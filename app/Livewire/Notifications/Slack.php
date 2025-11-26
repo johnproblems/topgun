@@ -74,6 +74,9 @@ class Slack extends Component
     {
         try {
             $this->team = auth()->user()->currentTeam();
+            if (! $this->team) {
+                return handleError(new \Exception('Team not found.'), $this);
+            }
             $this->settings = $this->team->slackNotificationSettings;
             $this->authorize('view', $this->settings);
             $this->syncData();

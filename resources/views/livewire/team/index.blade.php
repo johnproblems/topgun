@@ -28,7 +28,7 @@
             <h4 class="pb-4">Delete Team</h4>
             @if (session('currentTeam.id') === 0)
                 <div>This is the default team. You can't delete it.</div>
-            @elseif(auth()->user()->teams()->get()->count() === 1 || auth()->user()->currentTeam()->personal_team)
+            @elseif(auth()->user()->teams()->get()->count() === 1 || auth()->user()?->currentTeam()?->personal_team)
                 <div>You can't delete your last / personal team.</div>
             @elseif(currentTeam()->subscription)
                 <div>Please cancel your subscription <a class="underline dark:text-white"

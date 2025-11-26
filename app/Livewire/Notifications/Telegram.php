@@ -119,6 +119,9 @@ class Telegram extends Component
     {
         try {
             $this->team = auth()->user()->currentTeam();
+            if (! $this->team) {
+                return handleError(new \Exception('Team not found.'), $this);
+            }
             $this->settings = $this->team->telegramNotificationSettings;
             $this->authorize('view', $this->settings);
             $this->syncData();

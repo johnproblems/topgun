@@ -175,8 +175,9 @@ function showBoarding(): bool
 function refreshSession(?Team $team = null): void
 {
     if (! $team) {
-        if (Auth::user()->currentTeam()) {
-            $team = Team::find(Auth::user()->currentTeam()->id);
+        $currentTeam = Auth::user()?->currentTeam();
+        if ($currentTeam) {
+            $team = Team::find($currentTeam->id);
         } else {
             $team = User::find(Auth::id())->teams->first();
         }

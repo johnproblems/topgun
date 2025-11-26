@@ -26,7 +26,7 @@ class Controller extends BaseController
 
     public function realtime_test()
     {
-        if (auth()->user()?->currentTeam()->id !== 0) {
+        if (auth()?->user()?->currentTeam()?->id !== 0) {
             return redirect(RouteServiceProvider::HOME);
         }
         TestEvent::dispatch();

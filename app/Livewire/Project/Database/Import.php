@@ -127,7 +127,7 @@ EOD;
         if (! data_get($this->parameters, 'database_uuid')) {
             abort(404);
         }
-        $resource = getResourceByUuid($this->parameters['database_uuid'], data_get(auth()->user()->currentTeam(), 'id'));
+        $resource = getResourceByUuid($this->parameters['database_uuid'], data_get(auth()?->user()?->currentTeam(), 'id'));
         if (is_null($resource)) {
             abort(404);
         }

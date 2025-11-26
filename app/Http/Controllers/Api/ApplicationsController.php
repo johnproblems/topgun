@@ -3177,9 +3177,8 @@ class ApplicationsController extends Controller
         if (is_null($teamId)) {
             return invalidTokenResponse();
         }
-<<<<<<< HEAD
-        $force = $request->query->get('force') ?? false;
-        $instant_deploy = $request->query->get('instant_deploy') ?? false;
+        $force = $request->boolean('force', false);
+        $instant_deploy = $request->boolean('instant_deploy', false);
 
         // Validate deployment options based on license
         if ($force) {
@@ -3195,10 +3194,7 @@ class ApplicationsController extends Controller
                 return $optionCheck;
             }
         }
-=======
-        $force = $request->boolean('force', false);
-        $instant_deploy = $request->boolean('instant_deploy', false);
->>>>>>> upstream/v4.x
+
         $uuid = $request->route('uuid');
         if (! $uuid) {
             return response()->json(['message' => 'UUID is required.'], 400);

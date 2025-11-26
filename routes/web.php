@@ -180,6 +180,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/terminal/auth/ips', function () {
         if (auth()->check()) {
             $team = auth()->user()->currentTeam();
+            if (! $team) {
+                return response()->json(['ipAddresses' => []], 200);
+            }
             $ipAddresses = $team->servers->where('settings.is_terminal_enabled', true)->pluck('ip')->toArray();
 
             return response()->json(['ipAddresses' => $ipAddresses], 200);

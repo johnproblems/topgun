@@ -219,6 +219,9 @@ class TeamController extends Controller
             return invalidTokenResponse();
         }
         $team = auth()->user()->currentTeam();
+        if (is_null($team)) {
+            return response()->json(['message' => 'No team assigned to user.'], 404);
+        }
 
         return response()->json(
             $this->removeSensitiveData($team),
@@ -264,6 +267,9 @@ class TeamController extends Controller
             return invalidTokenResponse();
         }
         $team = auth()->user()->currentTeam();
+        if (is_null($team)) {
+            return response()->json(['message' => 'No team assigned to user.'], 404);
+        }
         $team->members->makeHidden([
             'pivot',
             'email_change_code',

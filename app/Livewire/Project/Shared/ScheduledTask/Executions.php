@@ -34,7 +34,10 @@ class Executions extends Component
 
     public function getListeners()
     {
-        $teamId = Auth::user()->currentTeam()->id;
+        $teamId = Auth::user()?->currentTeam()?->id;
+        if (! $teamId) {
+            return [];
+        }
 
         return [
             "echo-private:team.{$teamId},ScheduledTaskDone" => 'refreshExecutions',

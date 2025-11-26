@@ -34,7 +34,7 @@ use Symfony\Component\Yaml\Yaml;
 use Visus\Cuid2\Cuid2;
 
 /**
- * @property \App\Models\ServerSetting $settings
+ * @property-read \App\Models\ServerSetting $settings
  * @property \App\Models\PrivateKey $privateKey
  * @property \App\Models\Team $team
  * @property \App\Models\Organization $organization
@@ -85,6 +85,10 @@ use Visus\Cuid2\Cuid2;
  *
  * @see \App\Jobs\CheckTraefikVersionForServerJob Where this data is populated
  * @see \App\Livewire\Server\Proxy Where this data is read and displayed
+ * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\DockerCleanupExecution> $dockerCleanupExecutions
+ * @property \App\Models\CloudProviderToken|null $cloudProviderToken
+ * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\SslCertificate> $sslCertificates
+ * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\Service> $services
  */
 #[OA\Schema(
     description: 'Server model',
