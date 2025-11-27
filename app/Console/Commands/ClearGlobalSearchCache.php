@@ -39,7 +39,14 @@ class ClearGlobalSearchCache extends Command
             return Command::FAILURE;
         }
 
-        $teamId = auth()->user()->currentTeam()->id;
+        $user = auth()->user();
+        $teamId = $user?->currentTeam()?->id;
+
+        if (! $teamId) {
+            $this->error('Current user has no team assigned. Use --team=ID or --all option.');
+
+            return Command::FAILURE;
+        }
 
         return $this->clearTeamCache($teamId);
     }
