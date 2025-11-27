@@ -251,11 +251,13 @@ class GlobalSearch extends Component
         $user = auth()->user();
         if (! $user) {
             $this->allSearchableItems = [];
+
             return;
         }
         $team = $user->currentTeam();
         if (! $team) {
             $this->allSearchableItems = [];
+
             return;
         }
         $cacheKey = self::getCacheKey($team->id);
@@ -1241,9 +1243,10 @@ class GlobalSearch extends Component
     {
         $this->loadingProjects = true;
         $user = auth()->user();
-        $team = $user->currentTeam();
+        $team = $user?->currentTeam();
         if (! $team) {
             $this->loadingProjects = false;
+
             return $this->dispatch('error', message: 'No team assigned to user');
         }
         $projects = Project::where('team_id', $team->id)->get();

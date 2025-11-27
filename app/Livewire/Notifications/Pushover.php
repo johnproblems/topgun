@@ -76,7 +76,8 @@ class Pushover extends Component
     public function mount()
     {
         try {
-            $this->team = auth()->user()->currentTeam();
+            $user = auth()->user();
+            $this->team = $user?->currentTeam();
             if (! $this->team) {
                 return handleError(new \Exception('Team not found.'), $this);
             }

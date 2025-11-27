@@ -218,7 +218,8 @@ class TeamController extends Controller
         if (is_null($teamId)) {
             return invalidTokenResponse();
         }
-        $team = auth()->user()->currentTeam();
+        $user = auth()->user();
+        $team = $user?->currentTeam();
         if (is_null($team)) {
             return response()->json(['message' => 'No team assigned to user.'], 404);
         }
@@ -266,7 +267,8 @@ class TeamController extends Controller
         if (is_null($teamId)) {
             return invalidTokenResponse();
         }
-        $team = auth()->user()->currentTeam();
+        $user = auth()->user();
+        $team = $user?->currentTeam();
         if (is_null($team)) {
             return response()->json(['message' => 'No team assigned to user.'], 404);
         }
