@@ -248,12 +248,23 @@ class GlobalSearch extends Component
     private function loadSearchableItems()
     {
         // Try to get from Redis cache first
-        $cacheKey = self::getCacheKey(auth()->user()->currentTeam()->id);
+        $user = auth()->user();
+        if (! $user) {
+            $this->allSearchableItems = [];
 
-        $this->allSearchableItems = Cache::remember($cacheKey, 300, function () {
+            return;
+        }
+        $team = $user->currentTeam();
+        if (! $team) {
+            $this->allSearchableItems = [];
+
+            return;
+        }
+        $cacheKey = self::getCacheKey($team->id);
+
+        $this->allSearchableItems = Cache::remember($cacheKey, 300, function () use ($team) {
             ray()->showQueries();
             $items = collect();
-            $team = auth()->user()->currentTeam();
 
             // Get all applications
             $applications = Application::ownedByCurrentTeam()
@@ -1232,7 +1243,12 @@ class GlobalSearch extends Component
     {
         $this->loadingProjects = true;
         $user = auth()->user();
-        $team = $user->currentTeam();
+        $team = $user?->currentTeam();
+        if (! $team) {
+            $this->loadingProjects = false;
+
+            return $this->dispatch('error', message: 'No team assigned to user');
+        }
         $projects = Project::where('team_id', $team->id)->get();
 
         if ($projects->isEmpty()) {

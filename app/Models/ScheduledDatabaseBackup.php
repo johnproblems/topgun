@@ -10,12 +10,18 @@ class ScheduledDatabaseBackup extends BaseModel
 {
     protected $guarded = [];
 
-    public static function ownedByCurrentTeam()
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder<ScheduledDatabaseBackup>
+     */
+    public static function ownedByCurrentTeam(): \Illuminate\Database\Eloquent\Builder
     {
         return ScheduledDatabaseBackup::whereRelation('team', 'id', currentTeam()->id)->orderBy('created_at', 'desc');
     }
 
-    public static function ownedByCurrentTeamAPI(int $teamId)
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder<ScheduledDatabaseBackup>
+     */
+    public static function ownedByCurrentTeamAPI(int $teamId): \Illuminate\Database\Eloquent\Builder
     {
         return ScheduledDatabaseBackup::whereRelation('team', 'id', $teamId)->orderBy('created_at', 'desc');
     }

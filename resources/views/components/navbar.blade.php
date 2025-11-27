@@ -97,8 +97,11 @@
         </div>
         <livewire:settings-dropdown />
     </div>
-    <div class="px-2 pt-2 pb-7">
+    <div class="px-2 pt-2 pb-4">
         <livewire:switch-team />
+    </div>
+    <div class="px-2 pb-7">
+        <livewire:organization.organization-switcher />
     </div>
     <ul role="list" class="flex flex-col flex-1 gap-y-7">
         <li class="flex-1 overflow-x-hidden">
@@ -128,6 +131,41 @@
                                 <path d="M4 16l8 4l8 -4" />
                             </svg>
                             Projects
+                        </a>
+                    </li>
+                    <li>
+                        <a title="Organizations"
+                            class="{{ request()->is('organization*') ? 'menu-item menu-item-active' : 'menu-item' }}"
+                            href="/organizations">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24"
+                                stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M3 21h18" />
+                                <path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16" />
+                                <path d="M9 9h1v1h-1z" />
+                                <path d="M14 9h1v1h-1z" />
+                                <path d="M9 13h1v1h-1z" />
+                                <path d="M14 13h1v1h-1z" />
+                                <path d="M9 17h1v1h-1z" />
+                                <path d="M14 17h1v1h-1z" />
+                            </svg>
+                            Organizations
+                        </a>
+                    </li>
+                    <li>
+                        <a title="License Management"
+                            class="{{ request()->is('license/management*') ? 'menu-item menu-item-active' : 'menu-item' }}"
+                            href="{{ route('license.management') }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24"
+                                stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M15 21h-9a3 3 0 0 1 -3 -3v-1h10v2a2 2 0 0 0 4 0v-14a2 2 0 1 1 2 2h-2m2 -4h-11a3 3 0 0 0 -3 3v11" />
+                                <path d="M9 7l4 0" />
+                                <path d="M9 11l4 0" />
+                            </svg>
+                            License Management
                         </a>
                     </li>
                     <li>

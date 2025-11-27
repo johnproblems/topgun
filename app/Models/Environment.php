@@ -35,7 +35,10 @@ class Environment extends BaseModel
         });
     }
 
-    public static function ownedByCurrentTeam()
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder<Environment>
+     */
+    public static function ownedByCurrentTeam(): \Illuminate\Database\Eloquent\Builder
     {
         return Environment::whereRelation('project.team', 'id', currentTeam()->id)->orderBy('name');
     }

@@ -151,6 +151,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/admin', TeamAdminView::class)->name('team.admin-view');
     });
 
+    Route::prefix('organizations')->group(function () {
+        Route::get('/', function () {
+            return view('organization.vue-manager');
+        })->name('organization.index');
+        Route::get('/livewire', \App\Livewire\Organization\OrganizationManager::class)->name('organization.livewire');
+        Route::get('/hierarchy', \App\Livewire\Organization\OrganizationHierarchy::class)->name('organization.hierarchy');
+        Route::get('/switcher', \App\Livewire\Organization\OrganizationSwitcher::class)->name('organization.switcher');
+        Route::get('/{organization}/users', \App\Livewire\Organization\UserManagement::class)->name('organization.users');
+    });
+
+    // Debug routes (only in development)
+    if (app()->environment('local', 'development')) {
+        Route::get('/debug/websocket', function () {
+            return view('debug.websocket-test');
+        })->name('debug.websocket');
+    }
+
     Route::get('/terminal', TerminalIndex::class)->name('terminal')->middleware('can.access.terminal');
     Route::post('/terminal/auth', function () {
         if (auth()->check()) {
@@ -163,6 +180,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/terminal/auth/ips', function () {
         if (auth()->check()) {
             $team = auth()->user()->currentTeam();
+            if (! $team) {
+                return response()->json(['ipAddresses' => []], 200);
+            }
             $ipAddresses = $team->servers->where('settings.is_terminal_enabled', true)->pluck('ip')->toArray();
 
             return response()->json(['ipAddresses' => $ipAddresses], 200);
@@ -245,10 +265,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/tasks/{task_uuid}', ScheduledTaskShow::class)->name('project.service.scheduled-tasks');
     });
 
-    Route::get('/servers', ServerIndex::class)->name('server.index');
+    Route::get('/servers', ServerIndex::class)->name('server.index')->middleware(['license']);
     // Route::get('/server/new', ServerCreate::class)->name('server.create');
 
-    Route::prefix('server/{server_uuid}')->group(function () {
+    Route::prefix('server/{server_uuid}')->middleware(['license:server_provisioning'])->group(function () {
         Route::get('/', ServerShow::class)->name('server.show');
         Route::get('/advanced', ServerAdvanced::class)->name('server.advanced');
         Route::get('/private-key', PrivateKeyShow::class)->name('server.private-key');
@@ -259,7 +279,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/destinations', ServerDestinations::class)->name('server.destinations');
         Route::get('/log-drains', LogDrains::class)->name('server.log-drains');
         Route::get('/metrics', ServerCharts::class)->name('server.charts');
-        Route::get('/danger', DeleteServer::class)->name('server.delete');
+        Route::get('/danger', DeleteServer::class)->name('server.delete')->middleware(['server.provision']);
         Route::get('/proxy', ProxyShow::class)->name('server.proxy');
         Route::get('/proxy/dynamic', ProxyDynamicConfigurations::class)->name('server.proxy.dynamic-confs');
         Route::get('/proxy/logs', ProxyLogs::class)->name('server.proxy.logs');
@@ -367,6 +387,63 @@ Route::middleware(['auth'])->group(function () {
     })->name('download.backup');
 
 });
+
+// Organization API routes for Vue.js frontend - must be before catch-all route
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::prefix('internal-api/organizations')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\OrganizationController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\OrganizationController::class, 'store']);
+        Route::put('/{organization}', [App\Http\Controllers\Api\OrganizationController::class, 'update']);
+        Route::post('/switch', [App\Http\Controllers\Api\OrganizationController::class, 'switchOrganization']);
+        Route::get('/{organization}/hierarchy', [App\Http\Controllers\Api\OrganizationController::class, 'hierarchy']);
+        Route::get('/{organization}/users', [App\Http\Controllers\Api\OrganizationController::class, 'users']);
+        Route::post('/{organization}/users', [App\Http\Controllers\Api\OrganizationController::class, 'addUser']);
+        Route::put('/{organization}/users/{user}', [App\Http\Controllers\Api\OrganizationController::class, 'updateUser']);
+        Route::delete('/{organization}/users/{user}', [App\Http\Controllers\Api\OrganizationController::class, 'removeUser']);
+        Route::get('/roles-permissions', [App\Http\Controllers\Api\OrganizationController::class, 'rolesAndPermissions']);
+    });
+
+    Route::prefix('internal-api/users')->group(function () {
+        Route::get('/search', [App\Http\Controllers\Api\UserController::class, 'search']);
+    });
+
+    // License Management Routes for Vue.js frontend
+    Route::prefix('internal-api/licenses')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\LicenseController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\LicenseController::class, 'store']);
+        Route::get('/{id}', [App\Http\Controllers\Api\LicenseController::class, 'show']);
+        Route::post('/{id}/validate', [App\Http\Controllers\Api\LicenseController::class, 'validateLicense']);
+        Route::post('/{id}/suspend', [App\Http\Controllers\Api\LicenseController::class, 'suspend']);
+        Route::post('/{id}/reactivate', [App\Http\Controllers\Api\LicenseController::class, 'reactivate']);
+        Route::post('/{id}/revoke', [App\Http\Controllers\Api\LicenseController::class, 'revoke']);
+        Route::post('/{id}/renew', [App\Http\Controllers\Api\LicenseController::class, 'renew']);
+        Route::post('/{id}/upgrade', [App\Http\Controllers\Api\LicenseController::class, 'upgrade']);
+        Route::get('/{id}/usage-history', [App\Http\Controllers\Api\LicenseController::class, 'usageHistory']);
+        Route::get('/{id}/usage-stats', [App\Http\Controllers\Api\LicenseController::class, 'show']); // Reuse show method
+        Route::get('/{id}/usage-export', [App\Http\Controllers\Api\LicenseController::class, 'exportUsage']);
+        Route::get('/{id}/export', [App\Http\Controllers\Api\LicenseController::class, 'exportLicense']);
+    });
+
+});
+
+// Include license management routes
+require __DIR__.'/license.php';
+
+// Dynamic asset routes (must be before catch-all route)
+// Note: Using withoutMiddleware to exclude web middleware group (session, CSRF, etc.)
+// This route is a public API endpoint that should work without session context
+Route::get('/branding/{organization}/styles.css',
+    [App\Http\Controllers\Enterprise\DynamicAssetController::class, 'styles']
+)->withoutMiddleware([
+    \App\Http\Middleware\DecideWhatToDoWithUser::class,
+    \App\Http\Middleware\EnsureOrganizationContext::class,
+    \App\Http\Middleware\CheckForcePasswordReset::class,
+    \App\Http\Middleware\VerifyCsrfToken::class,
+])->middleware([
+    'throttle:branding',
+    'cache.headers:public;max_age=3600;etag'
+])
+->name('enterprise.branding.styles');
 
 Route::any('/{any}', function () {
     if (auth()->user()) {

@@ -44,7 +44,10 @@ class StandaloneKeydb extends BaseModel
         });
     }
 
-    public static function ownedByCurrentTeam()
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder<StandaloneKeydb>
+     */
+    public static function ownedByCurrentTeam(): \Illuminate\Database\Eloquent\Builder
     {
         return StandaloneKeydb::whereRelation('environment.project.team', 'id', currentTeam()->id)->orderBy('name');
     }

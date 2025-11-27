@@ -25,12 +25,18 @@ class ServiceDatabase extends BaseModel
         });
     }
 
-    public static function ownedByCurrentTeamAPI(int $teamId)
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder<ServiceDatabase>
+     */
+    public static function ownedByCurrentTeamAPI(int $teamId): \Illuminate\Database\Eloquent\Builder
     {
         return ServiceDatabase::whereRelation('service.environment.project.team', 'id', $teamId)->orderBy('name');
     }
 
-    public static function ownedByCurrentTeam()
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder<ServiceDatabase>
+     */
+    public static function ownedByCurrentTeam(): \Illuminate\Database\Eloquent\Builder
     {
         return ServiceDatabase::whereRelation('service.environment.project.team', 'id', currentTeam()->id)->orderBy('name');
     }
