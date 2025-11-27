@@ -79,7 +79,7 @@ class ActivityMonitor extends Component
                         $causer_id = data_get($this->activity, 'causer_id');
                         $user = User::find($causer_id);
                         if ($user) {
-                            $teamId = $user->currentTeam()->id;
+                            $teamId = $user?->currentTeam()?->id;
                             if (! self::$eventDispatched) {
                                 if (filled($this->eventData)) {
                                     $this->eventToDispatch::dispatch($teamId, $this->eventData);

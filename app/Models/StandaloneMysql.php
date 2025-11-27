@@ -45,7 +45,10 @@ class StandaloneMysql extends BaseModel
         });
     }
 
-    public static function ownedByCurrentTeam()
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder<StandaloneMysql>
+     */
+    public static function ownedByCurrentTeam(): \Illuminate\Database\Eloquent\Builder
     {
         return StandaloneMysql::whereRelation('environment.project.team', 'id', currentTeam()->id)->orderBy('name');
     }

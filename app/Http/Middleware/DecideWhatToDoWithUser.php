@@ -17,7 +17,7 @@ class DecideWhatToDoWithUser
             refreshSession($currentTeam);
         }
         if (auth()?->user()?->currentTeam()) {
-            refreshSession(auth()->user()->currentTeam());
+            refreshSession(auth()?->user()?->currentTeam());
         }
         if (! auth()->user() || ! isCloud() || isInstanceAdmin()) {
             if (! isCloud() && showBoarding() && ! in_array($request->path(), allowedPathsForBoardingAccounts())) {

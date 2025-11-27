@@ -9,7 +9,10 @@ class GitlabApp extends BaseModel
         'app_secret',
     ];
 
-    public static function ownedByCurrentTeam()
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder<GitlabApp>
+     */
+    public static function ownedByCurrentTeam(): \Illuminate\Database\Eloquent\Builder
     {
         return GitlabApp::whereTeamId(currentTeam()->id);
     }

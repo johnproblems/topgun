@@ -11,7 +11,7 @@ class SwitchTeam extends Component
 
     public function mount()
     {
-        $this->selectedTeamId = auth()->user()->currentTeam()->id;
+        $this->selectedTeamId = auth()?->user()?->currentTeam()?->id;
     }
 
     public function updatedSelectedTeamId()

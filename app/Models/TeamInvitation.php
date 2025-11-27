@@ -28,7 +28,10 @@ class TeamInvitation extends Model
         return $this->belongsTo(Team::class);
     }
 
-    public static function ownedByCurrentTeam()
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder<TeamInvitation>
+     */
+    public static function ownedByCurrentTeam(): \Illuminate\Database\Eloquent\Builder
     {
         return TeamInvitation::whereTeamId(currentTeam()->id);
     }

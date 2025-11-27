@@ -30,9 +30,15 @@ class Project extends BaseModel
 
     protected $guarded = [];
 
-    public static function ownedByCurrentTeam()
+    /**
+     * @param array<int, string> $select
+     * @return \Illuminate\Database\Eloquent\Builder<Project>
+     */
+    public static function ownedByCurrentTeam(array $select = ['*']): \Illuminate\Database\Eloquent\Builder
     {
-        return Project::whereTeamId(currentTeam()->id)->orderByRaw('LOWER(name)');
+        $selectArray = collect($select)->concat(['id']);
+
+        return Project::whereTeamId(currentTeam()->id)->select($selectArray->all())->orderByRaw('LOWER(name)');
     }
 
     protected static function booted()

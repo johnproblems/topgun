@@ -141,8 +141,8 @@ return [
     */
 
     'maintenance' => [
-        'driver' => 'cache',
-        'store' => 'redis',
+        'driver' => env('APP_MAINTENANCE_DRIVER', 'cache'),
+        'store' => env('APP_MAINTENANCE_STORE', 'redis'),
     ],
 
     /*
@@ -200,6 +200,7 @@ return [
         App\Providers\HorizonServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\ConfigurationServiceProvider::class,
+        App\Providers\LicensingServiceProvider::class,
     ],
 
     /*

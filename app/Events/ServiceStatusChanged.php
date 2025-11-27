@@ -16,8 +16,8 @@ class ServiceStatusChanged implements ShouldBroadcast
     public function __construct(
         public ?int $teamId = null
     ) {
-        if (is_null($this->teamId) && Auth::check() && Auth::user()->currentTeam()) {
-            $this->teamId = Auth::user()->currentTeam()->id;
+        if (is_null($this->teamId)) {
+            $this->teamId = Auth::user()?->currentTeam()?->id;
         }
     }
 

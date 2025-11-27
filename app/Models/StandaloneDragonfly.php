@@ -44,7 +44,10 @@ class StandaloneDragonfly extends BaseModel
         });
     }
 
-    public static function ownedByCurrentTeam()
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder<StandaloneDragonfly>
+     */
+    public static function ownedByCurrentTeam(): \Illuminate\Database\Eloquent\Builder
     {
         return StandaloneDragonfly::whereRelation('environment.project.team', 'id', currentTeam()->id)->orderBy('name');
     }

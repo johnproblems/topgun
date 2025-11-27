@@ -153,7 +153,10 @@ class Service extends BaseModel
         return $this->morphToMany(Tag::class, 'taggable');
     }
 
-    public static function ownedByCurrentTeam()
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder<Service>
+     */
+    public static function ownedByCurrentTeam(): \Illuminate\Database\Eloquent\Builder
     {
         return Service::whereRelation('environment.project.team', 'id', currentTeam()->id)->orderBy('name');
     }

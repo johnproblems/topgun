@@ -16,9 +16,7 @@ class TestEvent implements ShouldBroadcast
 
     public function __construct()
     {
-        if (auth()->check() && auth()->user()->currentTeam()) {
-            $this->teamId = auth()->user()->currentTeam()->id;
-        }
+        $this->teamId = auth()->user()?->currentTeam()?->id;
     }
 
     public function broadcastOn(): array
