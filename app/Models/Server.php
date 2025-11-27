@@ -254,7 +254,11 @@ class Server extends BaseModel
         return Server::ownedByCurrentTeam()->whereRelation('settings', 'is_reachable', true);
     }
 
-    public static function ownedByCurrentTeam(array $select = ['*'])
+    /**
+     * @param array<int, string> $select
+     * @return \Illuminate\Database\Eloquent\Builder<Server>
+     */
+    public static function ownedByCurrentTeam(array $select = ['*']): \Illuminate\Database\Eloquent\Builder
     {
         $teamId = currentTeam()->id;
         $selectArray = collect($select)->concat(['id']);

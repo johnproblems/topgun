@@ -32,12 +32,18 @@ class ServiceApplication extends BaseModel
         instant_remote_process(["docker restart {$container_id}"], $this->service->server);
     }
 
-    public static function ownedByCurrentTeamAPI(int $teamId)
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder<ServiceApplication>
+     */
+    public static function ownedByCurrentTeamAPI(int $teamId): \Illuminate\Database\Eloquent\Builder
     {
         return ServiceApplication::whereRelation('service.environment.project.team', 'id', $teamId)->orderBy('name');
     }
 
-    public static function ownedByCurrentTeam()
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder<ServiceApplication>
+     */
+    public static function ownedByCurrentTeam(): \Illuminate\Database\Eloquent\Builder
     {
         return ServiceApplication::whereRelation('service.environment.project.team', 'id', currentTeam()->id)->orderBy('name');
     }

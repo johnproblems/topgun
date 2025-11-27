@@ -333,12 +333,18 @@ class Application extends BaseModel
         return json_last_error() === JSON_ERROR_NONE;
     }
 
-    public static function ownedByCurrentTeamAPI(int $teamId)
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder<Application>
+     */
+    public static function ownedByCurrentTeamAPI(int $teamId): \Illuminate\Database\Eloquent\Builder
     {
         return Application::whereRelation('environment.project.team', 'id', $teamId)->orderBy('name');
     }
 
-    public static function ownedByCurrentTeam()
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder<Application>
+     */
+    public static function ownedByCurrentTeam(): \Illuminate\Database\Eloquent\Builder
     {
         return Application::whereRelation('environment.project.team', 'id', currentTeam()->id)->orderBy('name');
     }

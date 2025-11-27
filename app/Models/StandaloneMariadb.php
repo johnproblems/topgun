@@ -45,7 +45,10 @@ class StandaloneMariadb extends BaseModel
         });
     }
 
-    public static function ownedByCurrentTeam()
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder<StandaloneMariadb>
+     */
+    public static function ownedByCurrentTeam(): \Illuminate\Database\Eloquent\Builder
     {
         return StandaloneMariadb::whereRelation('environment.project.team', 'id', currentTeam()->id)->orderBy('name');
     }

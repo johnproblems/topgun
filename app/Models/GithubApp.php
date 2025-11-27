@@ -45,7 +45,10 @@ class GithubApp extends BaseModel
         });
     }
 
-    public static function ownedByCurrentTeam()
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder<GithubApp>
+     */
+    public static function ownedByCurrentTeam(): \Illuminate\Database\Eloquent\Builder
     {
         return GithubApp::where(function ($query) {
             $query->where('team_id', currentTeam()->id)

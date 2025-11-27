@@ -212,7 +212,7 @@ class TeamController extends Controller
             ),
         ]
     )]
-    public function current_team(Request $request)
+    public function current_team(Request $request): \Illuminate\Http\JsonResponse
     {
         $teamId = getTeamIdFromToken();
         if (is_null($teamId)) {

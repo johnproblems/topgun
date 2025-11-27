@@ -80,7 +80,11 @@ class PrivateKey extends BaseModel
         return self::extractPublicKeyFromPrivate($this->private_key) ?? 'Error loading private key';
     }
 
-    public static function ownedByCurrentTeam(array $select = ['*'])
+    /**
+     * @param array<int, string> $select
+     * @return \Illuminate\Database\Eloquent\Builder<PrivateKey>
+     */
+    public static function ownedByCurrentTeam(array $select = ['*']): \Illuminate\Database\Eloquent\Builder
     {
         $teamId = currentTeam()->id;
         $selectArray = collect($select)->concat(['id']);
