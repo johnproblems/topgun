@@ -1,55 +1,385 @@
 # CLAUDE.md
 
-This file provides guidance to **Claude Code** (claude.ai/code) when working with code in this repository.
-
-> **Note for AI Assistants**: This file is specifically for Claude Code. All detailed documentation is in the `.ai/` directory. Both Claude Code and Cursor IDE use the same source files in `.ai/` for consistency.
->
-> **Maintaining Instructions**: When updating AI instructions, see [.ai/meta/sync-guide.md](.ai/meta/sync-guide.md) and [.ai/meta/maintaining-docs.md](.ai/meta/maintaining-docs.md) for guidelines.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
 
-Coolify is an open-source, self-hostable platform for deploying applications and managing servers - an alternative to Heroku/Netlify/Vercel. It's built with Laravel (PHP) and uses Docker for containerization.
+This is a **Coolify Enterprise Transformation Project** - transforming the existing Coolify fork into a comprehensive enterprise-grade cloud deployment and management platform. This is NOT standard Coolify development but a major architectural transformation.
+
+### Key Transformation Goals
+
+1. **Multi-Tenant Organization Hierarchy**: Replace team-based architecture with hierarchical organizations (Top Branch → Master Branch → Sub-Users → End Users)
+2. **Terraform + Coolify Hybrid**: Use Terraform for infrastructure provisioning while preserving Coolify's application deployment excellence
+3. **Enterprise Features**: Add licensing, payment processing, white-label branding, domain management
+4. **Vue.js + Inertia.js Frontend**: Modern reactive frontend alongside existing Livewire components
+5. **Real-time Resource Management**: Advanced capacity planning, build server optimization, organization quotas
+
+## Development Context
+
+### Project Status
+- **Tasks 1-2 Completed**: Foundation setup (organizations, database schema) and licensing system
+- **Current Focus**: Tasks 3+ (white-label branding, Terraform integration, payment processing)
+- **Architecture**: Laravel 12 + Vue.js 3 + Inertia.js + existing Livewire components
+
+### Key Reference Documents
+- **Requirements**: `.kiro/specs/coolify-enterprise-transformation/requirements.md`
+- **Design**: `.kiro/specs/coolify-enterprise-transformation/design.md`
+- **Implementation Plan**: `.kiro/specs/coolify-enterprise-transformation/tasks.md`
+- **Architecture Guide**: `.kiro/steering/application-architecture.md`
+
+## Technology Stack
+
+### Backend (Enhanced)
+- **Laravel 12** - Core framework (existing)
+- **PostgreSQL 15** - Primary database (existing)
+- **Redis 7** - Caching/queues (existing)
+- **New Enterprise Services**: LicensingService, TerraformService, PaymentService, WhiteLabelService
+
+### Frontend (Hybrid)
+- **Livewire 3.6** - Server-side components (existing)
+- **Vue.js 3.5** + **Inertia.js** - New reactive components for enterprise features
+- **Alpine.js** - Client-side interactivity (existing)
+- **Tailwind CSS 4.1** - Utility-first styling (existing)
+
+### Enterprise Infrastructure
+- **Terraform** - Cloud infrastructure provisioning (NEW)
+- **Multi-Cloud Support** - AWS, GCP, Azure, DigitalOcean, Hetzner (NEW)
+- **Docker** - Container orchestration (existing, enhanced)
 
 ## Development Commands
 
-### Frontend Development
-- `npm run dev` - Start Vite development server for frontend assets
-- `npm run build` - Build frontend assets for production
+### Setup (Enterprise Fork)
+```bash
+# Standard Laravel setup
+composer install
+npm install
+php artisan key:generate
 
-### Backend Development
-Only run artisan commands inside "coolify" container when in development.
-- `php artisan serve` - Start Laravel development server
-- `php artisan migrate` - Run database migrations
-- `php artisan queue:work` - Start queue worker for background jobs
-- `php artisan horizon` - Start Laravel Horizon for queue monitoring
-- `php artisan tinker` - Start interactive PHP REPL
+# Run enterprise migrations
+php artisan migrate
+
+# Seed enterprise data
+php artisan db:seed --class=EnterpriseSeeder
+
+# Build Vue.js components
+npm run dev
+
+# Start services
+php artisan serve
+php artisan queue:work
+php artisan reverb:start # WebSockets
+```
 
 ### Code Quality
-- `./vendor/bin/pint` - Run Laravel Pint for code formatting
-- `./vendor/bin/phpstan` - Run PHPStan for static analysis
-- `./vendor/bin/pest tests/Unit` - Run unit tests only (no database, can run outside Docker)
-- `./vendor/bin/pest` - Run ALL tests (includes Feature tests, may require database)
+```bash
+# PHP formatting and analysis
+./vendor/bin/pint
+./vendor/bin/phpstan analyse
+./vendor/bin/rector process --dry-run
 
-### Running Tests
-**IMPORTANT**: Tests that require database connections MUST be run inside the Docker container:
-- **Inside Docker**: `docker exec coolify php artisan test` (for feature tests requiring database)
-- **Outside Docker**: `./vendor/bin/pest tests/Unit` (for pure unit tests without database dependencies)
-- Unit tests should use mocking and avoid database connections
-- Feature tests that require database must be run in the `coolify` container
+# Run tests
+./vendor/bin/pest
+./vendor/bin/pest --coverage
+```
+
+### Vue.js Development
+```bash
+# Vue component development
+npm run dev # Hot reload
+npm run build # Production build
+
+# Vue component testing
+npm run test # If configured
+```
 
 ## Architecture Overview
 
-### Technology Stack
-- **Backend**: Laravel 12.4.1 (PHP 8.4.7)
-- **Frontend**: Livewire 3.5.20 with Alpine.js and Tailwind CSS 4.1.4
-- **Database**: PostgreSQL 15 (primary), Redis 7 (cache/queues)
-- **Real-time**: Soketi (WebSocket server)
-- **Containerization**: Docker & Docker Compose
-- **Queue Management**: Laravel Horizon 5.30.3
+### Core Enterprise Models (NEW)
+- **Organization**: Hierarchical multi-tenant structure
+- **EnterpriseLicense**: Feature flags and usage limits
+- **CloudProviderCredential**: Encrypted cloud API keys
+- **TerraformDeployment**: Infrastructure provisioning state
+- **WhiteLabelConfig**: Branding and customization
+- **OrganizationResourceUsage**: Resource monitoring and quotas
 
-> **Note**: For complete version information and all dependencies, see [.ai/core/technology-stack.md](.ai/core/technology-stack.md)
+### Enhanced Existing Models
+- **User**: Extended with organization relationships
+- **Server**: Enhanced with Terraform integration
+- **Application**: Enhanced with capacity-aware deployment
+- **Team**: Migrated to organization hierarchy
 
-### Key Components
+### Service Layer (NEW)
+```php
+// Core enterprise services
+app/Services/Enterprise/
+├── LicensingService.php        # License validation and management
+├── TerraformService.php        # Infrastructure provisioning
+├── PaymentService.php          # Multi-gateway payment processing
+├── WhiteLabelService.php       # Branding and customization
+├── OrganizationService.php     # Hierarchy management
+├── CapacityManager.php         # Resource allocation
+└── SystemResourceMonitor.php   # Real-time monitoring
+```
+
+### Frontend Architecture (Hybrid)
+
+#### Livewire Components (Existing)
+- Core application management
+- Server monitoring
+- Deployment workflows
+
+#### Vue.js Components (NEW)
+```
+resources/js/Components/Enterprise/
+├── Organization/
+│   ├── OrganizationManager.vue
+│   ├── OrganizationHierarchy.vue
+│   └── OrganizationSwitcher.vue
+├── License/
+│   ├── LicenseManager.vue
+│   ├── UsageMonitoring.vue
+│   └── FeatureToggles.vue
+├── Infrastructure/
+│   ├── TerraformManager.vue
+│   └── CloudProviderCredentials.vue
+└── WhiteLabel/
+    ├── BrandingManager.vue
+    └── ThemeCustomizer.vue
+```
+
+## Database Schema (Enhanced)
+
+### Enterprise Tables (NEW)
+- `organizations` - Hierarchical organization structure
+- `organization_users` - User-organization relationships with roles
+- `enterprise_licenses` - License management with feature flags
+- `white_label_configs` - Branding configuration
+- `cloud_provider_credentials` - Encrypted cloud API keys
+- `terraform_deployments` - Infrastructure provisioning tracking
+- `server_resource_metrics` - Real-time resource monitoring
+- `organization_resource_usage` - Organization-level resource quotas
+
+### Enhanced Existing Tables
+- Extended `users` table with organization relationships
+- Enhanced `servers` table with Terraform integration
+- Modified foreign keys to support organization hierarchy
+
+## Development Patterns
+
+### Enterprise Service Pattern
+```php
+class LicensingService implements LicensingServiceInterface
+{
+    public function validateLicense(string $licenseKey, string $domain = null): LicenseValidationResult
+    {
+        // License validation with domain checking
+        // Usage limit enforcement
+        // Feature flag validation
+    }
+}
+```
+
+### Vue.js + Inertia.js Pattern
+```php
+// Controller
+class OrganizationController extends Controller
+{
+    public function index()
+    {
+        return Inertia::render('Enterprise/Organization/Index', [
+            'organizations' => auth()->user()->organizations,
+            'permissions' => auth()->user()->getAllPermissions(),
+        ]);
+    }
+}
+```
+
+```vue
+<!-- Vue Component -->
+<template>
+  <div class="organization-manager">
+    <OrganizationHierarchy
+      :organizations="organizations"
+      @organization-selected="handleOrganizationSelect"
+    />
+  </div>
+</template>
+
+<script setup>
+import { defineProps, defineEmits } from 'vue'
+import OrganizationHierarchy from './OrganizationHierarchy.vue'
+
+const props = defineProps(['organizations', 'permissions'])
+const emit = defineEmits(['organization-selected'])
+</script>
+```
+
+### Resource Management Pattern
+```php
+class CapacityManager implements CapacityManagerInterface
+{
+    public function canServerHandleDeployment(Server $server, Application $app): bool
+    {
+        // Check CPU, memory, disk capacity
+        // Consider current resource usage
+        // Apply capacity buffers and safety margins
+    }
+
+    public function selectOptimalServer(Collection $servers, array $requirements): ?Server
+    {
+        // Score servers based on capacity and load
+        // Select best-fit server for deployment
+    }
+}
+```
+
+## Key Implementation Areas
+
+### 1. Organization Hierarchy
+- Multi-level organization structure
+- Role-based access control per organization
+- Resource isolation and quota enforcement
+- Cross-organization resource sharing
+
+### 2. Licensing System ✅ COMPLETED
+- License key generation and validation
+- Feature flag enforcement
+- Usage limit tracking
+- Domain-based authorization
+
+### 3. Terraform Integration (IN PROGRESS)
+- Cloud provider credential management
+- Infrastructure provisioning via Terraform
+- Server registration with Coolify post-provisioning
+- Multi-cloud support (AWS, GCP, Azure, etc.)
+
+### 4. Resource Management (IN PROGRESS)
+- Real-time resource monitoring
+- Capacity-aware deployment decisions
+- Build server load balancing
+- Organization resource quotas
+
+### 5. Payment Processing
+- Multi-gateway support (Stripe, PayPal, etc.)
+- Subscription management
+- Usage-based billing
+- Payment-triggered resource provisioning
+
+### 6. White-Label Branding
+- Custom branding per organization
+- Dynamic theme configuration
+- Custom domain support
+- Branded email templates
+
+## Testing Strategy
+
+### Enterprise Test Structure
+```
+tests/
+├── Enterprise/
+│   ├── Feature/
+│   │   ├── OrganizationManagementTest.php
+│   │   ├── LicensingWorkflowTest.php
+│   │   └── TerraformIntegrationTest.php
+│   ├── Unit/
+│   │   ├── LicensingServiceTest.php
+│   │   ├── CapacityManagerTest.php
+│   │   └── PaymentServiceTest.php
+│   └── Browser/
+│       ├── OrganizationManagementTest.php
+│       └── LicenseManagementTest.php
+```
+
+### Testing Patterns
+- Mock external services (Terraform, payment gateways)
+- Test organization hierarchy and permissions
+- Validate license enforcement across features
+- Test resource capacity calculations
+- Browser tests for Vue.js components
+
+## Common Development Tasks
+
+### Adding New Enterprise Features
+1. Create service interface and implementation
+2. Add database migrations if needed
+3. Create Vue.js components for UI
+4. Add Inertia.js routes and controllers
+5. Write comprehensive tests
+6. Update license feature flags
+
+### Working with Vue.js Components
+1. Components located in `resources/js/Components/Enterprise/`
+2. Use Inertia.js for server communication
+3. Follow existing component patterns
+4. Build with `npm run dev` or `npm run build`
+
+### Enterprise Service Development
+1. Create interface in `app/Contracts/`
+2. Implement service in `app/Services/Enterprise/`
+3. Register in service provider
+4. Add comprehensive error handling
+5. Create unit and integration tests
+
+## Security Considerations
+
+### Data Isolation
+- Organization-based data scoping
+- Encrypted sensitive data (API keys, credentials)
+- Role-based access control
+- Audit logging for all actions
+
+### API Security
+- Sanctum token authentication
+- Rate limiting per organization tier
+- Request validation and sanitization
+- CORS configuration for enterprise domains
+
+## Performance Guidelines
+
+### Database Optimization
+- Organization-scoped queries with proper indexing
+- Eager loading for complex relationships
+- Efficient resource usage calculations
+- Proper caching for license validations
+
+### Frontend Performance
+- Vue.js component lazy loading
+- Efficient WebSocket connections
+- Resource monitoring data pagination
+- Optimized asset loading
+
+## Deployment Considerations
+
+### Environment Variables
+```bash
+# Enterprise-specific configuration
+TERRAFORM_BINARY_PATH=/usr/local/bin/terraform
+PAYMENT_STRIPE_SECRET_KEY=sk_test_...
+PAYMENT_PAYPAL_CLIENT_ID=...
+LICENSE_ENCRYPTION_KEY=...
+ORGANIZATION_DEFAULT_QUOTAS=...
+```
+
+### Required Services
+- PostgreSQL 15+ (primary database)
+- Redis 7+ (caching, queues, sessions)
+- Terraform (infrastructure provisioning)
+- Docker (container management)
+- WebSocket server (real-time features)
+
+This is a major architectural transformation preserving Coolify's deployment excellence while adding comprehensive enterprise features. Focus on maintaining existing functionality while carefully implementing the new organizational hierarchy and enterprise capabilities.
+
+---
+
+# Upstream Coolify Development Guidelines
+
+The following sections contain the standard Coolify development patterns and practices. When working on core Coolify functionality (non-enterprise features), follow these guidelines.
+
+## Coolify Overview
+
+Coolify is an open-source, self-hostable platform for deploying applications and managing servers - an alternative to Heroku/Netlify/Vercel. It's built with Laravel (PHP) and uses Docker for containerization.
+
+### Core Components
 
 #### Core Models
 - `Application` - Deployed applications with Git integration (74KB, highly complex)
@@ -129,12 +459,12 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 class MyComponent extends Component
 {
     use AuthorizesRequests;
-    
+
     public function mount()
     {
         $this->authorize('view', $this->resource);
     }
-    
+
     public function update()
     {
         $this->authorize('update', $this->resource);
@@ -149,7 +479,6 @@ class MyComponent extends Component
 - State management handled on the server
 - Use wire:model for two-way data binding
 - Dispatch events for component communication
-- **CRITICAL**: Livewire component views **MUST** have exactly ONE root element. ALL content must be contained within this single root element. Placing ANY elements (`<style>`, `<script>`, `<div>`, comments, or any other HTML) outside the root element will break Livewire's component tracking and cause `wire:click` and other directives to fail silently.
 
 ### Code Organization Patterns
 - **Actions Pattern**: Use Actions for complex business logic (`app/Actions/`)
@@ -164,7 +493,6 @@ class MyComponent extends Component
 - Use database transactions for critical operations
 - Leverage query scopes for reusable queries
 - Apply indexes for performance-critical queries
-- **CRITICAL**: When adding new database columns, ALWAYS update the model's `$fillable` array to allow mass assignment
 
 ### Security Best Practices
 - **Authentication**: Multi-provider auth via Laravel Fortify & Sanctum
@@ -188,21 +516,6 @@ class MyComponent extends Component
 - **Coverage**: Test critical paths and edge cases
 - **Mocking**: Use Laravel's built-in mocking for external services
 - **Database**: Use RefreshDatabase trait for test isolation
-
-#### Test Execution Environment
-**CRITICAL**: Database-dependent tests MUST run inside Docker container:
-- **Unit Tests** (`tests/Unit/`): Should NOT use database. Use mocking. Run with `./vendor/bin/pest tests/Unit`
-- **Feature Tests** (`tests/Feature/`): May use database. MUST run inside Docker with `docker exec coolify php artisan test`
-- If a test needs database (factories, migrations, etc.), it belongs in `tests/Feature/`
-- Always mock external services and SSH connections in tests
-
-#### Test Design Philosophy
-**PREFER MOCKING**: When designing features and writing tests:
-- **Design for testability**: Structure code so it can be tested without database (use dependency injection, interfaces)
-- **Mock by default**: Unit tests should mock models and external dependencies using Mockery
-- **Avoid database when possible**: If you can test the logic without database, write it as a Unit test
-- **Only use database when necessary**: Feature tests should test integration points, not isolated logic
-- **Example**: Instead of `Server::factory()->create()`, use `Mockery::mock('App\Models\Server')` in unit tests
 
 ### Routing Conventions
 - Group routes by middleware and prefix
@@ -256,65 +569,431 @@ When developing features:
 - Maintain backward compatibility
 - Document breaking changes
 - Consider performance impact on large-scale deployments
+- App\Models\Application::team must return a relationship instance., always use team()
 
 ## Additional Documentation
 
-This file contains high-level guidelines for Claude Code. For **more detailed, topic-specific documentation**, refer to the `.ai/` directory:
+For more detailed guidelines and patterns, refer to the `.cursor/rules/` directory:
 
-> **Documentation Hub**: The `.ai/` directory contains comprehensive, detailed documentation organized by topic. Start with [.ai/README.md](.ai/README.md) for navigation, then explore specific topics below.
+### Architecture & Patterns
+- [Application Architecture](.cursor/rules/application-architecture.mdc) - Detailed application structure
+- [Deployment Architecture](.cursor/rules/deployment-architecture.mdc) - Deployment patterns and flows
+- [Database Patterns](.cursor/rules/database-patterns.mdc) - Database design and query patterns
+- [Frontend Patterns](.cursor/rules/frontend-patterns.mdc) - Livewire and Alpine.js patterns
+- [API & Routing](.cursor/rules/api-and-routing.mdc) - API design and routing conventions
 
-### Core Documentation
-- [Technology Stack](.ai/core/technology-stack.md) - All versions, packages, and dependencies (single source of truth)
-- [Project Overview](.ai/core/project-overview.md) - What Coolify is and how it works
-- [Application Architecture](.ai/core/application-architecture.md) - System design and component relationships
-- [Deployment Architecture](.ai/core/deployment-architecture.md) - How deployments work end-to-end
+### Development & Security
+- [Development Workflow](.cursor/rules/development-workflow.mdc) - Development best practices
+- [Security Patterns](.cursor/rules/security-patterns.mdc) - Security implementation details
+- [Form Components](.cursor/rules/form-components.mdc) - Enhanced form components with authorization
+- [Testing Patterns](.cursor/rules/testing-patterns.mdc) - Testing strategies and examples
 
-### Development Practices
-- [Development Workflow](.ai/development/development-workflow.md) - Development setup, commands, and workflows
-- [Testing Patterns](.ai/development/testing-patterns.md) - Testing strategies and examples (Docker requirements!)
-- [Laravel Boost](.ai/development/laravel-boost.md) - Laravel-specific guidelines and best practices
+### Project Information
+- [Project Overview](.cursor/rules/project-overview.mdc) - High-level project structure
+- [Technology Stack](.cursor/rules/technology-stack.mdc) - Detailed tech stack information
+- [Cursor Rules Guide](.cursor/rules/cursor_rules.mdc) - How to maintain cursor rules
 
-### Code Patterns
-- [Database Patterns](.ai/patterns/database-patterns.md) - Eloquent, migrations, relationships
-- [Frontend Patterns](.ai/patterns/frontend-patterns.md) - Livewire, Alpine.js, Tailwind CSS
-- [Security Patterns](.ai/patterns/security-patterns.md) - Authentication, authorization, security
-- [Form Components](.ai/patterns/form-components.md) - Enhanced form components with authorization
-- [API & Routing](.ai/patterns/api-and-routing.md) - API design and routing conventions
+===
 
-### Meta Documentation
-- [Maintaining Docs](.ai/meta/maintaining-docs.md) - How to update and improve AI documentation
-- [Sync Guide](.ai/meta/sync-guide.md) - Keeping documentation synchronized
+<laravel-boost-guidelines>
+=== foundation rules ===
 
-## Laravel Boost Guidelines
+# Laravel Boost Guidelines
 
-> **Full Guidelines**: See [.ai/development/laravel-boost.md](.ai/development/laravel-boost.md) for complete Laravel Boost guidelines.
+The Laravel Boost guidelines are specifically curated by Laravel maintainers for this application. These guidelines should be followed closely to enhance the user's satisfaction building Laravel applications.
 
-### Essential Laravel Patterns
+## Foundational Context
+This application is a Laravel application and its main Laravel ecosystems package & versions are below. You are an expert with them all. Ensure you abide by these specific packages & versions.
 
-- Use PHP 8.4 constructor property promotion and typed properties
-- Follow PSR-12 (run `./vendor/bin/pint` before committing)
-- Use Eloquent ORM, avoid raw queries
-- Use Form Request classes for validation
-- Queue heavy operations with Laravel Horizon
-- Never use `env()` outside config files
-- Use named routes with `route()` function
-- Laravel 12 with Laravel 10 structure (no bootstrap/app.php)
-
-### Testing Requirements
-
-- **Unit tests**: No database, use mocking, run with `./vendor/bin/pest tests/Unit`
-- **Feature tests**: Can use database, run with `docker exec coolify php artisan test`
-- Every change must have tests
-- Use Pest for all tests
-
-### Livewire & Frontend
-
-- Livewire components require single root element
-- Use `wire:model.live` for real-time updates
-- Alpine.js included with Livewire
-- Tailwind CSS 4.1.4 (use new utilities, not deprecated ones)
-- Use `gap` utilities for spacing, not margins
+- php - 8.4.7
+- laravel/fortify (FORTIFY) - v1
+- laravel/framework (LARAVEL) - v12
+- laravel/horizon (HORIZON) - v5
+- laravel/prompts (PROMPTS) - v0
+- laravel/sanctum (SANCTUM) - v4
+- laravel/socialite (SOCIALITE) - v5
+- livewire/livewire (LIVEWIRE) - v3
+- laravel/dusk (DUSK) - v8
+- laravel/pint (PINT) - v1
+- laravel/telescope (TELESCOPE) - v5
+- pestphp/pest (PEST) - v3
+- phpunit/phpunit (PHPUNIT) - v11
+- rector/rector (RECTOR) - v2
+- laravel-echo (ECHO) - v2
+- tailwindcss (TAILWINDCSS) - v4
+- vue (VUE) - v3
 
 
-Random other things you should remember:
-- App\Models\Application::team must return a relationship instance., always use team()
+## Conventions
+- You must follow all existing code conventions used in this application. When creating or editing a file, check sibling files for the correct structure, approach, naming.
+- Use descriptive names for variables and methods. For example, `isRegisteredForDiscounts`, not `discount()`.
+- Check for existing components to reuse before writing a new one.
+
+## Verification Scripts
+- Do not create verification scripts or tinker when tests cover that functionality and prove it works. Unit and feature tests are more important.
+
+## Application Structure & Architecture
+- Stick to existing directory structure - don't create new base folders without approval.
+- Do not change the application's dependencies without approval.
+
+## Frontend Bundling
+- If the user doesn't see a frontend change reflected in the UI, it could mean they need to run `npm run build`, `npm run dev`, or `composer run dev`. Ask them.
+
+## Replies
+- Be concise in your explanations - focus on what's important rather than explaining obvious details.
+
+## Documentation Files
+- You must only create documentation files if explicitly requested by the user.
+
+
+=== boost rules ===
+
+## Laravel Boost
+- Laravel Boost is an MCP server that comes with powerful tools designed specifically for this application. Use them.
+
+## Artisan
+- Use the `list-artisan-commands` tool when you need to call an Artisan command to double check the available parameters.
+
+## URLs
+- Whenever you share a project URL with the user you should use the `get-absolute-url` tool to ensure you're using the correct scheme, domain / IP, and port.
+
+## Tinker / Debugging
+- You should use the `tinker` tool when you need to execute PHP to debug code or query Eloquent models directly.
+- Use the `database-query` tool when you only need to read from the database.
+
+## Reading Browser Logs With the `browser-logs` Tool
+- You can read browser logs, errors, and exceptions using the `browser-logs` tool from Boost.
+- Only recent browser logs will be useful - ignore old logs.
+
+## Searching Documentation (Critically Important)
+- Boost comes with a powerful `search-docs` tool you should use before any other approaches. This tool automatically passes a list of installed packages and their versions to the remote Boost API, so it returns only version-specific documentation specific for the user's circumstance. You should pass an array of packages to filter on if you know you need docs for particular packages.
+- The 'search-docs' tool is perfect for all Laravel related packages, including Laravel, Inertia, Livewire, Filament, Tailwind, Pest, Nova, Nightwatch, etc.
+- You must use this tool to search for Laravel-ecosystem documentation before falling back to other approaches.
+- Search the documentation before making code changes to ensure we are taking the correct approach.
+- Use multiple, broad, simple, topic based queries to start. For example: `['rate limiting', 'routing rate limiting', 'routing']`.
+- Do not add package names to queries - package information is already shared. For example, use `test resource table`, not `filament 4 test resource table`.
+
+### Available Search Syntax
+- You can and should pass multiple queries at once. The most relevant results will be returned first.
+
+1. Simple Word Searches with auto-stemming - query=authentication - finds 'authenticate' and 'auth'
+2. Multiple Words (AND Logic) - query=rate limit - finds knowledge containing both "rate" AND "limit"
+3. Quoted Phrases (Exact Position) - query="infinite scroll" - Words must be adjacent and in that order
+4. Mixed Queries - query=middleware "rate limit" - "middleware" AND exact phrase "rate limit"
+5. Multiple Queries - queries=["authentication", "middleware"] - ANY of these terms
+
+
+=== php rules ===
+
+## PHP
+
+- Always use curly braces for control structures, even if it has one line.
+
+### Constructors
+- Use PHP 8 constructor property promotion in `__construct()`.
+    - <code-snippet>public function __construct(public GitHub $github) { }</code-snippet>
+- Do not allow empty `__construct()` methods with zero parameters.
+
+### Type Declarations
+- Always use explicit return type declarations for methods and functions.
+- Use appropriate PHP type hints for method parameters.
+
+<code-snippet name="Explicit Return Types and Method Params" lang="php">
+protected function isAccessible(User $user, ?string $path = null): bool
+{
+    ...
+}
+</code-snippet>
+
+## Comments
+- Prefer PHPDoc blocks over comments. Never use comments within the code itself unless there is something _very_ complex going on.
+
+## PHPDoc Blocks
+- Add useful array shape type definitions for arrays when appropriate.
+
+## Enums
+- Typically, keys in an Enum should be TitleCase. For example: `FavoritePerson`, `BestLake`, `Monthly`.
+
+
+=== laravel/core rules ===
+
+## Do Things the Laravel Way
+
+- Use `php artisan make:` commands to create new files (i.e. migrations, controllers, models, etc.). You can list available Artisan commands using the `list-artisan-commands` tool.
+- If you're creating a generic PHP class, use `artisan make:class`.
+- Pass `--no-interaction` to all Artisan commands to ensure they work without user input. You should also pass the correct `--options` to ensure correct behavior.
+
+### Database
+- Always use proper Eloquent relationship methods with return type hints. Prefer relationship methods over raw queries or manual joins.
+- Use Eloquent models and relationships before suggesting raw database queries
+- Avoid `DB::`; prefer `Model::query()`. Generate code that leverages Laravel's ORM capabilities rather than bypassing them.
+- Generate code that prevents N+1 query problems by using eager loading.
+- Use Laravel's query builder for very complex database operations.
+
+### Model Creation
+- When creating new models, create useful factories and seeders for them too. Ask the user if they need any other things, using `list-artisan-commands` to check the available options to `php artisan make:model`.
+
+### APIs & Eloquent Resources
+- For APIs, default to using Eloquent API Resources and API versioning unless existing API routes do not, then you should follow existing application convention.
+
+### Controllers & Validation
+- Always create Form Request classes for validation rather than inline validation in controllers. Include both validation rules and custom error messages.
+- Check sibling Form Requests to see if the application uses array or string based validation rules.
+
+### Queues
+- Use queued jobs for time-consuming operations with the `ShouldQueue` interface.
+
+### Authentication & Authorization
+- Use Laravel's built-in authentication and authorization features (gates, policies, Sanctum, etc.).
+
+### URL Generation
+- When generating links to other pages, prefer named routes and the `route()` function.
+
+### Configuration
+- Use environment variables only in configuration files - never use the `env()` function directly outside of config files. Always use `config('app.name')`, not `env('APP_NAME')`.
+
+### Testing
+- When creating models for tests, use the factories for the models. Check if the factory has custom states that can be used before manually setting up the model.
+- Faker: Use methods such as `$this->faker->word()` or `fake()->randomDigit()`. Follow existing conventions whether to use `$this->faker` or `fake()`.
+- When creating tests, make use of `php artisan make:test [options] <name>` to create a feature test, and pass `--unit` to create a unit test. Most tests should be feature tests.
+
+### Vite Error
+- If you receive an "Illuminate\Foundation\ViteException: Unable to locate file in Vite manifest" error, you can run `npm run build` or ask the user to run `npm run dev` or `composer run dev`.
+
+
+=== laravel/v12 rules ===
+
+## Laravel 12
+
+- Use the `search-docs` tool to get version specific documentation.
+- This project upgraded from Laravel 10 without migrating to the new streamlined Laravel file structure.
+- This is **perfectly fine** and recommended by Laravel. Follow the existing structure from Laravel 10. We do not to need migrate to the new Laravel structure unless the user explicitly requests that.
+
+### Laravel 10 Structure
+- Middleware typically lives in `app/Http/Middleware/` and service providers in `app/Providers/`.
+- There is no `bootstrap/app.php` application configuration in a Laravel 10 structure:
+    - Middleware registration happens in `app/Http/Kernel.php`
+    - Exception handling is in `app/Exceptions/Handler.php`
+    - Console commands and schedule register in `app/Console/Kernel.php`
+    - Rate limits likely exist in `RouteServiceProvider` or `app/Http/Kernel.php`
+
+### Database
+- When modifying a column, the migration must include all of the attributes that were previously defined on the column. Otherwise, they will be dropped and lost.
+- Laravel 11 allows limiting eagerly loaded records natively, without external packages: `$query->latest()->limit(10);`.
+
+### Models
+- Casts can and likely should be set in a `casts()` method on a model rather than the `$casts` property. Follow existing conventions from other models.
+
+
+=== livewire/core rules ===
+
+## Livewire Core
+- Use the `search-docs` tool to find exact version specific documentation for how to write Livewire & Livewire tests.
+- Use the `php artisan make:livewire [Posts\\CreatePost]` artisan command to create new components
+- State should live on the server, with the UI reflecting it.
+- All Livewire requests hit the Laravel backend, they're like regular HTTP requests. Always validate form data, and run authorization checks in Livewire actions.
+
+## Livewire Best Practices
+- Livewire components require a single root element.
+- Use `wire:loading` and `wire:dirty` for delightful loading states.
+- Add `wire:key` in loops:
+
+    ```blade
+    @foreach ($items as $item)
+        <div wire:key="item-{{ $item->id }}">
+            {{ $item->name }}
+        </div>
+    @endforeach
+    ```
+
+- Prefer lifecycle hooks like `mount()`, `updatedFoo()`) for initialization and reactive side effects:
+
+<code-snippet name="Lifecycle hook examples" lang="php">
+    public function mount(User $user) { $this->user = $user; }
+    public function updatedSearch() { $this->resetPage(); }
+</code-snippet>
+
+
+## Testing Livewire
+
+<code-snippet name="Example Livewire component test" lang="php">
+    Livewire::test(Counter::class)
+        ->assertSet('count', 0)
+        ->call('increment')
+        ->assertSet('count', 1)
+        ->assertSee(1)
+        ->assertStatus(200);
+</code-snippet>
+
+
+    <code-snippet name="Testing a Livewire component exists within a page" lang="php">
+        $this->get('/posts/create')
+        ->assertSeeLivewire(CreatePost::class);
+    </code-snippet>
+
+
+=== livewire/v3 rules ===
+
+## Livewire 3
+
+### Key Changes From Livewire 2
+- These things changed in Livewire 2, but may not have been updated in this application. Verify this application's setup to ensure you conform with application conventions.
+    - Use `wire:model.live` for real-time updates, `wire:model` is now deferred by default.
+    - Components now use the `App\Livewire` namespace (not `App\Http\Livewire`).
+    - Use `$this->dispatch()` to dispatch events (not `emit` or `dispatchBrowserEvent`).
+    - Use the `components.layouts.app` view as the typical layout path (not `layouts.app`).
+
+### New Directives
+- `wire:show`, `wire:transition`, `wire:cloak`, `wire:offline`, `wire:target` are available for use. Use the documentation to find usage examples.
+
+### Alpine
+- Alpine is now included with Livewire, don't manually include Alpine.js.
+- Plugins included with Alpine: persist, intersect, collapse, and focus.
+
+### Lifecycle Hooks
+- You can listen for `livewire:init` to hook into Livewire initialization, and `fail.status === 419` for the page expiring:
+
+<code-snippet name="livewire:load example" lang="js">
+document.addEventListener('livewire:init', function () {
+    Livewire.hook('request', ({ fail }) => {
+        if (fail && fail.status === 419) {
+            alert('Your session expired');
+        }
+    });
+
+    Livewire.hook('message.failed', (message, component) => {
+        console.error(message);
+    });
+});
+</code-snippet>
+
+
+=== pint/core rules ===
+
+## Laravel Pint Code Formatter
+
+- You must run `vendor/bin/pint --dirty` before finalizing changes to ensure your code matches the project's expected style.
+- Do not run `vendor/bin/pint --test`, simply run `vendor/bin/pint` to fix any formatting issues.
+
+
+=== pest/core rules ===
+
+## Pest
+
+### Testing
+- If you need to verify a feature is working, write or update a Unit / Feature test.
+
+### Pest Tests
+- All tests must be written using Pest. Use `php artisan make:test --pest <name>`.
+- You must not remove any tests or test files from the tests directory without approval. These are not temporary or helper files - these are core to the application.
+- Tests should test all of the happy paths, failure paths, and weird paths.
+- Tests live in the `tests/Feature` and `tests/Unit` directories.
+- Pest tests look and behave like this:
+<code-snippet name="Basic Pest Test Example" lang="php">
+it('is true', function () {
+    expect(true)->toBeTrue();
+});
+</code-snippet>
+
+### Running Tests
+- Run the minimal number of tests using an appropriate filter before finalizing code edits.
+- To run all tests: `php artisan test`.
+- To run all tests in a file: `php artisan test tests/Feature/ExampleTest.php`.
+- To filter on a particular test name: `php artisan test --filter=testName` (recommended after making a change to a related file).
+- When the tests relating to your changes are passing, ask the user if they would like to run the entire test suite to ensure everything is still passing.
+
+### Pest Assertions
+- When asserting status codes on a response, use the specific method like `assertForbidden` and `assertNotFound` instead of using `assertStatus(403)` or similar, e.g.:
+<code-snippet name="Pest Example Asserting postJson Response" lang="php">
+it('returns all', function () {
+    $response = $this->postJson('/api/docs', []);
+
+    $response->assertSuccessful();
+});
+</code-snippet>
+
+### Mocking
+- Mocking can be very helpful when appropriate.
+- When mocking, you can use the `Pest\Laravel\mock` Pest function, but always import it via `use function Pest\Laravel\mock;` before using it. Alternatively, you can use `$this->mock()` if existing tests do.
+- You can also create partial mocks using the same import or self method.
+
+### Datasets
+- Use datasets in Pest to simplify tests which have a lot of duplicated data. This is often the case when testing validation rules, so consider going with this solution when writing tests for validation rules.
+
+<code-snippet name="Pest Dataset Example" lang="php">
+it('has emails', function (string $email) {
+    expect($email)->not->toBeEmpty();
+})->with([
+    'james' => 'james@laravel.com',
+    'taylor' => 'taylor@laravel.com',
+]);
+</code-snippet>
+
+
+=== tailwindcss/core rules ===
+
+## Tailwind Core
+
+- Use Tailwind CSS classes to style HTML, check and use existing tailwind conventions within the project before writing your own.
+- Offer to extract repeated patterns into components that match the project's conventions (i.e. Blade, JSX, Vue, etc..)
+- Think through class placement, order, priority, and defaults - remove redundant classes, add classes to parent or child carefully to limit repetition, group elements logically
+- You can use the `search-docs` tool to get exact examples from the official documentation when needed.
+
+### Spacing
+- When listing items, use gap utilities for spacing, don't use margins.
+
+    <code-snippet name="Valid Flex Gap Spacing Example" lang="html">
+        <div class="flex gap-8">
+            <div>Superior</div>
+            <div>Michigan</div>
+            <div>Erie</div>
+        </div>
+    </code-snippet>
+
+
+### Dark Mode
+- If existing pages and components support dark mode, new pages and components must support dark mode in a similar way, typically using `dark:`.
+
+
+=== tailwindcss/v4 rules ===
+
+## Tailwind 4
+
+- Always use Tailwind CSS v4 - do not use the deprecated utilities.
+- `corePlugins` is not supported in Tailwind v4.
+- In Tailwind v4, you import Tailwind using a regular CSS `@import` statement, not using the `@tailwind` directives used in v3:
+
+<code-snippet name="Tailwind v4 Import Tailwind Diff" lang="diff"
+   - @tailwind base;
+   - @tailwind components;
+   - @tailwind utilities;
+   + @import "tailwindcss";
+</code-snippet>
+
+
+### Replaced Utilities
+- Tailwind v4 removed deprecated utilities. Do not use the deprecated option - use the replacement.
+- Opacity values are still numeric.
+
+| Deprecated |	Replacement |
+|------------+--------------|
+| bg-opacity-* | bg-black/* |
+| text-opacity-* | text-black/* |
+| border-opacity-* | border-black/* |
+| divide-opacity-* | divide-black/* |
+| ring-opacity-* | ring-black/* |
+| placeholder-opacity-* | placeholder-black/* |
+| flex-shrink-* | shrink-* |
+| flex-grow-* | grow-* |
+| overflow-ellipsis | text-ellipsis |
+| decoration-slice | box-decoration-slice |
+| decoration-clone | box-decoration-clone |
+
+
+=== tests rules ===
+
+## Test Enforcement
+
+- Every change must be programmatically tested. Write a new test or update an existing test, then run the affected tests to make sure they pass.
+- Run the minimum number of tests needed to ensure code quality and speed. Use `php artisan test` with a specific filename or filter.
+</laravel-boost-guidelines>

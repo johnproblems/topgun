@@ -1,177 +1,343 @@
-<div align="center">
+# Coolify Enterprise Transformation
 
-# Coolify
-An open-source & self-hostable Heroku / Netlify / Vercel alternative. 
+**Enterprise-grade cloud deployment and management platform built on Coolify's foundation**
 
-![Latest Release Version](https://img.shields.io/badge/dynamic/json?labelColor=grey&color=6366f1&label=Latest%20released%20version&url=https%3A%2F%2Fcdn.coollabs.io%2Fcoolify%2Fversions.json&query=coolify.v4.version&style=for-the-badge
-) [![Bounty Issues](https://img.shields.io/static/v1?labelColor=grey&color=6366f1&label=Algora&message=%F0%9F%92%8E+Bounty+issues&style=for-the-badge)](https://console.algora.io/org/coollabsio/bounties/new)
-</div>
+[![Laravel](https://img.shields.io/badge/Laravel-12-FF2D20?style=for-the-badge&logo=laravel)](https://laravel.com)
+[![Vue.js](https://img.shields.io/badge/Vue.js-3.5-4FC08D?style=for-the-badge&logo=vue.js)](https://vuejs.org)
+[![Terraform](https://img.shields.io/badge/Terraform-Latest-7B42BC?style=for-the-badge&logo=terraform)](https://terraform.io)
 
 ## About the Project
 
-Coolify is an open-source & self-hostable alternative to Heroku / Netlify / Vercel / etc.
+This project transforms the open-source Coolify platform into a comprehensive **enterprise-grade cloud deployment and management solution**. Built on Coolify's excellent application deployment foundation, we're adding enterprise features including multi-tenant organization hierarchies, Terraform-based infrastructure provisioning, white-label branding, and advanced resource management.
 
-It helps you manage your servers, applications, and databases on your own hardware; you only need an SSH connection. You can manage VPS, Bare Metal, Raspberry PIs, and anything else.
+### What We're Building
 
-Imagine having the ease of a cloud but with your own servers. That is **Coolify**.
+- **Multi-Tenant Organization Hierarchy**: Replace team-based architecture with hierarchical organizations (Top Branch → Master Branch → Sub-Users → End Users)
+- **Terraform + Coolify Hybrid**: Use Terraform for infrastructure provisioning while preserving Coolify's application deployment excellence
+- **Enterprise Features**: Licensing system, payment processing, white-label branding, custom domain management
+- **Modern Frontend**: Vue.js 3 + Inertia.js reactive components alongside existing Livewire
+- **Real-time Resource Management**: Advanced capacity planning, build server optimization, organization quotas
 
-No vendor lock-in, which means that all the configurations for your applications/databases/etc are saved to your server. So, if you decide to stop using Coolify (oh nooo), you could still manage your running resources. You lose the automations and all the magic. 🪄️
+## Technology Stack
 
-For more information, take a look at our landing page at [coolify.io](https://coolify.io).
+### Backend
+- **Laravel 12** - Core framework with enterprise services
+- **PostgreSQL 15** - Primary database with hierarchical organization schema
+- **Redis 7** - Caching, queues, and real-time features
+- **Terraform** - Cloud infrastructure provisioning (NEW)
+- **Docker** - Container orchestration (existing, enhanced)
 
-## Installation
+### Frontend
+- **Livewire 3.6** - Server-side components (existing)
+- **Vue.js 3.5 + Inertia.js** - Reactive enterprise components (NEW)
+- **Alpine.js** - Client-side interactivity (existing)
+- **Tailwind CSS 4.1** - Utility-first styling (existing)
+
+### Enterprise Services
+- **LicensingService** - Feature flags and usage limits
+- **TerraformService** - Multi-cloud infrastructure provisioning
+- **PaymentService** - Multi-gateway payment processing
+- **WhiteLabelService** - Branding and customization
+- **CapacityManager** - Intelligent resource allocation
+- **SystemResourceMonitor** - Real-time monitoring
+
+## Quick Start
+
+### Prerequisites
+- PHP 8.4+
+- Node.js 20+
+- PostgreSQL 15+
+- Redis 7+
+- Docker & Docker Compose
+- Terraform (for infrastructure provisioning)
+
+### Installation
 
 ```bash
-curl -fsSL https://cdn.coollabs.io/coolify/install.sh | bash
+# Clone the repository
+git clone <repository-url>
+cd topgun
+
+# Install PHP dependencies
+composer install
+
+# Install Node dependencies
+npm install
+
+# Environment setup
+cp .env.example .env
+php artisan key:generate
+
+# Configure database and services in .env
+# Then run migrations
+php artisan migrate
+
+# Seed enterprise data (organizations, licenses, etc.)
+php artisan db:seed --class=EnterpriseSeeder
+
+# Build frontend assets
+npm run dev
+
+# Start services
+php artisan serve
+php artisan queue:work
+php artisan reverb:start # WebSockets for real-time features
 ```
-You can find the installation script source [here](./scripts/install.sh).
 
-> [!NOTE]
-> Please refer to the [docs](https://coolify.io/docs/installation) for more information about the installation.
+### Development Commands
 
-## Support
+```bash
+# Frontend development (hot reload)
+npm run dev
 
-Contact us at [coolify.io/docs/contact](https://coolify.io/docs/contact).
+# Production build
+npm run build
 
-## Cloud
+# Code quality
+./vendor/bin/pint                 # Format code
+./vendor/bin/phpstan analyse      # Static analysis
+./vendor/bin/rector process       # Code modernization
 
-If you do not want to self-host Coolify, there is a paid cloud version available: [app.coolify.io](https://app.coolify.io)
+# Testing
+./vendor/bin/pest                 # Run all tests
+./vendor/bin/pest --coverage      # With coverage
+./vendor/bin/pest --filter=test   # Run specific test
+```
 
-For more information & pricing, take a look at our landing page [coolify.io](https://coolify.io).
+## Project Structure
 
-## Why should I use the Cloud version?
-The recommended way to use Coolify is to have one server for Coolify and one (or more) for the resources you are deploying. A server is around 4-5$/month.
+```
+topgun/
+├── app/
+│   ├── Actions/Enterprise/        # Enterprise business logic
+│   ├── Models/                    # Eloquent models (enhanced)
+│   ├── Services/Enterprise/       # Core enterprise services
+│   ├── Livewire/                  # Livewire components (existing)
+│   └── Http/Controllers/Enterprise/
+├── resources/
+│   ├── js/
+│   │   ├── Components/Enterprise/ # Vue.js enterprise components
+│   │   └── Pages/Enterprise/      # Inertia.js pages
+│   └── views/
+│       └── livewire/              # Livewire views
+├── database/
+│   ├── migrations/                # Database schema evolution
+│   └── seeders/                   # Data seeding (including EnterpriseSeeder)
+├── tests/
+│   ├── Enterprise/Feature/        # Enterprise feature tests
+│   ├── Enterprise/Unit/           # Enterprise unit tests
+│   └── Enterprise/Browser/        # Browser tests for Vue components
+├── .claude/                       # Claude Code configuration & PM workflow
+└── .kiro/specs/                   # Enterprise transformation specs
+```
 
-By subscribing to the cloud version, you get the Coolify server for the same price, but with:
-- High-availability
-- Free email notifications
-- Better support
-- Less maintenance for you
+## Key Features
 
-## Donations
-To stay completely free and open-source, with no feature behind the paywall and evolve the project, we need your help. If you like Coolify, please consider donating to help us fund the project's future development.
+### ✅ Completed (Tasks 1-2)
+- **Multi-tenant Organization System**: Hierarchical organization structure with role-based access control
+- **Enterprise Licensing**: License key validation, feature flags, usage limits, domain authorization
+- **Database Schema**: Enhanced schema with organization hierarchy and resource tracking
 
-[coolify.io/sponsorships](https://coolify.io/sponsorships)
+### 🚧 In Progress (Tasks 3+)
+- **White-Label Branding**: Custom branding, themes, and domain support per organization
+- **Terraform Integration**: Multi-cloud infrastructure provisioning with server auto-registration
+- **Payment Processing**: Stripe, PayPal integration with subscription management
+- **Resource Management**: Real-time monitoring, capacity planning, quota enforcement
+- **Vue.js Components**: Modern reactive UI for enterprise features
 
-Thank you so much!
+## Architecture Highlights
 
-### Big Sponsors
+### Organization Hierarchy
+```
+Top Branch Organization
+├── Master Branch Organizations
+│   ├── Sub-User Organizations
+│   │   └── End Users
+│   └── End Users
+└── End Users
+```
 
-* [23M](https://23m.com?ref=coolify.io) - Your experts for high-availability hosting solutions!
-* [Algora](https://algora.io?ref=coolify.io) - Open source contribution platform
-* [American Cloud](https://americancloud.com?ref=coolify.io) - US-based cloud infrastructure services
-* [Arcjet](https://arcjet.com?ref=coolify.io) - Advanced web security and performance solutions
-* [BC Direct](https://bc.direct?ref=coolify.io) - Your trusted technology consulting partner
-* [Blacksmith](https://blacksmith.sh?ref=coolify.io) - Infrastructure automation platform
-* [Brand.dev](https://brand.dev?ref=coolify.io) - API to personalize your product with logos, colors, and company info from any domain
-* [ByteBase](https://www.bytebase.com?ref=coolify.io) - Database CI/CD and Security at Scale
-* [CodeRabbit](https://coderabbit.ai?ref=coolify.io) - Cut Code Review Time & Bugs in Half
-* [COMIT](https://comit.international?ref=coolify.io) - New York Times award–winning contractor
-* [CompAI](https://www.trycomp.ai?ref=coolify.io) - Open source compliance automation platform
-* [Convex](https://convex.link/coolify.io) - Open-source reactive database for web app developers
-* [CubePath](https://cubepath.com/?ref=coolify.io) - Dedicated Servers & Instant Deploy
-* [Dade2](https://dade2.net/?ref=coolify.io) - IT Consulting, Cloud Solutions & System Integration
-* [Formbricks](https://formbricks.com?ref=coolify.io) - The open source feedback platform
-* [GoldenVM](https://billing.goldenvm.com?ref=coolify.io) - Premium virtual machine hosting solutions
-* [Hetzner](http://htznr.li/CoolifyXHetzner) - Server, cloud, hosting, and data center solutions
-* [Hostinger](https://www.hostinger.com/vps/coolify-hosting?ref=coolify.io) - Web hosting and VPS solutions
-* [JobsCollider](https://jobscollider.com/remote-jobs?ref=coolify.io) - 30,000+ remote jobs for developers
-* [Juxtdigital](https://juxtdigital.com?ref=coolify.io) - Digital PR & AI Authority Building Agency
-* [LiquidWeb](https://liquidweb.com?ref=coolify.io) - Premium managed hosting solutions
-* [Logto](https://logto.io?ref=coolify.io) - The better identity infrastructure for developers
-* [Macarne](https://macarne.com?ref=coolify.io) - Best IP Transit & Carrier Ethernet Solutions for Simplified Network Connectivity
-* [Mobb](https://vibe.mobb.ai/?ref=coolify.io) - Secure Your AI-Generated Code to Unlock Dev Productivity
-* [PFGLabs](https://pfglabs.com?ref=coolify.io) - Build Real Projects with Golang
-* [Ramnode](https://ramnode.com/?ref=coolify.io) - High Performance Cloud VPS Hosting
-* [SaasyKit](https://saasykit.com?ref=coolify.io) - Complete SaaS starter kit for developers
-* [SupaGuide](https://supa.guide?ref=coolify.io) - Your comprehensive guide to Supabase
-* [Supadata AI](https://supadata.ai/?ref=coolify.io) - Scrape YouTube, web, and files. Get AI-ready, clean data
-* [Syntax.fm](https://syntax.fm?ref=coolify.io) - Podcast for web developers
-* [Tigris](https://www.tigrisdata.com?ref=coolify.io) - Modern developer data platform
-* [Tolgee](https://tolgee.io?ref=coolify.io) - The open source localization platform
-* [Ubicloud](https://www.ubicloud.com?ref=coolify.io) - Open source cloud infrastructure platform
+### Service Layer Pattern
+```php
+// Example: License validation with domain checking
+$result = app(LicensingService::class)
+    ->validateLicense($licenseKey, $domain);
 
+// Example: Terraform infrastructure provisioning
+$deployment = app(TerraformService::class)
+    ->provisionInfrastructure($cloudProvider, $config);
 
-### Small Sponsors
+// Example: Capacity-aware server selection
+$server = app(CapacityManager::class)
+    ->selectOptimalServer($servers, $requirements);
+```
 
-<a href="https://open-elements.com/?utm_source=coolify.io"><img width="60px" alt="OpenElements" src="https://github.com/OpenElements.png"/></a>
-<a href="https://xaman.app/?utm_source=coolify.io"><img width="60px" alt="XamanApp" src="https://github.com/XamanApp.png"/></a>
-<a href="https://www.uxwizz.com/?utm_source=coolify.io"><img width="60px" alt="UXWizz" src="https://github.com/UXWizz.png"/></a>
-<a href="https://evercam.io/?utm_source=coolify.io"><img width="60px" alt="Evercam" src="https://github.com/evercam.png"/></a>
-<a href="https://github.com/iujlaki"><img width="60px" alt="Imre Ujlaki" src="https://github.com/iujlaki.png"/></a>
-<a href="https://bsky.app/profile/jyc.dev"><img width="60px" alt="jyc.dev" src="https://github.com/jycouet.png"/></a>
-<a href="https://github.com/therealjp?utm_source=coolify.io"><img width="60px" alt="TheRealJP" src="https://github.com/therealjp.png"/></a>
-<a href="https://360creators.com/?utm_source=coolify.io"><img width="60px" alt="360Creators" src="https://opencollective-production.s3.us-west-1.amazonaws.com/account-avatar/503e0953-bff7-4296-b4cc-5e36d40eecc0/icon-360creators.png"/></a>
-<a href="https://github.com/aniftyco"><img width="60px" alt="NiftyCo" src="https://github.com/aniftyco.png"/></a>
-<a href="https://dry.software/?utm_source=coolify.io"><img width="60px" alt="Dry Software" src="https://github.com/dry-software.png"/></a>
-<a href="https://lightspeed.run/?utm_source=coolify.io"><img width="60px" alt="Lightspeed.run" src="https://github.com/lightspeedrun.png"/></a>
-<a href="https://linkdr.com?utm_source=coolify.io"><img width="60px" alt="LinkDr" src="https://github.com/LLM-Inc.png"/></a>
-<a href="http://gravitywiz.com/?utm_source=coolify.io"><img width="60px" alt="Gravity Wiz" src="https://github.com/gravitywiz.png"/></a>
-<a href="https://bitlaunch.io/?utm_source=coolify.io"><img width="60px" alt="BitLaunch" src="https://github.com/bitlaunchio.png"/></a>
-<a href="https://bestforandroid.com/?utm_source=coolify.io"><img width="60px" alt="Best for Android" src="https://github.com/bestforandroid.png"/></a>
-<a href="https://il.ly/?utm_source=coolify.io"><img width="60px" alt="Ilias Ism" src="https://github.com/Illyism.png"/></a>
-<a href="https://formbricks.com/?utm_source=coolify.io"><img width="60px" alt="Formbricks" src="https://github.com/formbricks.png"/></a>
-<a href="https://www.serversearcher.com/"><img width="60px" alt="Server Searcher" src="https://github.com/serversearcher.png"/></a>
-<a href="https://www.reshot.ai/?utm_source=coolify.io"><img width="60px" alt="Reshot" src="https://coolify.io/images/reshotai.png"/></a>
-<a href="https://cirun.io/?utm_source=coolify.io"><img width="60px" alt="Cirun" src="https://coolify.io/images/cirun-logo.png"/></a>
-<a href="https://typebot.io/?utm_source=coolify.io"><img width="60px" alt="Typebot" src="https://cdn.bsky.app/img/avatar/plain/did:plc:gwxcta3pccyim4z5vuultdqx/bafkreig23hci7e2qpdxicsshnuzujbcbcgmydxhbybkewszdezhdodv42m@jpeg"/></a>
-<a href="https://cccareers.org/?utm_source=coolify.io"><img width="60px" alt="Creating Coding Careers" src="https://github.com/cccareers.png"/></a>
-<a href="https://internetgarden.co/?utm_source=coolify.io"><img width="60px" alt="Internet Garden" src="https://coolify.io/images/internetgarden.ico"/></a>
-<a href="https://web3.career/?utm_source=coolify.io"><img width="60px" alt="Web3 Jobs" src="https://coolify.io/images/web3jobs.png"/></a>
-<a href="https://codext.link/coolify-io?utm_source=coolify.io"><img width="60px" alt="Codext" src="https://coolify.io/images/codext.jpg"/></a>
-<a href="https://github.com/monocursive"><img width="60px" alt="Michael Mazurczak" src="https://github.com/monocursive.png"/></a>
-<a href="https://fider.io/?utm_source=coolify.io"><img width="60px" alt="Fider" src="https://github.com/getfider.png"/></a>
-<a href="https://www.flint.sh/en/home?utm_source=coolify.io"><img width="60px" alt="Flint" src="https://github.com/Flint-company.png"/></a>
-<a href="https://github.com/urtho"><img width="60px" alt="Paweł Pierścionek" src="https://github.com/urtho.png"/></a>
-<a href="https://www.runpod.io/?utm_source=coolify.io"><img width="60px" alt="RunPod" src="https://coolify.io/images/runpod.svg"/></a>
-<a href="https://dartnode.com/?utm_source=coolify.io"><img width="60px" alt="DartNode" src="https://github.com/dartnode.png"/></a>
-<a href="https://github.com/whitesidest"><img width="60px" alt="Tyler Whitesides" src="https://avatars.githubusercontent.com/u/12365916?s=52&v=4"/></a>
-<a href="https://serpapi.com/?utm_source=coolify.io"><img width="60px" alt="SerpAPI" src="https://github.com/serpapi.png"/></a>
-<a href="https://aquarela.io"><img width="60px" alt="Aquarela" src="https://github.com/aquarela-io.png"/></a>
-<a href="https://cryptojobslist.com/?utm_source=coolify.io"><img width="60px" alt="Crypto Jobs List" src="https://github.com/cryptojobslist.png"/></a>
-<a href="https://www.youtube.com/@AlfredNutile?utm_source=coolify.io"><img width="60px" alt="Alfred Nutile" src="https://github.com/alnutile.png"/></a>
-<a href="https://startupfa.me?utm_source=coolify.io"><img width="60px" alt="Startup Fame" src="https://github.com/startupfame.png"/></a>
-<a href="https://barrad.me/?utm_source=coolify.io"><img width="60px" alt="Younes Barrad" src="https://github.com/Flowko.png"/></a>
-<a href="https://jonasjaeger.com?utm_source=coolify.io"><img width="60px" alt="Jonas Jaeger" src="https://github.com/toxin20.png"/></a>
-<a href="https://pixel.ao/?utm_source=coolify.io"><img width="60px" alt="Pixel Infinito" src="https://github.com/pixelinfinito.png"/></a>
-<a href="https://github.com/corentinclichy"><img width="60px" alt="Corentin Clichy" src="https://github.com/corentinclichy.png"/></a>
-<a href="https://x.com/mrsmith9ja?utm_source=coolify.io"><img width="60px" alt="Thompson Edolo" src="https://github.com/verygreenboi.png"/></a>
-<a href="https://devhuset.no?utm_source=coolify.io"><img width="60px" alt="Devhuset" src="https://github.com/devhuset.png"/></a>
-<a href="https://arvensis.systems/?utm_source=coolify.io"><img width="60px" alt="Arvensis Systems" src="https://coolify.io/images/arvensis.png"/></a>
-<a href="https://github.com/Niki2k1"><img width="60px" alt="Niklas Lausch" src="https://github.com/Niki2k1.png"/></a>
-<a href="https://capgo.app/?utm_source=coolify.io"><img width="60px" alt="Cap-go" src="https://github.com/cap-go.png"/></a>
-<a href="https://interviewpal.com/?utm_source=coolify.io"><img width="60px" alt="InterviewPal" src="/public/svgs/interviewpal.svg"/></a>
+### Vue.js + Inertia.js Integration
+```php
+// Controller
+return Inertia::render('Enterprise/Organization/Index', [
+    'organizations' => auth()->user()->organizations,
+    'permissions' => auth()->user()->getAllPermissions(),
+]);
+```
 
-
-...and many more at [GitHub Sponsors](https://github.com/sponsors/coollabsio)
-
-## Recognitions
-
-<p>
-<a href="https://news.ycombinator.com/item?id=26624341">
-  <img
-    style="width: 250px; height: 54px;" width="250" height="54"
-    alt="Featured on Hacker News"
-    src="https://hackernews-badge.vercel.app/api?id=26624341"
+```vue
+<!-- Vue Component -->
+<template>
+  <OrganizationHierarchy
+    :organizations="organizations"
+    @organization-selected="handleSelect"
   />
-</a>
-</p>
+</template>
+```
 
-<a href="https://www.producthunt.com/posts/coolify?ref=badge-featured&utm_medium=badge&utm_souce=badge-coolify" target="_blank"><img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=338273&theme=light" alt="Coolify - An&#0032;open&#0045;source&#0032;&#0038;&#0032;self&#0045;hostable&#0032;Heroku&#0044;&#0032;Netlify&#0032;alternative | Product Hunt" style="width: 250px; height: 54px;" width="250" height="54" /></a>
+## Development Workflow
 
-<a href="https://trendshift.io/repositories/634" target="_blank"><img src="https://trendshift.io/api/badge/repositories/634" alt="coollabsio%2Fcoolify | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+### Using Claude Code PM Workflow
 
-## Core Maintainers
+This project uses Claude Code's PM (Project Management) workflow for epic and task tracking:
 
-| Andras Bacsai | 🏔️ Peak |
-|------------|------------|
-| <img src="https://github.com/andrasbacsai.png" width="200px" alt="Andras Bacsai" /> | <img src="https://github.com/peaklabs-dev.png" width="200px" alt="peaklabs-dev" /> |
-| <a href="https://github.com/andrasbacsai"><img src="https://api.iconify.design/devicon:github.svg" width="25px"></a> <a href="https://x.com/heyandras"><img src="https://api.iconify.design/devicon:twitter.svg" width="25px"></a> <a href="https://bsky.app/profile/heyandras.dev"><img src="https://api.iconify.design/simple-icons:bluesky.svg" width="25px"></a> | <a href="https://github.com/peaklabs-dev"><img src="https://api.iconify.design/devicon:github.svg" width="25px"></a> <a href="https://x.com/peaklabs_dev"><img src="https://api.iconify.design/devicon:twitter.svg" width="25px"></a> <a href="https://bsky.app/profile/peaklabs.dev"><img src="https://api.iconify.design/simple-icons:bluesky.svg" width="25px"></a> |
+```bash
+# View project status
+/pm/status
 
-## Repo Activity
+# List all epics
+/pm/epic-list
 
-![Alt](https://repobeats.axiom.co/api/embed/eab1c8066f9c59d0ad37b76c23ebb5ccac4278ae.svg "Repobeats analytics image")
+# Show specific epic
+/pm/epic-show <epic-number>
 
-## Star History
+# Start working on an epic
+/pm/epic-start <epic-number>
 
-[![Star History Chart](https://api.star-history.com/svg?repos=coollabsio/coolify&type=Date)](https://star-history.com/#coollabsio/coolify&Date)
+# Get next available task
+/pm/next
+
+# View PRD status
+/pm/prd-status
+```
+
+See [.claude/CCPM_README.md](.claude/CCPM_README.md) for complete PM workflow documentation.
+
+### Development Guidelines
+
+1. **Follow Existing Patterns**: Check [CLAUDE.md](CLAUDE.md) for comprehensive development guidelines
+2. **Enterprise Services**: Create interfaces in `app/Contracts/` and implementations in `app/Services/Enterprise/`
+3. **Vue Components**: Follow existing patterns in `resources/js/Components/Enterprise/`
+4. **Testing**: Write comprehensive tests for all new features
+5. **Code Quality**: Run Pint, PHPStan, and Pest before committing
+
+### Reference Documentation
+
+- **Requirements**: [.kiro/specs/coolify-enterprise-transformation/requirements.md](.kiro/specs/coolify-enterprise-transformation/requirements.md)
+- **Design**: [.kiro/specs/coolify-enterprise-transformation/design.md](.kiro/specs/coolify-enterprise-transformation/design.md)
+- **Implementation Plan**: [.kiro/specs/coolify-enterprise-transformation/tasks.md](.kiro/specs/coolify-enterprise-transformation/tasks.md)
+- **Architecture Guide**: [.kiro/steering/application-architecture.md](.kiro/steering/application-architecture.md)
+
+## Testing
+
+```bash
+# Run all tests
+./vendor/bin/pest
+
+# Run specific test suites
+./vendor/bin/pest tests/Enterprise/Feature/
+./vendor/bin/pest tests/Enterprise/Unit/
+
+# Run with coverage
+./vendor/bin/pest --coverage
+
+# Run browser tests (Dusk)
+php artisan dusk tests/Enterprise/Browser/
+```
+
+### Test Structure
+- **Feature Tests**: Test complete user workflows and integrations
+- **Unit Tests**: Test isolated service logic and calculations
+- **Browser Tests**: Test Vue.js components and UI interactions
+
+## Environment Configuration
+
+### Required Environment Variables
+
+```bash
+# Database
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=coolify_enterprise
+DB_USERNAME=postgres
+DB_PASSWORD=
+
+# Redis
+REDIS_HOST=127.0.0.1
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+
+# Enterprise Features
+TERRAFORM_BINARY_PATH=/usr/local/bin/terraform
+LICENSE_ENCRYPTION_KEY=
+ORGANIZATION_DEFAULT_QUOTAS=
+
+# Payment Gateways
+PAYMENT_STRIPE_SECRET_KEY=
+PAYMENT_STRIPE_PUBLISHABLE_KEY=
+PAYMENT_PAYPAL_CLIENT_ID=
+PAYMENT_PAYPAL_CLIENT_SECRET=
+
+# Cloud Provider Credentials (encrypted in DB, these are for initial setup)
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+```
+
+## Security Considerations
+
+- **Data Isolation**: Organization-scoped queries with proper indexing
+- **Encrypted Credentials**: Cloud provider API keys encrypted at rest
+- **Role-Based Access Control**: Comprehensive permission system per organization
+- **Audit Logging**: All enterprise actions logged for compliance
+- **API Security**: Sanctum token authentication with rate limiting per tier
+
+## Performance Guidelines
+
+- **Database Optimization**: Organization-scoped queries, proper indexing, eager loading
+- **Frontend Performance**: Vue.js component lazy loading, optimized asset loading
+- **Resource Monitoring**: Efficient data pagination and WebSocket connections
+- **Caching Strategy**: Redis caching for license validations and resource calculations
+
+## Contributing
+
+This is an enterprise transformation project. For contribution guidelines:
+
+1. Check existing tasks in `.taskmaster/tasks/`
+2. Follow patterns in [CLAUDE.md](CLAUDE.md)
+3. Write comprehensive tests
+4. Ensure code quality (Pint, PHPStan)
+5. Update documentation
+
+## License
+
+This project is built on Coolify's open-source foundation and is being transformed into an enterprise platform. See [LICENSE](LICENSE) for details.
+
+## Project Status
+
+**Current Phase**: Enterprise Feature Implementation (Tasks 3-10)
+
+- ✅ Foundation Setup (Organization hierarchy, database schema)
+- ✅ Licensing System (License validation, feature flags)
+- 🚧 White-Label Branding (In progress)
+- 🚧 Terraform Integration (In progress)
+- ⏳ Payment Processing (Planned)
+- ⏳ Advanced Resource Management (Planned)
+
+See [.claude/epics/topgun/](.claude/epics/topgun/) for detailed epic and task breakdown.
+
+## Acknowledgments
+
+Built on the excellent foundation provided by [Coolify](https://coolify.io) - an open-source, self-hostable platform for deploying applications. This enterprise transformation preserves Coolify's deployment excellence while adding comprehensive multi-tenant and enterprise capabilities.
+
+---
+
+**For detailed development guidelines, see [CLAUDE.md](CLAUDE.md)**
+
+**For Claude Code PM workflow, see [.claude/CCPM_README.md](.claude/CCPM_README.md)**
