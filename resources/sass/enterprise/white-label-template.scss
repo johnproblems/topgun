@@ -1,0 +1,202 @@
+// White Label Theme Template
+// This template is compiled with organization-specific variables at runtime
+// Variables are set via scssphp compiler's setVariables() method
+
+// Color Variables - set by DynamicAssetController
+$primary_color: #3b82f6 !default;
+$secondary_color: #1f2937 !default;
+$accent_color: #10b981 !default;
+$background_color: #ffffff !default;
+$text_color: #1f2937 !default;
+$sidebar_color: #f9fafb !default;
+$border_color: #e5e7eb !default;
+$success_color: #10b981 !default;
+$warning_color: #f59e0b !default;
+$error_color: #ef4444 !default;
+$info_color: #3b82f6 !default;
+
+// Typography Variables
+$font_family: 'Inter, sans-serif' !default;
+
+// Helper function to convert hex to RGB
+@function hex-to-rgb($hex) {
+    @return red($hex), green($hex), blue($hex);
+}
+
+// CSS Custom Properties (CSS Variables)
+:root {
+    // Primary Colors
+    --color-primary: #{$primary_color};
+    --color-primary-rgb: #{hex-to-rgb($primary_color)};
+    --color-primary-light: #{lighten($primary_color, 10%)};
+    --color-primary-dark: #{darken($primary_color, 10%)};
+    --color-primary-alpha: #{rgba($primary_color, 0.1)};
+
+    // Secondary Colors
+    --color-secondary: #{$secondary_color};
+    --color-secondary-rgb: #{hex-to-rgb($secondary_color)};
+    --color-secondary-light: #{lighten($secondary_color, 10%)};
+    --color-secondary-dark: #{darken($secondary_color, 10%)};
+
+    // Accent Colors
+    --color-accent: #{$accent_color};
+    --color-accent-rgb: #{hex-to-rgb($accent_color)};
+    --color-accent-light: #{lighten($accent_color, 10%)};
+    --color-accent-dark: #{darken($accent_color, 10%)};
+
+    // Background Colors
+    --color-background: #{$background_color};
+    --color-background-rgb: #{hex-to-rgb($background_color)};
+    --color-sidebar: #{$sidebar_color};
+    --color-sidebar-rgb: #{hex-to-rgb($sidebar_color)};
+
+    // Text Colors
+    --color-text: #{$text_color};
+    --color-text-rgb: #{hex-to-rgb($text_color)};
+    --color-text-muted: #{rgba($text_color, 0.6)};
+    --color-text-light: #{rgba($text_color, 0.4)};
+
+    // Border Colors
+    --color-border: #{$border_color};
+    --color-border-rgb: #{hex-to-rgb($border_color)};
+    --color-border-light: #{lighten($border_color, 10%)};
+    --color-border-dark: #{darken($border_color, 10%)};
+
+    // Status Colors
+    --color-success: #{$success_color};
+    --color-success-rgb: #{hex-to-rgb($success_color)};
+    --color-success-light: #{lighten($success_color, 10%)};
+    --color-success-dark: #{darken($success_color, 10%)};
+
+    --color-warning: #{$warning_color};
+    --color-warning-rgb: #{hex-to-rgb($warning_color)};
+    --color-warning-light: #{lighten($warning_color, 10%)};
+    --color-warning-dark: #{darken($warning_color, 10%)};
+
+    --color-error: #{$error_color};
+    --color-error-rgb: #{hex-to-rgb($error_color)};
+    --color-error-light: #{lighten($error_color, 10%)};
+    --color-error-dark: #{darken($error_color, 10%)};
+
+    --color-info: #{$info_color};
+    --color-info-rgb: #{hex-to-rgb($info_color)};
+    --color-info-light: #{lighten($info_color, 10%)};
+    --color-info-dark: #{darken($info_color, 10%)};
+
+    // Typography
+    --font-family-primary: #{$font_family};
+    --font-family-mono: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+
+    // Spacing (using Tailwind-like scale)
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+
+    // Border Radius
+    --radius-sm: 0.25rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+
+    // Shadows
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+// Component Styles using CSS Variables
+.btn-primary {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: white;
+
+    &:hover {
+        background-color: var(--color-primary-dark);
+        border-color: var(--color-primary-dark);
+    }
+
+    &:focus {
+        outline: 2px solid var(--color-primary-alpha);
+        outline-offset: 2px;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+.btn-secondary {
+    background-color: var(--color-secondary);
+    border-color: var(--color-secondary);
+    color: white;
+
+    &:hover {
+        background-color: var(--color-secondary-dark);
+        border-color: var(--color-secondary-dark);
+    }
+}
+
+.btn-accent {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+    color: white;
+
+    &:hover {
+        background-color: var(--color-accent-dark);
+        border-color: var(--color-accent-dark);
+    }
+}
+
+// Navigation Styles
+.navbar,
+.sidebar {
+    background-color: var(--color-sidebar);
+    border-color: var(--color-border);
+    color: var(--color-text);
+}
+
+// Card Styles
+.card {
+    background-color: var(--color-background);
+    border-color: var(--color-border);
+    color: var(--color-text);
+}
+
+// Input Styles
+.input,
+.form-input {
+    border-color: var(--color-border);
+    color: var(--color-text);
+
+    &:focus {
+        border-color: var(--color-primary);
+        outline: 2px solid var(--color-primary-alpha);
+    }
+}
+
+// Status Badges
+.badge-success {
+    background-color: var(--color-success-light);
+    color: var(--color-success-dark);
+}
+
+.badge-warning {
+    background-color: var(--color-warning-light);
+    color: var(--color-warning-dark);
+}
+
+.badge-error {
+    background-color: var(--color-error-light);
+    color: var(--color-error-dark);
+}
+
+.badge-info {
+    background-color: var(--color-info-light);
+    color: var(--color-info-dark);
+}
+

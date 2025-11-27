@@ -1,0 +1,6 @@
+// Define default variables
+$primary-color: #007bff !default;
+
+body {
+    --primary-color: #{$primary-color};
+}
