@@ -113,12 +113,19 @@ class Email extends Component
     public function mount()
     {
         try {
-            $this->team = auth()->user()->currentTeam();
-            $this->emails = auth()->user()->email;
+            $user = auth()->user();
+            if (! $user) {
+                return handleError(new \Exception('User not authenticated.'), $this);
+            }
+            $this->team = $user->currentTeam();
+            if (! $this->team) {
+                return handleError(new \Exception('Team not found.'), $this);
+            }
+            $this->emails = $user->email;
             $this->settings = $this->team->emailNotificationSettings;
             $this->authorize('view', $this->settings);
             $this->syncData();
-            $this->testEmailAddress = auth()->user()->email;
+            $this->testEmailAddress = $user->email;
         } catch (\Throwable $e) {
             return handleError($e, $this);
         }

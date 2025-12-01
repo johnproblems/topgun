@@ -46,9 +46,16 @@ class MagicController extends Controller
 
     public function newProject()
     {
+        $team = currentTeam();
+        if (! $team) {
+            return response()->json([
+                'message' => 'No team assigned to user.',
+            ], 404);
+        }
+
         $project = Project::firstOrCreate(
             ['name' => request()->query('name') ?? generate_random_name()],
-            ['team_id' => currentTeam()->id]
+            ['team_id' => $team->id]
         );
 
         return response()->json([
@@ -70,13 +77,20 @@ class MagicController extends Controller
 
     public function newTeam()
     {
+        $user = auth()->user();
+        if (! $user) {
+            return response()->json([
+                'message' => 'Unauthenticated.',
+            ], 401);
+        }
+
         $team = Team::create(
             [
                 'name' => request()->query('name') ?? generate_random_name(),
                 'personal_team' => false,
             ],
         );
-        auth()->user()->teams()->attach($team, ['role' => 'admin']);
+        $user->teams()->attach($team, ['role' => 'admin']);
         refreshSession();
 
         return redirect(request()->header('Referer'));

@@ -212,13 +212,17 @@ class TeamController extends Controller
             ),
         ]
     )]
-    public function current_team(Request $request)
+    public function current_team(Request $request): \Illuminate\Http\JsonResponse
     {
         $teamId = getTeamIdFromToken();
         if (is_null($teamId)) {
             return invalidTokenResponse();
         }
-        $team = auth()->user()->currentTeam();
+        $user = auth()->user();
+        $team = $user?->currentTeam();
+        if (is_null($team)) {
+            return response()->json(['message' => 'No team assigned to user.'], 404);
+        }
 
         return response()->json(
             $this->removeSensitiveData($team),
@@ -263,7 +267,11 @@ class TeamController extends Controller
         if (is_null($teamId)) {
             return invalidTokenResponse();
         }
-        $team = auth()->user()->currentTeam();
+        $user = auth()->user();
+        $team = $user?->currentTeam();
+        if (is_null($team)) {
+            return response()->json(['message' => 'No team assigned to user.'], 404);
+        }
         $team->members->makeHidden([
             'pivot',
             'email_change_code',
