@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\LocalPersistentVolume> $persistentStorages
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EnvironmentVariable> $runtime_environment_variables
  * @property-read string $internal_db_url
- * @property-read string $external_db_url
+ * @property-read string|null $external_db_url
  * @property string|null $ssl_mode SSL mode for connection
  * @property-read bool $server_status Server functional status
  */

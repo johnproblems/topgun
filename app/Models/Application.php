@@ -128,9 +128,9 @@ use Visus\Cuid2\Cuid2;
  * @property-read array<int, string> $custom_network_aliases_array Computed attribute from custom_network_aliases
  * @property-read string|null $git_branch_location Computed Git branch location
  * @property-read string|null $git_webhook Computed Git webhook URL
- * @property-read array $git_commits Git commits information
+ * @property-read string|null $git_commits Git commits URL
  * @property-read bool $server_status Server health status
- * @property-read array<int, string>|null $watch_paths Computed watch paths
+ * @property string|null $watch_paths Normalized watch paths (newline-separated)
  * @property string $status Application status
  * @property string|null $image Docker image (via docker_registry_image_name)
  * @property int|null $pull_request_id Pull request ID for preview deployments

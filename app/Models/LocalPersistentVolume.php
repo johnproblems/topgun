@@ -11,7 +11,7 @@ use Symfony\Component\Yaml\Yaml;
  * @property string $name
  * @property string $mount_path
  * @property string|null $host_path
- * @property Application|Service|ServiceApplication|ServiceDatabase|StandalonePostgresql|StandaloneRedis|StandaloneMongodb|StandaloneMysql|StandaloneMariadb|null $resource
+ * @property Application|Service|ServiceApplication|ServiceDatabase|StandalonePostgresql|StandaloneRedis|StandaloneMongodb|StandaloneMysql|StandaloneMariadb|StandaloneKeydb|StandaloneDragonfly|StandaloneClickhouse|null $resource
  */
 class LocalPersistentVolume extends Model
 {

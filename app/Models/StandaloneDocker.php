@@ -20,6 +20,7 @@ use App\Traits\HasSafeStringAttribute;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StandaloneKeydb> $keydbs
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StandaloneDragonfly> $dragonflies
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StandaloneClickhouse> $clickhouses
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Service> $services
  */
 class StandaloneDocker extends BaseModel
 {
