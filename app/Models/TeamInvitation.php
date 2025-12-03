@@ -23,7 +23,7 @@ class TeamInvitation extends Model
         $this->attributes['email'] = strtolower($value);
     }
 
-    public function team()
+    public function team(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Team::class);
     }
@@ -36,7 +36,7 @@ class TeamInvitation extends Model
         return TeamInvitation::whereTeamId(currentTeam()->id);
     }
 
-    public function isValid()
+    public function isValid(): bool
     {
         $createdAt = $this->created_at;
         $diff = $createdAt->diffInDays(now());

@@ -212,27 +212,27 @@ class Team extends Model implements SendsDiscord, SendsEmail, SendsPushover, Sen
         }
     }
 
-    public function environment_variables()
+    public function environment_variables(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(SharedEnvironmentVariable::class)->whereNull('project_id')->whereNull('environment_id');
     }
 
-    public function members()
+    public function members(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(User::class, 'team_user', 'team_id', 'user_id')->withPivot('role');
     }
 
-    public function subscription()
+    public function subscription(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(Subscription::class);
     }
 
-    public function applications()
+    public function applications(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
         return $this->hasManyThrough(Application::class, Project::class);
     }
 
-    public function invitations()
+    public function invitations(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(TeamInvitation::class);
     }
@@ -246,22 +246,22 @@ class Team extends Model implements SendsDiscord, SendsEmail, SendsPushover, Sen
         return false;
     }
 
-    public function projects()
+    public function projects(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Project::class);
     }
 
-    public function servers()
+    public function servers(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Server::class);
     }
 
-    public function privateKeys()
+    public function privateKeys(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(PrivateKey::class);
     }
 
-    public function cloudProviderTokens()
+    public function cloudProviderTokens(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(CloudProviderToken::class);
     }
@@ -286,37 +286,37 @@ class Team extends Model implements SendsDiscord, SendsEmail, SendsPushover, Sen
         return $sources->merge($github_apps)->merge($gitlab_apps);
     }
 
-    public function s3s()
+    public function s3s(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(S3Storage::class)->where('is_usable', true);
     }
 
-    public function emailNotificationSettings()
+    public function emailNotificationSettings(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(EmailNotificationSettings::class);
     }
 
-    public function discordNotificationSettings()
+    public function discordNotificationSettings(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(DiscordNotificationSettings::class);
     }
 
-    public function telegramNotificationSettings()
+    public function telegramNotificationSettings(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(TelegramNotificationSettings::class);
     }
 
-    public function slackNotificationSettings()
+    public function slackNotificationSettings(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(SlackNotificationSettings::class);
     }
 
-    public function pushoverNotificationSettings()
+    public function pushoverNotificationSettings(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(PushoverNotificationSettings::class);
     }
 
-    public function webhookNotificationSettings()
+    public function webhookNotificationSettings(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(WebhookNotificationSettings::class);
     }

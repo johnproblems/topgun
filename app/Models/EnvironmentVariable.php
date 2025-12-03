@@ -82,7 +82,7 @@ class EnvironmentVariable extends BaseModel
         });
     }
 
-    public function service()
+    public function service(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Service::class);
     }
@@ -98,7 +98,7 @@ class EnvironmentVariable extends BaseModel
     /**
      * Get the parent resourceable model.
      */
-    public function resourceable()
+    public function resourceable(): \Illuminate\Database\Eloquent\Relations\MorphTo
     {
         return $this->morphTo();
     }

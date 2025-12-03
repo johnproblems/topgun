@@ -254,22 +254,22 @@ class PrivateKey extends BaseModel
         });
     }
 
-    public function servers()
+    public function servers(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Server::class);
     }
 
-    public function applications()
+    public function applications(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Application::class);
     }
 
-    public function githubApps()
+    public function githubApps(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(GithubApp::class);
     }
 
-    public function gitlabApps()
+    public function gitlabApps(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(GitlabApp::class);
     }

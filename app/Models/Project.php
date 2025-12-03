@@ -63,72 +63,72 @@ class Project extends BaseModel
         });
     }
 
-    public function environment_variables()
+    public function environment_variables(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(SharedEnvironmentVariable::class);
     }
 
-    public function environments()
+    public function environments(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Environment::class);
     }
 
-    public function settings()
+    public function settings(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(ProjectSetting::class);
     }
 
-    public function team()
+    public function team(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Team::class);
     }
 
-    public function services()
+    public function services(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
         return $this->hasManyThrough(Service::class, Environment::class);
     }
 
-    public function applications()
+    public function applications(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
         return $this->hasManyThrough(Application::class, Environment::class);
     }
 
-    public function postgresqls()
+    public function postgresqls(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
         return $this->hasManyThrough(StandalonePostgresql::class, Environment::class);
     }
 
-    public function redis()
+    public function redis(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
         return $this->hasManyThrough(StandaloneRedis::class, Environment::class);
     }
 
-    public function keydbs()
+    public function keydbs(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
         return $this->hasManyThrough(StandaloneKeydb::class, Environment::class);
     }
 
-    public function dragonflies()
+    public function dragonflies(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
         return $this->hasManyThrough(StandaloneDragonfly::class, Environment::class);
     }
 
-    public function clickhouses()
+    public function clickhouses(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
         return $this->hasManyThrough(StandaloneClickhouse::class, Environment::class);
     }
 
-    public function mongodbs()
+    public function mongodbs(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
         return $this->hasManyThrough(StandaloneMongodb::class, Environment::class);
     }
 
-    public function mysqls()
+    public function mysqls(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
         return $this->hasManyThrough(StandaloneMysql::class, Environment::class);
     }
 
-    public function mariadbs()
+    public function mariadbs(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
         return $this->hasManyThrough(StandaloneMariadb::class, Environment::class);
     }

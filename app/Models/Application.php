@@ -108,7 +108,21 @@ use Visus\Cuid2\Cuid2;
         'http_basic_auth_password' => ['type' => 'string', 'nullable' => true, 'description' => 'Password for HTTP Basic Authentication'],
     ]
 )]
-
+/**
+ * @property-read \App\Models\ApplicationSetting $settings
+ * @property-read \App\Models\Environment $environment
+ * @property-read \App\Models\PrivateKey|null $private_key
+ * @property-read \App\Models\StandaloneDocker|\App\Models\SwarmDocker $destination
+ * @property-read \App\Models\GithubApp|\App\Models\GitlabApp|\App\Models\GiteaApp|null $source
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ApplicationPreview> $previews
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EnvironmentVariable> $environment_variables
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EnvironmentVariable> $environment_variables_preview
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\LocalPersistentVolume> $persistentStorages
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\LocalFileVolume> $fileStorages
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Server> $additional_servers
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StandaloneDocker> $additional_networks
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ScheduledTask> $scheduled_tasks
+ */
 class Application extends BaseModel
 {
     use ClearsGlobalSearchCache, HasConfiguration, HasFactory, HasSafeStringAttribute, SoftDeletes;
@@ -392,13 +406,13 @@ class Application extends BaseModel
         instant_remote_process(["docker network rm {$uuid}"], $server, false);
     }
 
-    public function additional_servers()
+    public function additional_servers(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(Server::class, 'additional_destinations')
             ->withPivot('standalone_docker_id', 'status');
     }
 
-    public function additional_networks()
+    public function additional_networks(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(StandaloneDocker::class, 'additional_destinations')
             ->withPivot('server_id', 'status');
@@ -476,17 +490,17 @@ class Application extends BaseModel
         return null;
     }
 
-    public function settings()
+    public function settings(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(ApplicationSetting::class);
     }
 
-    public function persistentStorages()
+    public function persistentStorages(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(LocalPersistentVolume::class, 'resource');
     }
 
-    public function fileStorages()
+    public function fileStorages(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(LocalFileVolume::class, 'resource');
     }
@@ -783,7 +797,7 @@ class Application extends BaseModel
         );
     }
 
-    public function tags()
+    public function tags(): \Illuminate\Database\Eloquent\Relations\MorphToMany
     {
         return $this->morphToMany(Tag::class, 'taggable');
     }
@@ -833,7 +847,7 @@ class Application extends BaseModel
         return null;
     }
 
-    public function environment_variables()
+    public function environment_variables(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(EnvironmentVariable::class, 'resourceable')
             ->where('is_preview', false)
@@ -847,21 +861,21 @@ class Application extends BaseModel
             ");
     }
 
-    public function runtime_environment_variables()
+    public function runtime_environment_variables(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(EnvironmentVariable::class, 'resourceable')
             ->where('is_preview', false)
             ->where('key', 'not like', 'NIXPACKS_%');
     }
 
-    public function nixpacks_environment_variables()
+    public function nixpacks_environment_variables(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(EnvironmentVariable::class, 'resourceable')
             ->where('is_preview', false)
             ->where('key', 'like', 'NIXPACKS_%');
     }
 
-    public function environment_variables_preview()
+    public function environment_variables_preview(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(EnvironmentVariable::class, 'resourceable')
             ->where('is_preview', true)
@@ -875,14 +889,14 @@ class Application extends BaseModel
             ");
     }
 
-    public function runtime_environment_variables_preview()
+    public function runtime_environment_variables_preview(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(EnvironmentVariable::class, 'resourceable')
             ->where('is_preview', true)
             ->where('key', 'not like', 'NIXPACKS_%');
     }
 
-    public function nixpacks_environment_variables_preview()
+    public function nixpacks_environment_variables_preview(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(EnvironmentVariable::class, 'resourceable')
             ->where('is_preview', true)
@@ -894,37 +908,37 @@ class Application extends BaseModel
         return $this->hasMany(ScheduledTask::class)->orderBy('name', 'asc');
     }
 
-    public function private_key()
+    public function private_key(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(PrivateKey::class);
     }
 
-    public function environment()
+    public function environment(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Environment::class);
     }
 
-    public function previews()
+    public function previews(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(ApplicationPreview::class)->orderBy('pull_request_id', 'desc');
     }
 
-    public function deployment_queue()
+    public function deployment_queue(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(ApplicationDeploymentQueue::class);
     }
 
-    public function destination()
+    public function destination(): \Illuminate\Database\Eloquent\Relations\MorphTo
     {
         return $this->morphTo();
     }
 
-    public function source()
+    public function source(): \Illuminate\Database\Eloquent\Relations\MorphTo
     {
         return $this->morphTo();
     }
 
-    public function organization()
+    public function organization(): \Illuminate\Database\Eloquent\Relations\HasOneThrough
     {
         return $this->hasOneThrough(Organization::class, Server::class, 'id', 'id', 'destination_id', 'organization_id');
     }

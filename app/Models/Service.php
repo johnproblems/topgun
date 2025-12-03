@@ -148,7 +148,7 @@ class Service extends BaseModel
         return data_get($this, 'environment.project.team');
     }
 
-    public function tags()
+    public function tags(): \Illuminate\Database\Eloquent\Relations\MorphToMany
     {
         return $this->morphToMany(Tag::class, 'taggable');
     }
@@ -1259,27 +1259,27 @@ class Service extends BaseModel
         return $this->getRequiredPort() !== null;
     }
 
-    public function applications()
+    public function applications(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(ServiceApplication::class);
     }
 
-    public function databases()
+    public function databases(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(ServiceDatabase::class);
     }
 
-    public function destination()
+    public function destination(): \Illuminate\Database\Eloquent\Relations\MorphTo
     {
         return $this->morphTo();
     }
 
-    public function environment()
+    public function environment(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Environment::class);
     }
 
-    public function server()
+    public function server(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Server::class);
     }

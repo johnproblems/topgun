@@ -104,6 +104,7 @@ else
     print_error "Failed to install PHP dependencies"
     print_warning "You may need to run: composer install --ignore-platform-reqs"
     print_warning "Note: This repository requires PHP 8.4+, but you have PHP $PHP_VERSION"
+    exit 1
 fi
 
 # Install Node.js dependencies

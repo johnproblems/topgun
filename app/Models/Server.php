@@ -280,12 +280,12 @@ class Server extends BaseModel
         return $standaloneDocker->concat($swarmDocker);
     }
 
-    public function settings()
+    public function settings(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(ServerSetting::class);
     }
 
-    public function dockerCleanupExecutions()
+    public function dockerCleanupExecutions(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(DockerCleanupExecution::class);
     }
@@ -885,7 +885,7 @@ $schema://$host {
         });
     }
 
-    public function services()
+    public function services(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Service::class);
     }
@@ -950,27 +950,27 @@ $schema://$host {
         return $standalone_docker->concat($swarm_docker);
     }
 
-    public function standaloneDockers()
+    public function standaloneDockers(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(StandaloneDocker::class);
     }
 
-    public function swarmDockers()
+    public function swarmDockers(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(SwarmDocker::class);
     }
 
-    public function privateKey()
+    public function privateKey(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(PrivateKey::class);
     }
 
-    public function cloudProviderToken()
+    public function cloudProviderToken(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(CloudProviderToken::class);
     }
 
-    public function sslCertificates()
+    public function sslCertificates(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(SslCertificate::class);
     }
@@ -980,22 +980,22 @@ $schema://$host {
         return 'mux_'.$this->uuid;
     }
 
-    public function team()
+    public function team(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Team::class);
     }
 
-    public function organization()
+    public function organization(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Organization::class);
     }
 
-    public function terraformDeployment()
+    public function terraformDeployment(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(TerraformDeployment::class);
     }
 
-    public function cloudProviderCredential()
+    public function cloudProviderCredential(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(CloudProviderCredential::class, 'provider_credential_id');
     }

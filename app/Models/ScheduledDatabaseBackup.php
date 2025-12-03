@@ -26,7 +26,7 @@ class ScheduledDatabaseBackup extends BaseModel
         return ScheduledDatabaseBackup::whereRelation('team', 'id', $teamId)->orderBy('created_at', 'desc');
     }
 
-    public function team()
+    public function team(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Team::class);
     }
@@ -47,7 +47,7 @@ class ScheduledDatabaseBackup extends BaseModel
         return $this->hasMany(ScheduledDatabaseBackupExecution::class)->orderBy('created_at', 'desc');
     }
 
-    public function s3()
+    public function s3(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(S3Storage::class, 's3_storage_id');
     }
