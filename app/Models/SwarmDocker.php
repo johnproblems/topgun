@@ -6,57 +6,57 @@ class SwarmDocker extends BaseModel
 {
     protected $guarded = [];
 
-    public function applications(): \Illuminate\Database\Eloquent\Relations\MorphMany()
+    public function applications(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(Application::class, 'destination');
     }
 
-    public function postgresqls(): \Illuminate\Database\Eloquent\Relations\MorphMany()
+    public function postgresqls(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(StandalonePostgresql::class, 'destination');
     }
 
-    public function redis(): \Illuminate\Database\Eloquent\Relations\MorphMany()
+    public function redis(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(StandaloneRedis::class, 'destination');
     }
 
-    public function keydbs(): \Illuminate\Database\Eloquent\Relations\MorphMany()
+    public function keydbs(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(StandaloneKeydb::class, 'destination');
     }
 
-    public function dragonflies(): \Illuminate\Database\Eloquent\Relations\MorphMany()
+    public function dragonflies(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(StandaloneDragonfly::class, 'destination');
     }
 
-    public function clickhouses(): \Illuminate\Database\Eloquent\Relations\MorphMany()
+    public function clickhouses(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(StandaloneClickhouse::class, 'destination');
     }
 
-    public function mongodbs(): \Illuminate\Database\Eloquent\Relations\MorphMany()
+    public function mongodbs(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(StandaloneMongodb::class, 'destination');
     }
 
-    public function mysqls(): \Illuminate\Database\Eloquent\Relations\MorphMany()
+    public function mysqls(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(StandaloneMysql::class, 'destination');
     }
 
-    public function mariadbs(): \Illuminate\Database\Eloquent\Relations\MorphMany()
+    public function mariadbs(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(StandaloneMariadb::class, 'destination');
     }
 
-    public function server(): \Illuminate\Database\Eloquent\Relations\BelongsTo()
+    public function server(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Server::class);
     }
 
-    public function services(): \Illuminate\Database\Eloquent\Relations\MorphMany()
+    public function services(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(Service::class, 'destination');
     }

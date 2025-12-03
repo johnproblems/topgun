@@ -53,7 +53,7 @@ class DiscordNotificationSettings extends Model
         'discord_ping_enabled' => 'boolean',
     ];
 
-    public function team(): \Illuminate\Database\Eloquent\Relations\BelongsTo()
+    public function team(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Team::class);
     }

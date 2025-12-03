@@ -291,32 +291,32 @@ class Team extends Model implements SendsDiscord, SendsEmail, SendsPushover, Sen
         return $this->hasMany(S3Storage::class)->where('is_usable', true);
     }
 
-    public function emailNotificationSettings(): \Illuminate\Database\Eloquent\Relations\HasOne()
+    public function emailNotificationSettings(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(EmailNotificationSettings::class);
     }
 
-    public function discordNotificationSettings(): \Illuminate\Database\Eloquent\Relations\HasOne()
+    public function discordNotificationSettings(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(DiscordNotificationSettings::class);
     }
 
-    public function telegramNotificationSettings(): \Illuminate\Database\Eloquent\Relations\HasOne()
+    public function telegramNotificationSettings(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(TelegramNotificationSettings::class);
     }
 
-    public function slackNotificationSettings(): \Illuminate\Database\Eloquent\Relations\HasOne()
+    public function slackNotificationSettings(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(SlackNotificationSettings::class);
     }
 
-    public function pushoverNotificationSettings(): \Illuminate\Database\Eloquent\Relations\HasOne()
+    public function pushoverNotificationSettings(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(PushoverNotificationSettings::class);
     }
 
-    public function webhookNotificationSettings(): \Illuminate\Database\Eloquent\Relations\HasOne()
+    public function webhookNotificationSettings(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(WebhookNotificationSettings::class);
     }

@@ -76,17 +76,17 @@ class GithubApp extends BaseModel
         })->whereNotNull('app_id')->get();
     }
 
-    public function team(): \Illuminate\Database\Eloquent\Relations\BelongsTo()
+    public function team(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Team::class);
     }
 
-    public function applications(): \Illuminate\Database\Eloquent\Relations\MorphMany()
+    public function applications(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(Application::class, 'source');
     }
 
-    public function privateKey(): \Illuminate\Database\Eloquent\Relations\BelongsTo()
+    public function privateKey(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(PrivateKey::class);
     }

@@ -41,7 +41,7 @@ class ApplicationDeploymentQueue extends Model
 {
     protected $guarded = [];
 
-    public function application(): \Illuminate\Database\Eloquent\Relations\BelongsTo()
+    public function application(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Application::class);
     }

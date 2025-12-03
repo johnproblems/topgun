@@ -134,7 +134,7 @@ class ServerSetting extends Model
         return $domain;
     }
 
-    public function server(): \Illuminate\Database\Eloquent\Relations\BelongsTo()
+    public function server(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Server::class);
     }

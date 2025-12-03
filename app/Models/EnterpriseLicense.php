@@ -33,7 +33,7 @@ class EnterpriseLicense extends Model
     ];
 
     // Relationships
-    public function organization(): \Illuminate\Database\Eloquent\Relations\BelongsTo()
+    public function organization(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Organization::class);
     }

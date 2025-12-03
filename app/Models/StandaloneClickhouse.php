@@ -172,7 +172,7 @@ class StandaloneClickhouse extends BaseModel
         return data_get($this, 'environment.project');
     }
 
-    public function sslCertificates(): \Illuminate\Database\Eloquent\Relations\MorphMany()
+    public function sslCertificates(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(SslCertificate::class, 'resource');
     }
@@ -261,22 +261,22 @@ class StandaloneClickhouse extends BaseModel
         );
     }
 
-    public function environment(): \Illuminate\Database\Eloquent\Relations\BelongsTo()
+    public function environment(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Environment::class);
     }
 
-    public function fileStorages(): \Illuminate\Database\Eloquent\Relations\MorphMany()
+    public function fileStorages(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(LocalFileVolume::class, 'resource');
     }
 
-    public function destination(): \Illuminate\Database\Eloquent\Relations\MorphTo()
+    public function destination(): \Illuminate\Database\Eloquent\Relations\MorphTo
     {
         return $this->morphTo();
     }
 
-    public function environment_variables(): \Illuminate\Database\Eloquent\Relations\MorphMany()
+    public function environment_variables(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(EnvironmentVariable::class, 'resourceable')
             ->orderByRaw("
@@ -289,17 +289,17 @@ class StandaloneClickhouse extends BaseModel
             ");
     }
 
-    public function runtime_environment_variables(): \Illuminate\Database\Eloquent\Relations\MorphMany()
+    public function runtime_environment_variables(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(EnvironmentVariable::class, 'resourceable');
     }
 
-    public function persistentStorages(): \Illuminate\Database\Eloquent\Relations\MorphMany()
+    public function persistentStorages(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(LocalPersistentVolume::class, 'resource');
     }
 
-    public function scheduledBackups(): \Illuminate\Database\Eloquent\Relations\MorphMany()
+    public function scheduledBackups(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(ScheduledDatabaseBackup::class, 'database');
     }

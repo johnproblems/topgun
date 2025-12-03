@@ -10,17 +10,17 @@ class LocalPersistentVolume extends Model
 {
     protected $guarded = [];
 
-    public function application(): \Illuminate\Database\Eloquent\Relations\MorphTo()
+    public function application(): \Illuminate\Database\Eloquent\Relations\MorphTo
     {
         return $this->morphTo('resource');
     }
 
-    public function service(): \Illuminate\Database\Eloquent\Relations\MorphTo()
+    public function service(): \Illuminate\Database\Eloquent\Relations\MorphTo
     {
         return $this->morphTo('resource');
     }
 
-    public function database(): \Illuminate\Database\Eloquent\Relations\MorphTo()
+    public function database(): \Illuminate\Database\Eloquent\Relations\MorphTo
     {
         return $this->morphTo('resource');
     }

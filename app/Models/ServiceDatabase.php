@@ -124,17 +124,17 @@ class ServiceDatabase extends BaseModel
         return service_configuration_dir()."/{$this->service->uuid}";
     }
 
-    public function service(): \Illuminate\Database\Eloquent\Relations\BelongsTo()
+    public function service(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Service::class);
     }
 
-    public function persistentStorages(): \Illuminate\Database\Eloquent\Relations\MorphMany()
+    public function persistentStorages(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(LocalPersistentVolume::class, 'resource');
     }
 
-    public function fileStorages(): \Illuminate\Database\Eloquent\Relations\MorphMany()
+    public function fileStorages(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(LocalFileVolume::class, 'resource');
     }
@@ -144,7 +144,7 @@ class ServiceDatabase extends BaseModel
         getFilesystemVolumesFromServer($this, $isInit);
     }
 
-    public function scheduledBackups(): \Illuminate\Database\Eloquent\Relations\MorphMany()
+    public function scheduledBackups(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(ScheduledDatabaseBackup::class, 'database');
     }

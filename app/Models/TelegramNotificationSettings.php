@@ -81,7 +81,7 @@ class TelegramNotificationSettings extends Model
         'telegram_notifications_traefik_outdated_thread_id' => 'encrypted',
     ];
 
-    public function team(): \Illuminate\Database\Eloquent\Relations\BelongsTo()
+    public function team(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Team::class);
     }

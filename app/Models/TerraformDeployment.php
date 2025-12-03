@@ -41,17 +41,17 @@ class TerraformDeployment extends Model
     public const STATUS_DESTROYED = 'destroyed';
 
     // Relationships
-    public function organization(): \Illuminate\Database\Eloquent\Relations\BelongsTo()
+    public function organization(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Organization::class);
     }
 
-    public function server(): \Illuminate\Database\Eloquent\Relations\BelongsTo()
+    public function server(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Server::class);
     }
 
-    public function providerCredential(): \Illuminate\Database\Eloquent\Relations\BelongsTo()
+    public function providerCredential(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(CloudProviderCredential::class, 'provider_credential_id');
     }

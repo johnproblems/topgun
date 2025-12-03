@@ -20,12 +20,12 @@ class ScheduledTask extends BaseModel
         ];
     }
 
-    public function service(): \Illuminate\Database\Eloquent\Relations\BelongsTo()
+    public function service(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Service::class);
     }
 
-    public function application(): \Illuminate\Database\Eloquent\Relations\BelongsTo()
+    public function application(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Application::class);
     }

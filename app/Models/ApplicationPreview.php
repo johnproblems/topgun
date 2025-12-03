@@ -62,12 +62,12 @@ class ApplicationPreview extends BaseModel
         return (bool) str($this->status)->startsWith('running');
     }
 
-    public function application(): \Illuminate\Database\Eloquent\Relations\BelongsTo()
+    public function application(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Application::class);
     }
 
-    public function persistentStorages(): \Illuminate\Database\Eloquent\Relations\MorphMany()
+    public function persistentStorages(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(\App\Models\LocalPersistentVolume::class, 'resource');
     }
