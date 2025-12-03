@@ -6,6 +6,7 @@ use App\Helpers\SslHelper;
 use App\Models\Server;
 use App\Models\StandaloneDocker;
 use Lorisleiva\Actions\Concerns\AsAction;
+use Spatie\Activitylog\Contracts\Activity;
 
 class InstallDocker
 {
@@ -13,7 +14,7 @@ class InstallDocker
 
     private string $dockerVersion;
 
-    public function handle(Server $server)
+    public function handle(Server $server): Activity
     {
         $this->dockerVersion = config('constants.docker.minimum_required_version');
         $supported_os_type = $server->validateOS();

@@ -12,7 +12,7 @@ class ComplexStatusCheck
     use AsAction;
     use CalculatesExcludedStatus;
 
-    public function handle(Application $application)
+    public function handle(Application $application): void
     {
         $servers = $application->additional_servers;
         $servers->push($application->destination->server);

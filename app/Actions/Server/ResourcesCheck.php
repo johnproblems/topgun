@@ -19,7 +19,7 @@ class ResourcesCheck
 {
     use AsAction;
 
-    public function handle()
+    public function handle(): void
     {
         $seconds = 60;
         try {
@@ -35,7 +35,7 @@ class ResourcesCheck
             StandaloneDragonfly::where('last_online_at', '<', now()->subSeconds($seconds))->update(['status' => 'exited']);
             StandaloneClickhouse::where('last_online_at', '<', now()->subSeconds($seconds))->update(['status' => 'exited']);
         } catch (\Throwable $e) {
-            return handleError($e);
+            handleError($e);
         }
     }
 }

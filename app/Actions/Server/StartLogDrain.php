@@ -4,6 +4,7 @@ namespace App\Actions\Server;
 
 use App\Models\Server;
 use Lorisleiva\Actions\Concerns\AsAction;
+use Spatie\Activitylog\Contracts\Activity;
 
 class StartLogDrain
 {
@@ -11,7 +12,7 @@ class StartLogDrain
 
     public string $jobQueue = 'high';
 
-    public function handle(Server $server)
+    public function handle(Server $server): string|Activity
     {
         if ($server->settings->is_logdrain_newrelic_enabled) {
             $type = 'newrelic';

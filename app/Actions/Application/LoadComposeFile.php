@@ -9,7 +9,7 @@ class LoadComposeFile
 {
     use AsAction;
 
-    public function handle(Application $application)
+    public function handle(Application $application): void
     {
         $application->loadComposeFile();
     }

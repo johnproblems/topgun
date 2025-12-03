@@ -28,7 +28,7 @@ class ServerStorageCheckJob implements ShouldBeEncrypted, ShouldQueue, Silenced
 
     public function __construct(public Server $server, public int|string|null $percentage = null) {}
 
-    public function handle()
+    public function handle(): void
     {
         try {
             if ($this->server->isFunctional() === false) {

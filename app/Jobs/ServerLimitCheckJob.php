@@ -25,7 +25,7 @@ class ServerLimitCheckJob implements ShouldBeEncrypted, ShouldQueue
 
     public function __construct(public Team $team) {}
 
-    public function handle()
+    public function handle(): void
     {
         try {
             $servers = $this->team->servers;

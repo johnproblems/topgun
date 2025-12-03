@@ -12,7 +12,7 @@ class StopProxy
 {
     use AsAction;
 
-    public function handle(Server $server, bool $forceStop = true, int $timeout = 30, bool $restarting = false)
+    public function handle(Server $server, bool $forceStop = true, int $timeout = 30, bool $restarting = false): void
     {
         try {
             $containerName = $server->isSwarm() ? 'coolify-proxy_traefik' : 'coolify-proxy';
@@ -39,7 +39,7 @@ class StopProxy
             $server->proxy->status = 'exited';
             $server->save();
         } catch (\Throwable $e) {
-            return handleError($e);
+            handleError($e);
         } finally {
             ProxyDashboardCacheService::clearCache($server);
 

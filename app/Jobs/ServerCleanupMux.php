@@ -26,15 +26,15 @@ class ServerCleanupMux implements ShouldBeEncrypted, ShouldQueue
 
     public function __construct(public Server $server) {}
 
-    public function handle()
+    public function handle(): void
     {
         try {
             if ($this->server->serverStatus() === false) {
-                return 'Server is not reachable or not ready.';
+                return;
             }
             SshMultiplexingHelper::removeMuxFile($this->server);
         } catch (\Throwable $e) {
-            return handleError($e);
+            handleError($e);
         }
     }
 }

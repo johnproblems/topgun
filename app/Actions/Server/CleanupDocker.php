@@ -11,7 +11,10 @@ class CleanupDocker
 
     public string $jobQueue = 'high';
 
-    public function handle(Server $server, bool $deleteUnusedVolumes = false, bool $deleteUnusedNetworks = false)
+    /**
+     * @return array<int, array{command: string, output: string|null}>
+     */
+    public function handle(Server $server, bool $deleteUnusedVolumes = false, bool $deleteUnusedNetworks = false): array
     {
         $settings = instanceSettings();
         $realtimeImage = config('constants.coolify.realtime_image');

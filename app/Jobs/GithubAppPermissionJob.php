@@ -24,7 +24,7 @@ class GithubAppPermissionJob implements ShouldBeEncrypted, ShouldQueue
 
     public function __construct(public GithubApp $github_app) {}
 
-    public function handle()
+    public function handle(): void
     {
         try {
             $github_access_token = generateGithubJwt($this->github_app);

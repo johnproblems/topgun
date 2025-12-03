@@ -11,7 +11,10 @@ class CheckUpdates
 
     public string $jobQueue = 'high';
 
-    public function handle(Server $server)
+    /**
+     * @return array<string, mixed>
+     */
+    public function handle(Server $server): array
     {
         try {
             if ($server->serverStatus() === false) {

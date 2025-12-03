@@ -9,7 +9,7 @@ class GenerateConfig
 {
     use AsAction;
 
-    public function handle(Application $application, bool $is_json = false)
+    public function handle(Application $application, bool $is_json = false): string|array
     {
         return $application->generateConfig(is_json: $is_json);
     }

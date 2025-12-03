@@ -37,7 +37,7 @@ class ServerConnectionCheckJob implements ShouldBeEncrypted, ShouldQueue
         $configRepository->disableSshMux();
     }
 
-    public function handle()
+    public function handle(): void
     {
         try {
             // Check if server is disabled

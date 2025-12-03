@@ -28,7 +28,7 @@ class RestartProxyJob implements ShouldBeEncrypted, ShouldQueue
 
     public function __construct(public Server $server) {}
 
-    public function handle()
+    public function handle(): void
     {
         try {
             StopProxy::run($this->server, restarting: true);
@@ -39,7 +39,7 @@ class RestartProxyJob implements ShouldBeEncrypted, ShouldQueue
             StartProxy::run($this->server, force: true, restarting: true);
 
         } catch (\Throwable $e) {
-            return handleError($e);
+            handleError($e);
         }
     }
 }

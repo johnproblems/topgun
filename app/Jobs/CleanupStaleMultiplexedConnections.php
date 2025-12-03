@@ -16,7 +16,7 @@ class CleanupStaleMultiplexedConnections implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public function handle()
+    public function handle(): void
     {
         $this->cleanupStaleConnections();
         $this->cleanupNonExistentServerConnections();

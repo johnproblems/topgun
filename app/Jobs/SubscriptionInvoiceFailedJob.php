@@ -20,7 +20,7 @@ class SubscriptionInvoiceFailedJob implements ShouldBeEncrypted, ShouldQueue
         $this->onQueue('high');
     }
 
-    public function handle()
+    public function handle(): void
     {
         try {
             // Double-check subscription status before sending failure notification
