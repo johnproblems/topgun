@@ -23,7 +23,7 @@ class TeamInvitation extends Model
         $this->attributes['email'] = strtolower($value);
     }
 
-    public function team()
+    public function team(): \Illuminate\Database\Eloquent\Relations\BelongsTo()
     {
         return $this->belongsTo(Team::class);
     }

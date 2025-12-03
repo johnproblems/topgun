@@ -291,32 +291,32 @@ class Team extends Model implements SendsDiscord, SendsEmail, SendsPushover, Sen
         return $this->hasMany(S3Storage::class)->where('is_usable', true);
     }
 
-    public function emailNotificationSettings()
+    public function emailNotificationSettings(): \Illuminate\Database\Eloquent\Relations\HasOne()
     {
         return $this->hasOne(EmailNotificationSettings::class);
     }
 
-    public function discordNotificationSettings()
+    public function discordNotificationSettings(): \Illuminate\Database\Eloquent\Relations\HasOne()
     {
         return $this->hasOne(DiscordNotificationSettings::class);
     }
 
-    public function telegramNotificationSettings()
+    public function telegramNotificationSettings(): \Illuminate\Database\Eloquent\Relations\HasOne()
     {
         return $this->hasOne(TelegramNotificationSettings::class);
     }
 
-    public function slackNotificationSettings()
+    public function slackNotificationSettings(): \Illuminate\Database\Eloquent\Relations\HasOne()
     {
         return $this->hasOne(SlackNotificationSettings::class);
     }
 
-    public function pushoverNotificationSettings()
+    public function pushoverNotificationSettings(): \Illuminate\Database\Eloquent\Relations\HasOne()
     {
         return $this->hasOne(PushoverNotificationSettings::class);
     }
 
-    public function webhookNotificationSettings()
+    public function webhookNotificationSettings(): \Illuminate\Database\Eloquent\Relations\HasOne()
     {
         return $this->hasOne(WebhookNotificationSettings::class);
     }

@@ -36,7 +36,7 @@ class S3Storage extends BaseModel
         return $this->is_usable;
     }
 
-    public function team()
+    public function team(): \Illuminate\Database\Eloquent\Relations\BelongsTo()
     {
         return $this->belongsTo(Team::class);
     }

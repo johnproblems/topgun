@@ -51,7 +51,7 @@ class SlackNotificationSettings extends Model
         'traefik_outdated_slack_notifications' => 'boolean',
     ];
 
-    public function team()
+    public function team(): \Illuminate\Database\Eloquent\Relations\BelongsTo()
     {
         return $this->belongsTo(Team::class);
     }
