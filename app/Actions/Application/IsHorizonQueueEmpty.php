@@ -9,7 +9,7 @@ class IsHorizonQueueEmpty
 {
     use AsAction;
 
-    public function handle()
+    public function handle(): bool
     {
         $hostname = gethostname();
         $recent = app(JobRepository::class)->getRecent();

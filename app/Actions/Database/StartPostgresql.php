@@ -6,6 +6,7 @@ use App\Helpers\SslHelper;
 use App\Models\SslCertificate;
 use App\Models\StandalonePostgresql;
 use Lorisleiva\Actions\Concerns\AsAction;
+use Spatie\Activitylog\Contracts\Activity;
 use Symfony\Component\Yaml\Yaml;
 
 class StartPostgresql
@@ -22,7 +23,7 @@ class StartPostgresql
 
     private ?SslCertificate $ssl_certificate = null;
 
-    public function handle(StandalonePostgresql $database)
+    public function handle(StandalonePostgresql $database): ?Activity
     {
         $this->database = $database;
         $container_name = $this->database->uuid;
@@ -72,7 +73,7 @@ class StartPostgresql
             if (! $caCert) {
                 $this->dispatch('error', 'No CA certificate found for this database. Please generate a CA certificate for this server in the server/advanced page.');
 
-                return;
+                return null;
             }
 
             $this->ssl_certificate = $this->database->sslCertificates()->first();
@@ -234,7 +235,10 @@ class StartPostgresql
         return remote_process($this->commands, $database->destination->server, callEventOnFinish: 'DatabaseStatusChanged');
     }
 
-    private function generate_local_persistent_volumes()
+    /**
+     * @return array<int, string>
+     */
+    private function generate_local_persistent_volumes(): array
     {
         $local_persistent_volumes = [];
         foreach ($this->database->persistentStorages as $persistentStorage) {
@@ -249,7 +253,10 @@ class StartPostgresql
         return $local_persistent_volumes;
     }
 
-    private function generate_local_persistent_volumes_only_volume_names()
+    /**
+     * @return array<string, array<string, bool|string>>
+     */
+    private function generate_local_persistent_volumes_only_volume_names(): array
     {
         $local_persistent_volumes_names = [];
         foreach ($this->database->persistentStorages as $persistentStorage) {
@@ -266,7 +273,10 @@ class StartPostgresql
         return $local_persistent_volumes_names;
     }
 
-    private function generate_environment_variables()
+    /**
+     * @return array<int, string>
+     */
+    private function generate_environment_variables(): array
     {
         $environment_variables = collect();
         foreach ($this->database->runtime_environment_variables as $env) {
@@ -293,7 +303,7 @@ class StartPostgresql
         return $environment_variables->all();
     }
 
-    private function generate_init_scripts()
+    private function generate_init_scripts(): void
     {
         $this->commands[] = "rm -rf $this->configuration_dir/docker-entrypoint-initdb.d/*";
 
@@ -310,7 +320,7 @@ class StartPostgresql
         }
     }
 
-    private function add_custom_conf()
+    private function add_custom_conf(): void
     {
         $filename = 'custom-postgres.conf';
         $config_file_path = "$this->configuration_dir/$filename";

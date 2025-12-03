@@ -10,7 +10,7 @@ class StartSentinel
 {
     use AsAction;
 
-    public function handle(Server $server, bool $restart = false, ?string $latestVersion = null, ?string $customImage = null)
+    public function handle(Server $server, bool $restart = false, ?string $latestVersion = null, ?string $customImage = null): void
     {
         if ($server->isSwarm() || $server->isBuildServer()) {
             return;

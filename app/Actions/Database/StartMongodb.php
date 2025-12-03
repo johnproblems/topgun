@@ -6,6 +6,7 @@ use App\Helpers\SslHelper;
 use App\Models\SslCertificate;
 use App\Models\StandaloneMongodb;
 use Lorisleiva\Actions\Concerns\AsAction;
+use Spatie\Activitylog\Contracts\Activity;
 use Symfony\Component\Yaml\Yaml;
 
 class StartMongodb
@@ -20,7 +21,7 @@ class StartMongodb
 
     private ?SslCertificate $ssl_certificate = null;
 
-    public function handle(StandaloneMongodb $database)
+    public function handle(StandaloneMongodb $database): ?Activity
     {
         $this->database = $database;
 
@@ -71,7 +72,7 @@ class StartMongodb
             if (! $caCert) {
                 $this->dispatch('error', 'No CA certificate found for this database. Please generate a CA certificate for this server in the server/advanced page.');
 
-                return;
+                return null;
             }
             $this->ssl_certificate = $this->database->sslCertificates()->first();
 
@@ -271,7 +272,10 @@ class StartMongodb
         return remote_process($this->commands, $database->destination->server, callEventOnFinish: 'DatabaseStatusChanged');
     }
 
-    private function generate_local_persistent_volumes()
+    /**
+     * @return array<int, string>
+     */
+    private function generate_local_persistent_volumes(): array
     {
         $local_persistent_volumes = [];
         foreach ($this->database->persistentStorages as $persistentStorage) {
@@ -286,7 +290,10 @@ class StartMongodb
         return $local_persistent_volumes;
     }
 
-    private function generate_local_persistent_volumes_only_volume_names()
+    /**
+     * @return array<string, array<string, bool|string>>
+     */
+    private function generate_local_persistent_volumes_only_volume_names(): array
     {
         $local_persistent_volumes_names = [];
         foreach ($this->database->persistentStorages as $persistentStorage) {
@@ -303,7 +310,10 @@ class StartMongodb
         return $local_persistent_volumes_names;
     }
 
-    private function generate_environment_variables()
+    /**
+     * @return array<int, string>
+     */
+    private function generate_environment_variables(): array
     {
         $environment_variables = collect();
         foreach ($this->database->runtime_environment_variables as $env) {
@@ -327,7 +337,7 @@ class StartMongodb
         return $environment_variables->all();
     }
 
-    private function add_custom_mongo_conf()
+    private function add_custom_mongo_conf(): void
     {
         if (is_null($this->database->mongo_conf) || empty($this->database->mongo_conf)) {
             return;
@@ -338,7 +348,7 @@ class StartMongodb
         $this->commands[] = "echo '{$content_base64}' | base64 -d | tee $this->configuration_dir/{$filename} > /dev/null";
     }
 
-    private function add_default_database()
+    private function add_default_database(): void
     {
         $content = "db = db.getSiblingDB(\"{$this->database->mongo_initdb_database}\");db.createCollection('init_collection');db.createUser({user: \"{$this->database->mongo_initdb_root_username}\", pwd: \"{$this->database->mongo_initdb_root_password}\",roles: [{role:\"readWrite\",db:\"{$this->database->mongo_initdb_database}\"}]});";
         $content_base64 = base64_encode($content);

@@ -27,7 +27,7 @@ class VolumeCloneJob implements ShouldBeEncrypted, ShouldQueue
         $this->onQueue('high');
     }
 
-    public function handle()
+    public function handle(): void
     {
         try {
             if (! $this->targetServer || $this->targetServer->id === $this->sourceServer->id) {

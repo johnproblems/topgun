@@ -103,7 +103,7 @@ class PushServerUpdateJob implements ShouldBeEncrypted, ShouldQueue, Silenced
         $this->allServiceDatabaseIds = collect();
     }
 
-    public function handle()
+    public function handle(): void
     {
         // Defensive initialization for Collection properties to handle queue deserialization edge cases
         $this->serviceContainerStatuses ??= collect();

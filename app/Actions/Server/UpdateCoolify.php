@@ -16,7 +16,7 @@ class UpdateCoolify
 
     public ?string $currentVersion = null;
 
-    public function handle($manual_update = false)
+    public function handle($manual_update = false): void
     {
         if (isDev()) {
             Sleep::for(10)->seconds();
@@ -47,7 +47,7 @@ class UpdateCoolify
         $settings->save();
     }
 
-    private function update()
+    private function update(): void
     {
         $helperImage = config('constants.coolify.helper_image');
         $latest_version = getHelperVersion();

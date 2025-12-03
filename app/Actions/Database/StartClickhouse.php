@@ -4,6 +4,7 @@ namespace App\Actions\Database;
 
 use App\Models\StandaloneClickhouse;
 use Lorisleiva\Actions\Concerns\AsAction;
+use Spatie\Activitylog\Contracts\Activity;
 use Symfony\Component\Yaml\Yaml;
 
 class StartClickhouse
@@ -16,7 +17,7 @@ class StartClickhouse
 
     public string $configuration_dir;
 
-    public function handle(StandaloneClickhouse $database)
+    public function handle(StandaloneClickhouse $database): Activity
     {
         $this->database = $database;
 
@@ -113,7 +114,10 @@ class StartClickhouse
         return remote_process($this->commands, $database->destination->server, callEventOnFinish: 'DatabaseStatusChanged');
     }
 
-    private function generate_local_persistent_volumes()
+    /**
+     * @return array<int, string>
+     */
+    private function generate_local_persistent_volumes(): array
     {
         $local_persistent_volumes = [];
         foreach ($this->database->persistentStorages as $persistentStorage) {
@@ -128,7 +132,10 @@ class StartClickhouse
         return $local_persistent_volumes;
     }
 
-    private function generate_local_persistent_volumes_only_volume_names()
+    /**
+     * @return array<string, array<string, bool|string>>
+     */
+    private function generate_local_persistent_volumes_only_volume_names(): array
     {
         $local_persistent_volumes_names = [];
         foreach ($this->database->persistentStorages as $persistentStorage) {
@@ -145,7 +152,10 @@ class StartClickhouse
         return $local_persistent_volumes_names;
     }
 
-    private function generate_environment_variables()
+    /**
+     * @return array<int, string>
+     */
+    private function generate_environment_variables(): array
     {
         $environment_variables = collect();
         foreach ($this->database->runtime_environment_variables as $env) {

@@ -23,7 +23,7 @@ class ValidateServer
 
     public ?string $docker_version = null;
 
-    public function handle(Server $server)
+    public function handle(Server $server): string
     {
         $server->update([
             'validation_logs' => null,

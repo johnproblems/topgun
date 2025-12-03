@@ -7,6 +7,7 @@ use App\Models\SslCertificate;
 use App\Models\StandaloneRedis;
 use Illuminate\Support\Facades\Storage;
 use Lorisleiva\Actions\Concerns\AsAction;
+use Spatie\Activitylog\Contracts\Activity;
 use Symfony\Component\Yaml\Yaml;
 
 class StartRedis
@@ -21,7 +22,7 @@ class StartRedis
 
     private ?SslCertificate $ssl_certificate = null;
 
-    public function handle(StandaloneRedis $database)
+    public function handle(StandaloneRedis $database): ?Activity
     {
         $this->database = $database;
 
@@ -66,7 +67,7 @@ class StartRedis
             if (! $caCert) {
                 $this->dispatch('error', 'No CA certificate found for this database. Please generate a CA certificate for this server in the server/advanced page.');
 
-                return;
+                return null;
             }
 
             $this->ssl_certificate = $this->database->sslCertificates()->first();
@@ -213,7 +214,10 @@ class StartRedis
         return remote_process($this->commands, $database->destination->server, callEventOnFinish: 'DatabaseStatusChanged');
     }
 
-    private function generate_local_persistent_volumes()
+    /**
+     * @return array<int, string>
+     */
+    private function generate_local_persistent_volumes(): array
     {
         $local_persistent_volumes = [];
         foreach ($this->database->persistentStorages as $persistentStorage) {
@@ -228,7 +232,10 @@ class StartRedis
         return $local_persistent_volumes;
     }
 
-    private function generate_local_persistent_volumes_only_volume_names()
+    /**
+     * @return array<string, array<string, bool|string>>
+     */
+    private function generate_local_persistent_volumes_only_volume_names(): array
     {
         $local_persistent_volumes_names = [];
         foreach ($this->database->persistentStorages as $persistentStorage) {
@@ -245,7 +252,10 @@ class StartRedis
         return $local_persistent_volumes_names;
     }
 
-    private function generate_environment_variables()
+    /**
+     * @return array<int, string>
+     */
+    private function generate_environment_variables(): array
     {
         $environment_variables = collect();
 
@@ -310,7 +320,7 @@ class StartRedis
         return $command;
     }
 
-    private function add_custom_redis()
+    private function add_custom_redis(): void
     {
         if (is_null($this->database->redis_conf) || empty($this->database->redis_conf)) {
             return;

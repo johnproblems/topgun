@@ -9,7 +9,7 @@ class RestartContainer
 {
     use AsAction;
 
-    public function handle(Server $server, string $containerName)
+    public function handle(Server $server, string $containerName): void
     {
         $server->restartContainer($containerName);
     }

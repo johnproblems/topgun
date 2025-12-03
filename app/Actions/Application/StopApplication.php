@@ -13,7 +13,7 @@ class StopApplication
 
     public string $jobQueue = 'high';
 
-    public function handle(Application $application, bool $previewDeployments = false, bool $dockerCleanup = true)
+    public function handle(Application $application, bool $previewDeployments = false, bool $dockerCleanup = true): ?string
     {
         $servers = collect([$application->destination->server]);
         if ($application?->additional_servers?->count() > 0) {
@@ -28,7 +28,7 @@ class StopApplication
                 if ($server->isSwarm()) {
                     instant_remote_process(["docker stack rm {$application->uuid}"], $server);
 
-                    return;
+                    return null;
                 }
 
                 $containers = $previewDeployments
@@ -56,5 +56,7 @@ class StopApplication
             }
         }
         ServiceStatusChanged::dispatch($application->environment->project->team->id);
+
+        return null;
     }
 }

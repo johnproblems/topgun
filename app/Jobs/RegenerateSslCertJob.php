@@ -27,7 +27,7 @@ class RegenerateSslCertJob implements ShouldQueue
         protected bool $force_regeneration = false,
     ) {}
 
-    public function handle()
+    public function handle(): void
     {
         $query = SslCertificate::query();
 

@@ -14,7 +14,7 @@ class StopService
 
     public string $jobQueue = 'high';
 
-    public function handle(Service $service, bool $deleteConnectedNetworks = false, bool $dockerCleanup = true)
+    public function handle(Service $service, bool $deleteConnectedNetworks = false, bool $dockerCleanup = true): ?string
     {
         try {
             $server = $service->destination->server;
@@ -42,6 +42,8 @@ class StopService
             if ($dockerCleanup) {
                 CleanupDocker::dispatch($server, false, false);
             }
+
+            return null;
         } catch (\Exception $e) {
             return $e->getMessage();
         } finally {

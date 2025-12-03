@@ -33,17 +33,17 @@ class ServerCheckJob implements ShouldBeEncrypted, ShouldQueue
 
     public function __construct(public Server $server) {}
 
-    public function handle()
+    public function handle(): void
     {
         try {
             if ($this->server->serverStatus() === false) {
-                return 'Server is not reachable or not ready.';
+                return;
             }
 
             if (! $this->server->isSwarmWorker() && ! $this->server->isBuildServer()) {
                 ['containers' => $this->containers, 'containerReplicates' => $containerReplicates] = $this->server->getContainers();
                 if (is_null($this->containers)) {
-                    return 'No containers found.';
+                    return;
                 }
                 GetContainersStatus::run($this->server, $this->containers, $containerReplicates);
 
@@ -82,7 +82,7 @@ class ServerCheckJob implements ShouldBeEncrypted, ShouldQueue
                 }
             }
         } catch (\Throwable $e) {
-            return handleError($e);
+            handleError($e);
         }
     }
 

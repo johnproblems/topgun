@@ -11,7 +11,7 @@ class DeleteService
 {
     use AsAction;
 
-    public function handle(Service $service, bool $deleteVolumes, bool $deleteConnectedNetworks, bool $deleteConfigurations, bool $dockerCleanup)
+    public function handle(Service $service, bool $deleteVolumes, bool $deleteConnectedNetworks, bool $deleteConfigurations, bool $dockerCleanup): void
     {
         try {
             $server = data_get($service, 'server');

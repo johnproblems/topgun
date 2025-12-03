@@ -40,7 +40,7 @@ class DeleteResourceJob implements ShouldBeEncrypted, ShouldQueue
         $this->onQueue('high');
     }
 
-    public function handle()
+    public function handle(): void
     {
         try {
             // Handle ApplicationPreview instances separately
