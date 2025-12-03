@@ -27,22 +27,22 @@ class SslCertificate extends Model
         'valid_until' => 'datetime',
     ];
 
-    public function application()
+    public function application(): \Illuminate\Database\Eloquent\Relations\MorphTo()
     {
         return $this->morphTo('resource');
     }
 
-    public function service()
+    public function service(): \Illuminate\Database\Eloquent\Relations\MorphTo()
     {
         return $this->morphTo('resource');
     }
 
-    public function database()
+    public function database(): \Illuminate\Database\Eloquent\Relations\MorphTo()
     {
         return $this->morphTo('resource');
     }
 
-    public function server()
+    public function server(): \Illuminate\Database\Eloquent\Relations\BelongsTo()
     {
         return $this->belongsTo(Server::class);
     }

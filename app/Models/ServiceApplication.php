@@ -100,22 +100,22 @@ class ServiceApplication extends BaseModel
         return null;
     }
 
-    public function service()
+    public function service(): \Illuminate\Database\Eloquent\Relations\BelongsTo()
     {
         return $this->belongsTo(Service::class);
     }
 
-    public function persistentStorages()
+    public function persistentStorages(): \Illuminate\Database\Eloquent\Relations\MorphMany()
     {
         return $this->morphMany(LocalPersistentVolume::class, 'resource');
     }
 
-    public function fileStorages()
+    public function fileStorages(): \Illuminate\Database\Eloquent\Relations\MorphMany()
     {
         return $this->morphMany(LocalFileVolume::class, 'resource');
     }
 
-    public function environment_variables()
+    public function environment_variables(): \Illuminate\Database\Eloquent\Relations\MorphMany()
     {
         return $this->morphMany(EnvironmentVariable::class, 'resourceable');
     }

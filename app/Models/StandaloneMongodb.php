@@ -185,7 +185,7 @@ class StandaloneMongodb extends BaseModel
         return data_get($this, 'is_log_drain_enabled', false);
     }
 
-    public function sslCertificates()
+    public function sslCertificates(): \Illuminate\Database\Eloquent\Relations\MorphMany()
     {
         return $this->morphMany(SslCertificate::class, 'resource');
     }
@@ -294,32 +294,32 @@ class StandaloneMongodb extends BaseModel
         );
     }
 
-    public function environment()
+    public function environment(): \Illuminate\Database\Eloquent\Relations\BelongsTo()
     {
         return $this->belongsTo(Environment::class);
     }
 
-    public function fileStorages()
+    public function fileStorages(): \Illuminate\Database\Eloquent\Relations\MorphMany()
     {
         return $this->morphMany(LocalFileVolume::class, 'resource');
     }
 
-    public function destination()
+    public function destination(): \Illuminate\Database\Eloquent\Relations\MorphTo()
     {
         return $this->morphTo();
     }
 
-    public function runtime_environment_variables()
+    public function runtime_environment_variables(): \Illuminate\Database\Eloquent\Relations\MorphMany()
     {
         return $this->morphMany(EnvironmentVariable::class, 'resourceable');
     }
 
-    public function persistentStorages()
+    public function persistentStorages(): \Illuminate\Database\Eloquent\Relations\MorphMany()
     {
         return $this->morphMany(LocalPersistentVolume::class, 'resource');
     }
 
-    public function scheduledBackups()
+    public function scheduledBackups(): \Illuminate\Database\Eloquent\Relations\MorphMany()
     {
         return $this->morphMany(ScheduledDatabaseBackup::class, 'database');
     }
@@ -373,7 +373,7 @@ class StandaloneMongodb extends BaseModel
         return true;
     }
 
-    public function environment_variables()
+    public function environment_variables(): \Illuminate\Database\Eloquent\Relations\MorphMany()
     {
         return $this->morphMany(EnvironmentVariable::class, 'resourceable')
             ->orderByRaw("

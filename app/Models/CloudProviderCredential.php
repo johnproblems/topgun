@@ -41,17 +41,17 @@ class CloudProviderCredential extends Model
     ];
 
     // Relationships
-    public function organization()
+    public function organization(): \Illuminate\Database\Eloquent\Relations\BelongsTo()
     {
         return $this->belongsTo(Organization::class);
     }
 
-    public function terraformDeployments()
+    public function terraformDeployments(): \Illuminate\Database\Eloquent\Relations\HasMany()
     {
         return $this->hasMany(TerraformDeployment::class, 'provider_credential_id');
     }
 
-    public function servers()
+    public function servers(): \Illuminate\Database\Eloquent\Relations\HasMany()
     {
         return $this->hasMany(Server::class, 'provider_credential_id');
     }

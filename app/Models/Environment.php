@@ -57,52 +57,52 @@ class Environment extends BaseModel
             $this->services()->count() == 0;
     }
 
-    public function environment_variables()
+    public function environment_variables(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(SharedEnvironmentVariable::class);
     }
 
-    public function applications()
+    public function applications(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Application::class);
     }
 
-    public function postgresqls()
+    public function postgresqls(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(StandalonePostgresql::class);
     }
 
-    public function redis()
+    public function redis(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(StandaloneRedis::class);
     }
 
-    public function mongodbs()
+    public function mongodbs(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(StandaloneMongodb::class);
     }
 
-    public function mysqls()
+    public function mysqls(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(StandaloneMysql::class);
     }
 
-    public function mariadbs()
+    public function mariadbs(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(StandaloneMariadb::class);
     }
 
-    public function keydbs()
+    public function keydbs(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(StandaloneKeydb::class);
     }
 
-    public function dragonflies()
+    public function dragonflies(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(StandaloneDragonfly::class);
     }
 
-    public function clickhouses()
+    public function clickhouses(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(StandaloneClickhouse::class);
     }
@@ -121,12 +121,12 @@ class Environment extends BaseModel
         return $postgresqls->concat($redis)->concat($mongodbs)->concat($mysqls)->concat($mariadbs)->concat($keydbs)->concat($dragonflies)->concat($clickhouses);
     }
 
-    public function project()
+    public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
 
-    public function services()
+    public function services(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Service::class);
     }

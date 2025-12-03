@@ -23,57 +23,57 @@ class StandaloneDocker extends BaseModel
         });
     }
 
-    public function applications()
+    public function applications(): \Illuminate\Database\Eloquent\Relations\MorphMany()
     {
         return $this->morphMany(Application::class, 'destination');
     }
 
-    public function postgresqls()
+    public function postgresqls(): \Illuminate\Database\Eloquent\Relations\MorphMany()
     {
         return $this->morphMany(StandalonePostgresql::class, 'destination');
     }
 
-    public function redis()
+    public function redis(): \Illuminate\Database\Eloquent\Relations\MorphMany()
     {
         return $this->morphMany(StandaloneRedis::class, 'destination');
     }
 
-    public function mongodbs()
+    public function mongodbs(): \Illuminate\Database\Eloquent\Relations\MorphMany()
     {
         return $this->morphMany(StandaloneMongodb::class, 'destination');
     }
 
-    public function mysqls()
+    public function mysqls(): \Illuminate\Database\Eloquent\Relations\MorphMany()
     {
         return $this->morphMany(StandaloneMysql::class, 'destination');
     }
 
-    public function mariadbs()
+    public function mariadbs(): \Illuminate\Database\Eloquent\Relations\MorphMany()
     {
         return $this->morphMany(StandaloneMariadb::class, 'destination');
     }
 
-    public function keydbs()
+    public function keydbs(): \Illuminate\Database\Eloquent\Relations\MorphMany()
     {
         return $this->morphMany(StandaloneKeydb::class, 'destination');
     }
 
-    public function dragonflies()
+    public function dragonflies(): \Illuminate\Database\Eloquent\Relations\MorphMany()
     {
         return $this->morphMany(StandaloneDragonfly::class, 'destination');
     }
 
-    public function clickhouses()
+    public function clickhouses(): \Illuminate\Database\Eloquent\Relations\MorphMany()
     {
         return $this->morphMany(StandaloneClickhouse::class, 'destination');
     }
 
-    public function server()
+    public function server(): \Illuminate\Database\Eloquent\Relations\BelongsTo()
     {
         return $this->belongsTo(Server::class);
     }
 
-    public function services()
+    public function services(): \Illuminate\Database\Eloquent\Relations\MorphMany()
     {
         return $this->morphMany(Service::class, 'destination');
     }
