@@ -215,12 +215,12 @@ class User extends Authenticatable implements SendsEmail
         return new NewAccessToken($token, $token->getKey().'|'.$plainTextToken);
     }
 
-    public function teams()
+    public function teams(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(Team::class)->withPivot('role');
     }
 
-    public function organizations()
+    public function organizations(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(Organization::class, 'organization_users')
             ->using(OrganizationUser::class)
@@ -228,7 +228,7 @@ class User extends Authenticatable implements SendsEmail
             ->withTimestamps();
     }
 
-    public function currentOrganization()
+    public function currentOrganization(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Organization::class, 'current_organization_id');
     }
@@ -248,7 +248,7 @@ class User extends Authenticatable implements SendsEmail
         return $this->currentOrganization?->activeLicense?->hasFeature($feature) ?? false;
     }
 
-    public function changelogReads()
+    public function changelogReads(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(UserChangelogRead::class);
     }

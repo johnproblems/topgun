@@ -39,7 +39,7 @@ class LocalFileVolume extends BaseModel
         );
     }
 
-    public function service()
+    public function service(): \Illuminate\Database\Eloquent\Relations\MorphTo
     {
         return $this->morphTo('resource');
     }

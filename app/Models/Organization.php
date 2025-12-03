@@ -33,17 +33,17 @@ class Organization extends Model
     ];
 
     // Relationships
-    public function parent()
+    public function parent(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Organization::class, 'parent_organization_id');
     }
 
-    public function children()
+    public function children(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Organization::class, 'parent_organization_id');
     }
 
-    public function users()
+    public function users(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(User::class, 'organization_users')
             ->using(OrganizationUser::class)
@@ -51,42 +51,42 @@ class Organization extends Model
             ->withTimestamps();
     }
 
-    public function activeLicense()
+    public function activeLicense(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(EnterpriseLicense::class)->where('status', 'active');
     }
 
-    public function licenses()
+    public function licenses(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(EnterpriseLicense::class);
     }
 
-    public function servers()
+    public function servers(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Server::class);
     }
 
-    public function whiteLabelConfig()
+    public function whiteLabelConfig(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(WhiteLabelConfig::class);
     }
 
-    public function cloudProviderCredentials()
+    public function cloudProviderCredentials(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(CloudProviderCredential::class);
     }
 
-    public function terraformDeployments()
+    public function terraformDeployments(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(TerraformDeployment::class);
     }
 
-    public function applications()
+    public function applications(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Application::class);
     }
 
-    public function domains()
+    public function domains(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Domain::class);
     }
