@@ -36,7 +36,7 @@ class TeamInvitation extends Model
         return TeamInvitation::whereTeamId(currentTeam()->id);
     }
 
-    public function isValid()
+    public function isValid(): bool
     {
         $createdAt = $this->created_at;
         $diff = $createdAt->diffInDays(now());

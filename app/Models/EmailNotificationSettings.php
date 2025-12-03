@@ -72,7 +72,7 @@ class EmailNotificationSettings extends Model
         return $this->belongsTo(Team::class);
     }
 
-    public function isEnabled()
+    public function isEnabled(): bool
     {
         return $this->smtp_enabled || $this->resend_enabled || $this->use_instance_email_settings;
     }

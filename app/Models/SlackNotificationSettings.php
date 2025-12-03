@@ -56,7 +56,7 @@ class SlackNotificationSettings extends Model
         return $this->belongsTo(Team::class);
     }
 
-    public function isEnabled()
+    public function isEnabled(): bool
     {
         return $this->slack_enabled;
     }

@@ -139,7 +139,7 @@ class ServiceDatabase extends BaseModel
         return $this->morphMany(LocalFileVolume::class, 'resource');
     }
 
-    public function getFilesFromServer(bool $isInit = false)
+    public function getFilesFromServer(bool $isInit = false): void
     {
         getFilesystemVolumesFromServer($this, $isInit);
     }

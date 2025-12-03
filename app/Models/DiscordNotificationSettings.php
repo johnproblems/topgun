@@ -58,7 +58,7 @@ class DiscordNotificationSettings extends Model
         return $this->belongsTo(Team::class);
     }
 
-    public function isEnabled()
+    public function isEnabled(): bool
     {
         return $this->discord_enabled;
     }

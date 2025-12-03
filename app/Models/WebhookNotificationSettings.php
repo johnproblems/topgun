@@ -56,12 +56,12 @@ class WebhookNotificationSettings extends Model
         ];
     }
 
-    public function team()
+    public function team(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Team::class);
     }
 
-    public function isEnabled()
+    public function isEnabled(): bool
     {
         return $this->webhook_enabled;
     }
