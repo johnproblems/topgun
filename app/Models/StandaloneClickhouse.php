@@ -8,6 +8,18 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property-read \App\Models\Environment $environment
+ * @property-read \App\Models\StandaloneDocker|\App\Models\SwarmDocker $destination
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\LocalPersistentVolume> $persistentStorages
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EnvironmentVariable> $runtime_environment_variables
+ * @property-read string $internal_db_url
+ * @property-read string $external_db_url
+ * @property-read string $database_type
+ * @property string|null $clickhouse_db ClickHouse database name
+ * @property-read array<int, string> $ports_mappings_array Computed array from ports_mappings
+ * @property-read bool $server_status Server functional status
+ */
 class StandaloneClickhouse extends BaseModel
 {
     use ClearsGlobalSearchCache, HasFactory, HasSafeStringAttribute, SoftDeletes;

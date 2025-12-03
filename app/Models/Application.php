@@ -122,6 +122,21 @@ use Visus\Cuid2\Cuid2;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Server> $additional_servers
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StandaloneDocker> $additional_networks
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ScheduledTask> $scheduled_tasks
+ * @property-read array<int, string> $ports_exposes_array Computed attribute from ports_exposes
+ * @property-read array<int, string> $ports_mappings_array Computed attribute from ports_mappings
+ * @property-read array<int, string> $fqdns Computed attribute from fqdn
+ * @property-read array<int, string> $custom_network_aliases_array Computed attribute from custom_network_aliases
+ * @property-read string|null $git_branch_location Computed Git branch location
+ * @property-read string|null $git_webhook Computed Git webhook URL
+ * @property-read array $git_commits Git commits information
+ * @property-read bool $server_status Server health status
+ * @property-read array<int, string>|null $watch_paths Computed watch paths
+ * @property string $status Application status
+ * @property string|null $image Docker image (via docker_registry_image_name)
+ * @property int|null $pull_request_id Pull request ID for preview deployments
+ * @property bool $is_container_label_readonly_enabled Container label readonly setting
+ * @property string|null $custom_docker_run_options Custom Docker run options
+ * @property string|null $custom_labels Custom labels for the container
  */
 class Application extends BaseModel
 {

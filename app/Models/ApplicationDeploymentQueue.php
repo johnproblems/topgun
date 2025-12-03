@@ -8,6 +8,12 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use OpenApi\Attributes as OA;
 
+/**
+ * @property-read \App\Models\Server|null $server Computed from server_id
+ * @property-read \App\Models\Application $application
+ * @property int|null $server_id Server ID for deployment
+ * @property int $pull_request_id Pull request ID (0 for main deployment)
+ */
 #[OA\Schema(
     description: 'Project model',
     type: 'object',

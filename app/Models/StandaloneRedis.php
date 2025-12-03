@@ -16,6 +16,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property-read string $internal_db_url
  * @property-read string $external_db_url
  * @property-read string $database_type
+ * @property string|null $redis_password Redis password
+ * @property string $redis_username Redis username (defaults to 'default')
+ * @property string|null $ssl_mode SSL mode for connection
+ * @property-read bool $server_status Server functional status
  */
 class StandaloneRedis extends BaseModel
 {
