@@ -13,7 +13,7 @@ class Webhook extends Component
 {
     use AuthorizesRequests;
 
-    public Team $team;
+    public ?Team $team = null;
 
     public WebhookNotificationSettings $settings;
 
