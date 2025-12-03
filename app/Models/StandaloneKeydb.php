@@ -162,7 +162,7 @@ class StandaloneKeydb extends BaseModel
         );
     }
 
-    public function tags()
+    public function tags(): \Illuminate\Database\Eloquent\Relations\MorphToMany
     {
         return $this->morphToMany(Tag::class, 'taggable');
     }

@@ -267,7 +267,7 @@ class StandaloneMariadb extends BaseModel
         return $this->morphMany(LocalFileVolume::class, 'resource');
     }
 
-    public function destination(): MorphTo
+    public function destination(): \Illuminate\Database\Eloquent\Relations\MorphTo
     {
         return $this->morphTo();
     }
