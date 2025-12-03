@@ -29,6 +29,26 @@ use OpenApi\Attributes as OA;
         'updated_at' => ['type' => 'string'],
     ]
 )]
+/**
+ * @property int $id
+ * @property string $uuid
+ * @property string $key
+ * @property string|null $value
+ * @property string|null $real_value
+ * @property bool $is_literal
+ * @property bool $is_multiline
+ * @property bool $is_preview
+ * @property bool $is_runtime
+ * @property bool $is_buildtime
+ * @property bool $is_shared
+ * @property bool $is_shown_once
+ * @property bool $is_required
+ * @property string|null $version
+ * @property string $resourceable_type
+ * @property int $resourceable_id
+ * @property Application|Service|StandalonePostgresql|StandaloneRedis|StandaloneMongodb|StandaloneMysql|StandaloneMariadb|null $resourceable
+ * @property Service|null $service
+ */
 class EnvironmentVariable extends BaseModel
 {
     protected $guarded = [];
@@ -82,7 +102,7 @@ class EnvironmentVariable extends BaseModel
         });
     }
 
-    public function service()
+    public function service(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Service::class);
     }
@@ -98,7 +118,7 @@ class EnvironmentVariable extends BaseModel
     /**
      * Get the parent resourceable model.
      */
-    public function resourceable()
+    public function resourceable(): \Illuminate\Database\Eloquent\Relations\MorphTo
     {
         return $this->morphTo();
     }

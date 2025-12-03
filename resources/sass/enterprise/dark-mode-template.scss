@@ -1,0 +1,118 @@
+// Dark Mode Overrides
+// This template provides dark mode variants for the white-label theme
+// Variables are set via scssphp compiler's setVariables() method
+
+// Color Variables - set by DynamicAssetController
+$primary_color: #3b82f6 !default;
+$secondary_color: #1f2937 !default;
+$accent_color: #10b981 !default;
+$success_color: #10b981 !default;
+$warning_color: #f59e0b !default;
+$error_color: #ef4444 !default;
+$info_color: #3b82f6 !default;
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        // Invert background and text colors
+        --color-background: #1a1a1a;
+        --color-background-rgb: 26, 26, 26;
+        --color-sidebar: #2a2a2a;
+        --color-sidebar-rgb: 42, 42, 42;
+        --color-text: #f0f0f0;
+        --color-text-rgb: 240, 240, 240;
+        --color-text-muted: rgba(240, 240, 240, 0.6);
+        --color-text-light: rgba(240, 240, 240, 0.4);
+        --color-border: #3a3a3a;
+        --color-border-rgb: 58, 58, 58;
+        --color-border-light: #4a4a4a;
+        --color-border-dark: #2a2a2a;
+
+        // Adjust accent colors for dark mode (slightly brighter)
+        --color-primary: #{adjust-color($primary_color, $lightness: 10%)};
+        --color-primary-light: #{adjust-color($primary_color, $lightness: 20%)};
+        --color-primary-dark: #{adjust-color($primary_color, $lightness: -10%)};
+
+        --color-secondary: #{adjust-color($secondary_color, $lightness: 10%)};
+        --color-secondary-light: #{adjust-color($secondary_color, $lightness: 20%)};
+        --color-secondary-dark: #{adjust-color($secondary_color, $lightness: -10%)};
+
+        --color-accent: #{adjust-color($accent_color, $lightness: 10%)};
+        --color-accent-light: #{adjust-color($accent_color, $lightness: 20%)};
+        --color-accent-dark: #{adjust-color($accent_color, $lightness: -10%)};
+
+        // Adjust status colors for dark mode
+        --color-success: #{adjust-color($success_color, $lightness: 10%)};
+        --color-success-light: #{adjust-color($success_color, $lightness: 20%)};
+        --color-success-dark: #{adjust-color($success_color, $lightness: -10%)};
+
+        --color-warning: #{adjust-color($warning_color, $lightness: 10%)};
+        --color-warning-light: #{adjust-color($warning_color, $lightness: 20%)};
+        --color-warning-dark: #{adjust-color($warning_color, $lightness: -10%)};
+
+        --color-error: #{adjust-color($error_color, $lightness: 10%)};
+        --color-error-light: #{adjust-color($error_color, $lightness: 20%)};
+        --color-error-dark: #{adjust-color($error_color, $lightness: -10%)};
+
+        --color-info: #{adjust-color($info_color, $lightness: 10%)};
+        --color-info-light: #{adjust-color($info_color, $lightness: 20%)};
+        --color-info-dark: #{adjust-color($info_color, $lightness: -10%)};
+
+        // Adjust shadows for dark mode
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+}
+
+// Dark mode class-based override (for manual dark mode toggle)
+.dark {
+    --color-background: #1a1a1a;
+    --color-background-rgb: 26, 26, 26;
+    --color-sidebar: #2a2a2a;
+    --color-sidebar-rgb: 42, 42, 42;
+    --color-text: #f0f0f0;
+    --color-text-rgb: 240, 240, 240;
+    --color-text-muted: rgba(240, 240, 240, 0.6);
+    --color-text-light: rgba(240, 240, 240, 0.4);
+    --color-border: #3a3a3a;
+    --color-border-rgb: 58, 58, 58;
+    --color-border-light: #4a4a4a;
+    --color-border-dark: #2a2a2a;
+
+    // Adjust accent colors
+    --color-primary: #{adjust-color($primary_color, $lightness: 10%)};
+    --color-primary-light: #{adjust-color($primary_color, $lightness: 20%)};
+    --color-primary-dark: #{adjust-color($primary_color, $lightness: -10%)};
+
+    --color-secondary: #{adjust-color($secondary_color, $lightness: 10%)};
+    --color-secondary-light: #{adjust-color($secondary_color, $lightness: 20%)};
+    --color-secondary-dark: #{adjust-color($secondary_color, $lightness: -10%)};
+
+    --color-accent: #{adjust-color($accent_color, $lightness: 10%)};
+    --color-accent-light: #{adjust-color($accent_color, $lightness: 20%)};
+    --color-accent-dark: #{adjust-color($accent_color, $lightness: -10%)};
+
+    // Adjust status colors
+    --color-success: #{adjust-color($success_color, $lightness: 10%)};
+    --color-success-light: #{adjust-color($success_color, $lightness: 20%)};
+    --color-success-dark: #{adjust-color($success_color, $lightness: -10%)};
+
+    --color-warning: #{adjust-color($warning_color, $lightness: 10%)};
+    --color-warning-light: #{adjust-color($warning_color, $lightness: 20%)};
+    --color-warning-dark: #{adjust-color($warning_color, $lightness: -10%)};
+
+    --color-error: #{adjust-color($error_color, $lightness: 10%)};
+    --color-error-light: #{adjust-color($error_color, $lightness: 20%)};
+    --color-error-dark: #{adjust-color($error_color, $lightness: -10%)};
+
+    --color-info: #{adjust-color($info_color, $lightness: 10%)};
+    --color-info-light: #{adjust-color($info_color, $lightness: 20%)};
+    --color-info-dark: #{adjust-color($info_color, $lightness: -10%)};
+
+    // Adjust shadows
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+}

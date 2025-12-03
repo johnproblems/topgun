@@ -43,7 +43,7 @@ class Logs extends Component
 
     public function getListeners()
     {
-        $teamId = auth()->user()->currentTeam()->id;
+        $teamId = auth()?->user()?->currentTeam()?->id;
 
         return [
             "echo-private:team.{$teamId},ServiceChecked" => '$refresh',
@@ -119,7 +119,7 @@ class Logs extends Component
                 }
             } elseif (data_get($this->parameters, 'database_uuid')) {
                 $this->type = 'database';
-                $resource = getResourceByUuid($this->parameters['database_uuid'], data_get(auth()->user()->currentTeam(), 'id'));
+                $resource = getResourceByUuid($this->parameters['database_uuid'], data_get(auth()?->user()?->currentTeam(), 'id'));
                 if (is_null($resource)) {
                     abort(404);
                 }

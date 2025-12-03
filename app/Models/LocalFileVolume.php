@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Symfony\Component\Yaml\Yaml;
 
+/**
+ * @property Application|Service|ServiceApplication|ServiceDatabase $resource
+ * @property-read Service|null $service
+ */
 class LocalFileVolume extends BaseModel
 {
     protected $casts = [
@@ -39,7 +43,7 @@ class LocalFileVolume extends BaseModel
         );
     }
 
-    public function service()
+    public function service(): \Illuminate\Database\Eloquent\Relations\MorphTo
     {
         return $this->morphTo('resource');
     }

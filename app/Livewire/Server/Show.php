@@ -75,7 +75,7 @@ class Show extends Component
 
     public function getListeners()
     {
-        $teamId = $this->server->team_id ?? auth()->user()->currentTeam()->id;
+        $teamId = $this->server->team_id ?? auth()?->user()?->currentTeam()?->id;
 
         return [
             'refreshServerShow' => 'refresh',

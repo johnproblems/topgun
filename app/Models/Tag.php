@@ -15,7 +15,10 @@ class Tag extends BaseModel
         return strtolower($value);
     }
 
-    public static function ownedByCurrentTeam()
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder<Tag>
+     */
+    public static function ownedByCurrentTeam(): \Illuminate\Database\Eloquent\Builder
     {
         return Tag::whereTeamId(currentTeam()->id)->orderBy('name');
     }

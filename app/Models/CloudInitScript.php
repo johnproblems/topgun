@@ -19,12 +19,16 @@ class CloudInitScript extends Model
         ];
     }
 
-    public function team()
+    public function team(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Team::class);
     }
 
-    public static function ownedByCurrentTeam(array $select = ['*'])
+    /**
+     * @param array<int, string> $select
+     * @return \Illuminate\Database\Eloquent\Builder<CloudInitScript>
+     */
+    public static function ownedByCurrentTeam(array $select = ['*']): \Illuminate\Database\Eloquent\Builder
     {
         $selectArray = collect($select)->concat(['id']);
 

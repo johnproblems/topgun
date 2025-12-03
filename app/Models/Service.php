@@ -17,6 +17,36 @@ use Spatie\Activitylog\Models\Activity;
 use Spatie\Url\Url;
 use Visus\Cuid2\Cuid2;
 
+/**
+ * @property int $id
+ * @property string $uuid
+ * @property string $name
+ * @property string|null $description
+ * @property int $environment_id
+ * @property int $server_id
+ * @property string|null $docker_compose_raw
+ * @property string|null $docker_compose
+ * @property string|null $destination_type
+ * @property int|null $destination_id
+ * @property bool $connect_to_docker_network
+ * @property bool $is_container_label_escape_enabled
+ * @property bool $is_container_label_readonly_enabled
+ * @property string|null $config_hash
+ * @property string|null $service_type
+ * @property string|null $compose_parsing_version
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\Models\Server $server
+ * @property-read \App\Models\Environment $environment
+ * @property-read \App\Models\StandaloneDocker|\App\Models\SwarmDocker|null $destination
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ServiceApplication> $applications
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ServiceDatabase> $databases
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EnvironmentVariable> $environment_variables
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ScheduledTask> $scheduled_tasks
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\LocalPersistentVolume> $persistentStorages
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\LocalFileVolume> $fileStorages
+ */
 #[OA\Schema(
     description: 'Service model',
     type: 'object',
@@ -148,12 +178,15 @@ class Service extends BaseModel
         return data_get($this, 'environment.project.team');
     }
 
-    public function tags()
+    public function tags(): \Illuminate\Database\Eloquent\Relations\MorphToMany
     {
         return $this->morphToMany(Tag::class, 'taggable');
     }
 
-    public static function ownedByCurrentTeam()
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder<Service>
+     */
+    public static function ownedByCurrentTeam(): \Illuminate\Database\Eloquent\Builder
     {
         return Service::whereRelation('environment.project.team', 'id', currentTeam()->id)->orderBy('name');
     }
@@ -1256,27 +1289,27 @@ class Service extends BaseModel
         return $this->getRequiredPort() !== null;
     }
 
-    public function applications()
+    public function applications(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(ServiceApplication::class);
     }
 
-    public function databases()
+    public function databases(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(ServiceDatabase::class);
     }
 
-    public function destination()
+    public function destination(): \Illuminate\Database\Eloquent\Relations\MorphTo
     {
         return $this->morphTo();
     }
 
-    public function environment()
+    public function environment(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Environment::class);
     }
 
-    public function server()
+    public function server(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Server::class);
     }

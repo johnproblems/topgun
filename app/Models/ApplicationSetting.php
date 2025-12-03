@@ -43,7 +43,7 @@ class ApplicationSetting extends Model
         );
     }
 
-    public function application()
+    public function application(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Application::class);
     }

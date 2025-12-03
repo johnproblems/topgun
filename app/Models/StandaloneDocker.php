@@ -4,6 +4,23 @@ namespace App\Models;
 
 use App\Traits\HasSafeStringAttribute;
 
+/**
+ * @property int $id
+ * @property int $server_id
+ * @property string $network
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Server $server
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Application> $applications
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StandalonePostgresql> $postgresqls
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StandaloneRedis> $redis
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StandaloneMongodb> $mongodbs
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StandaloneMysql> $mysqls
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StandaloneMariadb> $mariadbs
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StandaloneKeydb> $keydbs
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StandaloneDragonfly> $dragonflies
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StandaloneClickhouse> $clickhouses
+ */
 class StandaloneDocker extends BaseModel
 {
     use HasSafeStringAttribute;
@@ -23,57 +40,57 @@ class StandaloneDocker extends BaseModel
         });
     }
 
-    public function applications()
+    public function applications(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(Application::class, 'destination');
     }
 
-    public function postgresqls()
+    public function postgresqls(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(StandalonePostgresql::class, 'destination');
     }
 
-    public function redis()
+    public function redis(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(StandaloneRedis::class, 'destination');
     }
 
-    public function mongodbs()
+    public function mongodbs(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(StandaloneMongodb::class, 'destination');
     }
 
-    public function mysqls()
+    public function mysqls(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(StandaloneMysql::class, 'destination');
     }
 
-    public function mariadbs()
+    public function mariadbs(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(StandaloneMariadb::class, 'destination');
     }
 
-    public function keydbs()
+    public function keydbs(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(StandaloneKeydb::class, 'destination');
     }
 
-    public function dragonflies()
+    public function dragonflies(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(StandaloneDragonfly::class, 'destination');
     }
 
-    public function clickhouses()
+    public function clickhouses(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(StandaloneClickhouse::class, 'destination');
     }
 
-    public function server()
+    public function server(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Server::class);
     }
 
-    public function services()
+    public function services(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(Service::class, 'destination');
     }

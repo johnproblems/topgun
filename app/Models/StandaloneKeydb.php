@@ -44,7 +44,10 @@ class StandaloneKeydb extends BaseModel
         });
     }
 
-    public static function ownedByCurrentTeam()
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder<StandaloneKeydb>
+     */
+    public static function ownedByCurrentTeam(): \Illuminate\Database\Eloquent\Builder
     {
         return StandaloneKeydb::whereRelation('environment.project.team', 'id', currentTeam()->id)->orderBy('name');
     }
@@ -159,7 +162,7 @@ class StandaloneKeydb extends BaseModel
         );
     }
 
-    public function tags()
+    public function tags(): \Illuminate\Database\Eloquent\Relations\MorphToMany
     {
         return $this->morphToMany(Tag::class, 'taggable');
     }
@@ -174,7 +177,7 @@ class StandaloneKeydb extends BaseModel
         return data_get($this, 'environment.project.team');
     }
 
-    public function sslCertificates()
+    public function sslCertificates(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(SslCertificate::class, 'resource');
     }
@@ -269,32 +272,32 @@ class StandaloneKeydb extends BaseModel
         );
     }
 
-    public function environment()
+    public function environment(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Environment::class);
     }
 
-    public function fileStorages()
+    public function fileStorages(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(LocalFileVolume::class, 'resource');
     }
 
-    public function destination()
+    public function destination(): \Illuminate\Database\Eloquent\Relations\MorphTo
     {
         return $this->morphTo();
     }
 
-    public function runtime_environment_variables()
+    public function runtime_environment_variables(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(EnvironmentVariable::class, 'resourceable');
     }
 
-    public function persistentStorages()
+    public function persistentStorages(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(LocalPersistentVolume::class, 'resource');
     }
 
-    public function scheduledBackups()
+    public function scheduledBackups(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(ScheduledDatabaseBackup::class, 'database');
     }
@@ -348,7 +351,7 @@ class StandaloneKeydb extends BaseModel
         return false;
     }
 
-    public function environment_variables()
+    public function environment_variables(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(EnvironmentVariable::class, 'resourceable')
             ->orderByRaw("

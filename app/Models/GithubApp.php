@@ -45,7 +45,10 @@ class GithubApp extends BaseModel
         });
     }
 
-    public static function ownedByCurrentTeam()
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder<GithubApp>
+     */
+    public static function ownedByCurrentTeam(): \Illuminate\Database\Eloquent\Builder
     {
         return GithubApp::where(function ($query) {
             $query->where('team_id', currentTeam()->id)
@@ -73,17 +76,17 @@ class GithubApp extends BaseModel
         })->whereNotNull('app_id')->get();
     }
 
-    public function team()
+    public function team(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Team::class);
     }
 
-    public function applications()
+    public function applications(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(Application::class, 'source');
     }
 
-    public function privateKey()
+    public function privateKey(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(PrivateKey::class);
     }

@@ -25,12 +25,18 @@ class ServiceDatabase extends BaseModel
         });
     }
 
-    public static function ownedByCurrentTeamAPI(int $teamId)
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder<ServiceDatabase>
+     */
+    public static function ownedByCurrentTeamAPI(int $teamId): \Illuminate\Database\Eloquent\Builder
     {
         return ServiceDatabase::whereRelation('service.environment.project.team', 'id', $teamId)->orderBy('name');
     }
 
-    public static function ownedByCurrentTeam()
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder<ServiceDatabase>
+     */
+    public static function ownedByCurrentTeam(): \Illuminate\Database\Eloquent\Builder
     {
         return ServiceDatabase::whereRelation('service.environment.project.team', 'id', currentTeam()->id)->orderBy('name');
     }
@@ -118,27 +124,27 @@ class ServiceDatabase extends BaseModel
         return service_configuration_dir()."/{$this->service->uuid}";
     }
 
-    public function service()
+    public function service(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Service::class);
     }
 
-    public function persistentStorages()
+    public function persistentStorages(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(LocalPersistentVolume::class, 'resource');
     }
 
-    public function fileStorages()
+    public function fileStorages(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(LocalFileVolume::class, 'resource');
     }
 
-    public function getFilesFromServer(bool $isInit = false)
+    public function getFilesFromServer(bool $isInit = false): void
     {
         getFilesystemVolumesFromServer($this, $isInit);
     }
 
-    public function scheduledBackups()
+    public function scheduledBackups(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(ScheduledDatabaseBackup::class, 'database');
     }

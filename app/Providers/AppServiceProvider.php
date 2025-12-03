@@ -19,6 +19,12 @@ class AppServiceProvider extends ServiceProvider
         if (App::isLocal()) {
             $this->app->register(TelescopeServiceProvider::class);
         }
+
+        // Register enterprise services
+        $this->app->bind(
+            \App\Contracts\OrganizationServiceInterface::class,
+            \App\Services\OrganizationService::class
+        );
     }
 
     public function boot(): void

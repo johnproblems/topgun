@@ -17,7 +17,7 @@
             <x-forms.input required type="password" id="token" label="API Token"
                 placeholder="Enter your API token" />
 
-            @if (auth()->user()->currentTeam()->cloudProviderTokens->where('provider', $provider)->isEmpty())
+            @if (auth()->user()?->currentTeam()?->cloudProviderTokens->where('provider', $provider)->isEmpty())
                 <div class="text-sm text-neutral-500 dark:text-neutral-400">
                     Create an API token in the <a
                         href='{{ $provider === 'hetzner' ? 'https://console.hetzner.com/projects' : '#' }}'
@@ -52,7 +52,7 @@
             <div class="flex-1 min-w-64">
                 <x-forms.input required type="password" id="token" label="API Token"
                     placeholder="Enter your API token" />
-                @if (auth()->user()->currentTeam()->cloudProviderTokens->where('provider', $provider)->isEmpty())
+                @if (auth()->user()?->currentTeam()?->cloudProviderTokens->where('provider', $provider)->isEmpty())
                     <div class="text-sm text-neutral-500 dark:text-neutral-400 mt-2">
                         Create an API token in the <a href='https://console.hetzner.com/projects' target='_blank'
                             class='underline dark:text-white'>Hetzner Console</a> → choose Project → Security → API

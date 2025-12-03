@@ -16,7 +16,10 @@ class DynamicConfigurations extends Component
 
     public function getListeners()
     {
-        $teamId = auth()->user()->currentTeam()->id;
+        $teamId = auth()->user()?->currentTeam()?->id;
+        if (! $teamId) {
+            return ['loadDynamicConfigurations'];
+        }
 
         return [
             "echo-private:team.{$teamId},ProxyStatusChangedUI" => 'loadDynamicConfigurations',

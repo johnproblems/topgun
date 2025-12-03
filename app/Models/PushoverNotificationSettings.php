@@ -53,12 +53,12 @@ class PushoverNotificationSettings extends Model
         'traefik_outdated_pushover_notifications' => 'boolean',
     ];
 
-    public function team()
+    public function team(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Team::class);
     }
 
-    public function isEnabled()
+    public function isEnabled(): bool
     {
         return $this->pushover_enabled;
     }

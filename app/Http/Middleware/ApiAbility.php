@@ -9,7 +9,12 @@ class ApiAbility extends CheckForAnyAbility
     public function handle($request, $next, ...$abilities)
     {
         try {
-            if ($request->user()->tokenCan('root')) {
+            $user = $request->user();
+            if (! $user) {
+                throw new \Illuminate\Auth\AuthenticationException;
+            }
+
+            if ($user->tokenCan('root')) {
                 return $next($request);
             }
 

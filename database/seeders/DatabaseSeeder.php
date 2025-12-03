@@ -31,5 +31,12 @@ class DatabaseSeeder extends Seeder
             CaSslCertSeeder::class,
             PersonalAccessTokenSeeder::class,
         ]);
+
+        // Add enterprise test data when in testing environment
+        if (app()->environment('testing')) {
+            $this->call([
+                EnterpriseTestSeeder::class,
+            ]);
+        }
     }
 }

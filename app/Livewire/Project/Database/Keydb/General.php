@@ -53,7 +53,7 @@ class General extends Component
     public function getListeners()
     {
         $userId = Auth::id();
-        $teamId = Auth::user()->currentTeam()->id;
+        $teamId = Auth::user()?->currentTeam()?->id;
 
         return [
             "echo-private:team.{$teamId},DatabaseProxyStopped" => 'databaseProxyStopped',

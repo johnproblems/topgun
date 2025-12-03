@@ -27,6 +27,22 @@ use phpseclib3\Crypt\PublicKeyLoader;
         'updated_at' => ['type' => 'string'],
     ],
 )]
+/**
+ * @property int $id
+ * @property string $uuid
+ * @property string $name
+ * @property string|null $description
+ * @property string $private_key
+ * @property string $public_key
+ * @property string|null $fingerprint
+ * @property bool $is_git_related
+ * @property int $team_id
+ * @property Team $team
+ * @property \Illuminate\Database\Eloquent\Collection<int, Server> $servers
+ * @property \Illuminate\Database\Eloquent\Collection<int, GithubApp> $githubApps
+ * @property \Illuminate\Database\Eloquent\Collection<int, GitlabApp> $gitlabApps
+ * @property \Illuminate\Database\Eloquent\Collection<int, Application> $applications
+ */
 class PrivateKey extends BaseModel
 {
     use HasSafeStringAttribute, WithRateLimiting;
@@ -80,7 +96,11 @@ class PrivateKey extends BaseModel
         return self::extractPublicKeyFromPrivate($this->private_key) ?? 'Error loading private key';
     }
 
-    public static function ownedByCurrentTeam(array $select = ['*'])
+    /**
+     * @param array<int, string> $select
+     * @return \Illuminate\Database\Eloquent\Builder<PrivateKey>
+     */
+    public static function ownedByCurrentTeam(array $select = ['*']): \Illuminate\Database\Eloquent\Builder
     {
         $teamId = currentTeam()->id;
         $selectArray = collect($select)->concat(['id']);
@@ -250,22 +270,22 @@ class PrivateKey extends BaseModel
         });
     }
 
-    public function servers()
+    public function servers(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Server::class);
     }
 
-    public function applications()
+    public function applications(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Application::class);
     }
 
-    public function githubApps()
+    public function githubApps(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(GithubApp::class);
     }
 
-    public function gitlabApps()
+    public function gitlabApps(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(GitlabApp::class);
     }

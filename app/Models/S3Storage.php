@@ -20,7 +20,11 @@ class S3Storage extends BaseModel
         'secret' => 'encrypted',
     ];
 
-    public static function ownedByCurrentTeam(array $select = ['*'])
+    /**
+     * @param array<int, string> $select
+     * @return \Illuminate\Database\Eloquent\Builder<S3Storage>
+     */
+    public static function ownedByCurrentTeam(array $select = ['*']): \Illuminate\Database\Eloquent\Builder
     {
         $selectArray = collect($select)->concat(['id']);
 
@@ -32,7 +36,7 @@ class S3Storage extends BaseModel
         return $this->is_usable;
     }
 
-    public function team()
+    public function team(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Team::class);
     }

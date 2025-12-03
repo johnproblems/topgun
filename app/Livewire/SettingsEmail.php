@@ -61,10 +61,17 @@ class SettingsEmail extends Component
         if (isInstanceAdmin() === false) {
             return redirect()->route('dashboard');
         }
+        $user = auth()->user();
+        if (! $user) {
+            return redirect()->route('login');
+        }
         $this->settings = instanceSettings();
         $this->syncData();
-        $this->team = auth()->user()->currentTeam();
-        $this->testEmailAddress = auth()->user()->email;
+        $this->team = $user->currentTeam();
+        if (! $this->team) {
+            return redirect()->route('dashboard');
+        }
+        $this->testEmailAddress = $user->email;
     }
 
     public function syncData(bool $toModel = false)

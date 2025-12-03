@@ -10,17 +10,23 @@ class ScheduledDatabaseBackup extends BaseModel
 {
     protected $guarded = [];
 
-    public static function ownedByCurrentTeam()
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder<ScheduledDatabaseBackup>
+     */
+    public static function ownedByCurrentTeam(): \Illuminate\Database\Eloquent\Builder
     {
         return ScheduledDatabaseBackup::whereRelation('team', 'id', currentTeam()->id)->orderBy('created_at', 'desc');
     }
 
-    public static function ownedByCurrentTeamAPI(int $teamId)
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder<ScheduledDatabaseBackup>
+     */
+    public static function ownedByCurrentTeamAPI(int $teamId): \Illuminate\Database\Eloquent\Builder
     {
         return ScheduledDatabaseBackup::whereRelation('team', 'id', $teamId)->orderBy('created_at', 'desc');
     }
 
-    public function team()
+    public function team(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Team::class);
     }
@@ -41,7 +47,7 @@ class ScheduledDatabaseBackup extends BaseModel
         return $this->hasMany(ScheduledDatabaseBackupExecution::class)->orderBy('created_at', 'desc');
     }
 
-    public function s3()
+    public function s3(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(S3Storage::class, 's3_storage_id');
     }

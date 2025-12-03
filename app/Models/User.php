@@ -21,6 +21,28 @@ use Laravel\Sanctum\HasApiTokens;
 use Laravel\Sanctum\NewAccessToken;
 use OpenApi\Attributes as OA;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property string|null $password
+ * @property string|null $remember_token
+ * @property \Illuminate\Support\Carbon|null $email_verified_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $two_factor_confirmed_at
+ * @property bool $force_password_reset
+ * @property bool $marketing_emails
+ * @property bool $show_boarding
+ * @property string|null $pending_email
+ * @property string|null $email_change_code
+ * @property \Illuminate\Support\Carbon|null $email_change_code_expires_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Team> $teams
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Organization> $organizations
+ * @property-read \App\Models\Organization|null $currentOrganization
+ * @property-read \App\Models\Team|null $currentTeam
+ * @property-read object|null $pivot
+ */
 #[OA\Schema(
     description: 'User model',
     type: 'object',
@@ -215,12 +237,40 @@ class User extends Authenticatable implements SendsEmail
         return new NewAccessToken($token, $token->getKey().'|'.$plainTextToken);
     }
 
-    public function teams()
+    public function teams(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
         return $this->belongsToMany(Team::class)->withPivot('role');
     }
 
-    public function changelogReads()
+    public function organizations(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Organization::class, 'organization_users')
+            ->using(OrganizationUser::class)
+            ->withPivot('role', 'permissions', 'is_active')
+            ->withTimestamps();
+    }
+
+    public function currentOrganization(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Organization::class, 'current_organization_id');
+    }
+
+    public function canPerformAction($action, $resource = null)
+    {
+        $organization = $this->currentOrganization;
+        if (! $organization) {
+            return false;
+        }
+
+        return $organization->canUserPerformAction($this, $action, $resource);
+    }
+
+    public function hasLicenseFeature($feature)
+    {
+        return $this->currentOrganization?->activeLicense?->hasFeature($feature) ?? false;
+    }
+
+    public function changelogReads(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(UserChangelogRead::class);
     }

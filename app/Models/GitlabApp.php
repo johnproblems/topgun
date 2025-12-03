@@ -9,17 +9,20 @@ class GitlabApp extends BaseModel
         'app_secret',
     ];
 
-    public static function ownedByCurrentTeam()
+    /**
+     * @return \Illuminate\Database\Eloquent\Builder<GitlabApp>
+     */
+    public static function ownedByCurrentTeam(): \Illuminate\Database\Eloquent\Builder
     {
         return GitlabApp::whereTeamId(currentTeam()->id);
     }
 
-    public function applications()
+    public function applications(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(Application::class, 'source');
     }
 
-    public function privateKey()
+    public function privateKey(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(PrivateKey::class);
     }

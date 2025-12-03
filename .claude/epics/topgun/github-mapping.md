@@ -1,0 +1,98 @@
+# GitHub Issue Mapping
+
+Epic: #111 - https://github.com/johnproblems/topgun/issues/111
+
+Tasks:
+- #112: Enhance DynamicAssetController with SASS compilation and CSS custom properties injection - https://github.com/johnproblems/topgun/issues/112
+- #113: Implement Redis caching layer for compiled CSS with automatic invalidation - https://github.com/johnproblems/topgun/issues/113
+- #114: Build LogoUploader.vue component with drag-drop, image optimization, and multi-format support - https://github.com/johnproblems/topgun/issues/114
+- #115: Build BrandingManager.vue main interface with tabbed sections - https://github.com/johnproblems/topgun/issues/115
+- #116: Build ThemeCustomizer.vue with live color picker and real-time CSS preview - https://github.com/johnproblems/topgun/issues/116
+- #117: Implement favicon generation in multiple sizes - https://github.com/johnproblems/topgun/issues/117
+- #118: Create BrandingPreview.vue component for real-time branding changes visualization - https://github.com/johnproblems/topgun/issues/118
+- #119: Extend email templates with dynamic variable injection - https://github.com/johnproblems/topgun/issues/119
+- #120: Implement BrandingCacheWarmerJob for pre-compilation of organization CSS - https://github.com/johnproblems/topgun/issues/120
+- #121: Add comprehensive tests for branding service, components, and cache invalidation - https://github.com/johnproblems/topgun/issues/121
+- #122: Create database schema for cloud_provider_credentials and terraform_deployments tables - https://github.com/johnproblems/topgun/issues/122
+- #123: Implement CloudProviderCredential model with encrypted attribute casting - https://github.com/johnproblems/topgun/issues/123
+- #124: Build TerraformService with provisionInfrastructure, destroyInfrastructure, getStatus methods - https://github.com/johnproblems/topgun/issues/124
+- #125: Create modular Terraform templates for AWS EC2 - https://github.com/johnproblems/topgun/issues/125
+- #126: Create modular Terraform templates for DigitalOcean and Hetzner - https://github.com/johnproblems/topgun/issues/126
+- #127: Implement Terraform state file encryption, storage, and backup mechanism - https://github.com/johnproblems/topgun/issues/127
+- #128: Build TerraformDeploymentJob for async provisioning with progress tracking - https://github.com/johnproblems/topgun/issues/128
+- #129: Implement server auto-registration with SSH key setup and Docker verification - https://github.com/johnproblems/topgun/issues/129
+- #130: Build TerraformManager.vue wizard component with cloud provider selection - https://github.com/johnproblems/topgun/issues/130
+- #131: Build CloudProviderCredentials.vue and DeploymentMonitoring.vue components - https://github.com/johnproblems/topgun/issues/131
+- #132: Create database schema for server_resource_metrics and organization_resource_usage tables - https://github.com/johnproblems/topgun/issues/132
+- #133: Extend existing ResourcesCheck pattern with enhanced metrics - https://github.com/johnproblems/topgun/issues/133
+- #134: Implement ResourceMonitoringJob for scheduled metric collection - https://github.com/johnproblems/topgun/issues/134
+- #135: Implement SystemResourceMonitor service with metric aggregation - https://github.com/johnproblems/topgun/issues/135
+- #136: Build CapacityManager service with selectOptimalServer method - https://github.com/johnproblems/topgun/issues/136
+- #137: Implement server scoring logic with weighted algorithm - https://github.com/johnproblems/topgun/issues/137
+- #138: Add organization resource quota enforcement - https://github.com/johnproblems/topgun/issues/138
+- #139: Build ResourceDashboard.vue with ApexCharts for metrics visualization - https://github.com/johnproblems/topgun/issues/139
+- #140: Build CapacityPlanner.vue with server selection visualization - https://github.com/johnproblems/topgun/issues/140
+- #141: Implement WebSocket broadcasting for real-time dashboard updates - https://github.com/johnproblems/topgun/issues/141
+- #142: Create EnhancedDeploymentService with deployWithStrategy method - https://github.com/johnproblems/topgun/issues/142
+- #143: Implement rolling update deployment strategy - https://github.com/johnproblems/topgun/issues/143
+- #144: Implement blue-green deployment strategy - https://github.com/johnproblems/topgun/issues/144
+- #145: Implement canary deployment strategy with traffic splitting - https://github.com/johnproblems/topgun/issues/145
+- #146: Add pre-deployment capacity validation using CapacityManager - https://github.com/johnproblems/topgun/issues/146
+- #147: Integrate automatic infrastructure provisioning if capacity insufficient - https://github.com/johnproblems/topgun/issues/147
+- #199: Implement automatic rollback mechanism on health check failures - https://github.com/johnproblems/topgun/issues/199
+- #148: Build DeploymentManager.vue with deployment strategy configuration - https://github.com/johnproblems/topgun/issues/148
+- #149: Build StrategySelector.vue component for visual strategy selection - https://github.com/johnproblems/topgun/issues/149
+- #150: Add comprehensive deployment tests for all strategies - https://github.com/johnproblems/topgun/issues/150
+- #151: Create database schema for payment and subscription tables - https://github.com/johnproblems/topgun/issues/151
+- #152: Implement PaymentGatewayInterface and factory pattern - https://github.com/johnproblems/topgun/issues/152
+- #153: Integrate Stripe payment gateway with credit card and ACH support - https://github.com/johnproblems/topgun/issues/153
+- #154: Integrate PayPal payment gateway - https://github.com/johnproblems/topgun/issues/154
+- #200: Implement PaymentService with subscription and payment methods - https://github.com/johnproblems/topgun/issues/200
+- #155: Build webhook handling system with HMAC validation - https://github.com/johnproblems/topgun/issues/155
+- #156: Implement subscription lifecycle management - https://github.com/johnproblems/topgun/issues/156
+- #157: Implement usage-based billing calculations - https://github.com/johnproblems/topgun/issues/157
+- #158: Build SubscriptionManager.vue, PaymentMethodManager.vue, and BillingDashboard.vue - https://github.com/johnproblems/topgun/issues/158
+- #159: Add comprehensive payment tests with gateway mocking - https://github.com/johnproblems/topgun/issues/159
+- #160: Extend Laravel Sanctum tokens with organization context - https://github.com/johnproblems/topgun/issues/160
+- #161: Implement ApiOrganizationScope middleware - https://github.com/johnproblems/topgun/issues/161
+- #162: Implement tiered rate limiting middleware using Redis - https://github.com/johnproblems/topgun/issues/162
+- #163: Add rate limit headers to all API responses - https://github.com/johnproblems/topgun/issues/163
+- #164: Create new API endpoints for enterprise features - https://github.com/johnproblems/topgun/issues/164
+- #165: Enhance OpenAPI specification with organization scoping examples - https://github.com/johnproblems/topgun/issues/165
+- #166: Integrate Swagger UI for interactive API explorer - https://github.com/johnproblems/topgun/issues/166
+- #167: Build ApiKeyManager.vue for token creation - https://github.com/johnproblems/topgun/issues/167
+- #168: Build ApiUsageMonitoring.vue for real-time API usage visualization - https://github.com/johnproblems/topgun/issues/168
+- #169: Add comprehensive API tests with rate limiting validation - https://github.com/johnproblems/topgun/issues/169
+- #170: Create database schema for domains and DNS records - https://github.com/johnproblems/topgun/issues/170
+- #171: Implement DomainRegistrarInterface and factory pattern - https://github.com/johnproblems/topgun/issues/171
+- #172: Integrate Namecheap API for domain management - https://github.com/johnproblems/topgun/issues/172
+- #173: Integrate Route53 Domains API for AWS domain management - https://github.com/johnproblems/topgun/issues/173
+- #174: Implement DomainRegistrarService with core methods - https://github.com/johnproblems/topgun/issues/174
+- #175: Implement DnsManagementService for automated DNS records - https://github.com/johnproblems/topgun/issues/175
+- #176: Integrate Let's Encrypt for SSL certificate provisioning - https://github.com/johnproblems/topgun/issues/176
+- #177: Implement domain ownership verification - https://github.com/johnproblems/topgun/issues/177
+- #201: Build DomainManager.vue, DnsRecordEditor.vue, and ApplicationDomainBinding.vue - https://github.com/johnproblems/topgun/issues/201
+- #178: Add domain management tests with registrar API mocking - https://github.com/johnproblems/topgun/issues/178
+- #179: Create OrganizationTestingTrait with hierarchy helpers - https://github.com/johnproblems/topgun/issues/179
+- #180: Create LicenseTestingTrait with validation helpers - https://github.com/johnproblems/topgun/issues/180
+- #181: Create TerraformTestingTrait with mock provisioning - https://github.com/johnproblems/topgun/issues/181
+- #182: Create PaymentTestingTrait with gateway simulation - https://github.com/johnproblems/topgun/issues/182
+- #183: Write unit tests for all enterprise services - https://github.com/johnproblems/topgun/issues/183
+- #184: Write integration tests for complete workflows - https://github.com/johnproblems/topgun/issues/184
+- #185: Write API tests with organization scoping validation - https://github.com/johnproblems/topgun/issues/185
+- #186: Write Dusk browser tests for Vue.js components - https://github.com/johnproblems/topgun/issues/186
+- #187: Implement performance tests for multi-tenant operations - https://github.com/johnproblems/topgun/issues/187
+- #188: Set up CI/CD quality gates - https://github.com/johnproblems/topgun/issues/188
+- #189: Write white-label branding system documentation - https://github.com/johnproblems/topgun/issues/189
+- #190: Write Terraform infrastructure provisioning documentation - https://github.com/johnproblems/topgun/issues/190
+- #191: Write resource monitoring and capacity management documentation - https://github.com/johnproblems/topgun/issues/191
+- #192: Write administrator guide for organization and license management - https://github.com/johnproblems/topgun/issues/192
+- #193: Write API documentation with interactive examples - https://github.com/johnproblems/topgun/issues/193
+- #194: Write migration guide from standard Coolify to enterprise - https://github.com/johnproblems/topgun/issues/194
+- #195: Create operational runbooks for common scenarios - https://github.com/johnproblems/topgun/issues/195
+- #196: Enhance CI/CD pipeline with multi-environment deployment - https://github.com/johnproblems/topgun/issues/196
+- #197: Implement database migration automation - https://github.com/johnproblems/topgun/issues/197
+- #198: Create monitoring dashboards and alerting configuration - https://github.com/johnproblems/topgun/issues/198
+
+Synced: 2025-10-06T20:41:39Z
+Updated: 2025-10-06T20:55:00Z (Added missing tasks #199, #200, #201)

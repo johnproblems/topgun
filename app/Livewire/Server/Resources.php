@@ -21,7 +21,10 @@ class Resources extends Component
 
     public function getListeners()
     {
-        $teamId = auth()->user()->currentTeam()->id;
+        $teamId = auth()->user()?->currentTeam()?->id;
+        if (! $teamId) {
+            return [];
+        }
 
         return [
             "echo-private:team.{$teamId},ApplicationStatusChanged" => 'refreshStatus',

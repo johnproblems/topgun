@@ -35,7 +35,7 @@ class Heading extends Component
 
     public function getListeners()
     {
-        $teamId = Auth::user()->currentTeam()->id;
+        $teamId = Auth::user()?->currentTeam()?->id;
 
         return [
             "echo-private:team.{$teamId},ServiceStatusChanged" => 'checkStatus',

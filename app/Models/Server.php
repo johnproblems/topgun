@@ -34,6 +34,14 @@ use Symfony\Component\Yaml\Yaml;
 use Visus\Cuid2\Cuid2;
 
 /**
+ * @property-read \App\Models\ServerSetting $settings
+ * @property \App\Models\PrivateKey $privateKey
+ * @property \App\Models\Team $team
+ * @property \App\Models\Organization $organization
+ * @property \App\Models\TerraformDeployment|null $terraformDeployment
+ * @property \App\Models\CloudProviderCredential|null $cloudProviderCredential
+ * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\SwarmDocker> $swarmDockers
+ * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\StandaloneDocker> $standaloneDockers
  * @property array{
  *     current: string,
  *     latest: string,
@@ -77,6 +85,10 @@ use Visus\Cuid2\Cuid2;
  *
  * @see \App\Jobs\CheckTraefikVersionForServerJob Where this data is populated
  * @see \App\Livewire\Server\Proxy Where this data is read and displayed
+ * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\DockerCleanupExecution> $dockerCleanupExecutions
+ * @property \App\Models\CloudProviderToken|null $cloudProviderToken
+ * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\SslCertificate> $sslCertificates
+ * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\Service> $services
  */
 #[OA\Schema(
     description: 'Server model',
@@ -242,7 +254,11 @@ class Server extends BaseModel
         return Server::ownedByCurrentTeam()->whereRelation('settings', 'is_reachable', true);
     }
 
-    public static function ownedByCurrentTeam(array $select = ['*'])
+    /**
+     * @param array<int, string> $select
+     * @return \Illuminate\Database\Eloquent\Builder<Server>
+     */
+    public static function ownedByCurrentTeam(array $select = ['*']): \Illuminate\Database\Eloquent\Builder
     {
         $teamId = currentTeam()->id;
         $selectArray = collect($select)->concat(['id']);
@@ -264,12 +280,12 @@ class Server extends BaseModel
         return $standaloneDocker->concat($swarmDocker);
     }
 
-    public function settings()
+    public function settings(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(ServerSetting::class);
     }
 
-    public function dockerCleanupExecutions()
+    public function dockerCleanupExecutions(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(DockerCleanupExecution::class);
     }
@@ -869,7 +885,7 @@ $schema://$host {
         });
     }
 
-    public function services()
+    public function services(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Service::class);
     }
@@ -934,27 +950,27 @@ $schema://$host {
         return $standalone_docker->concat($swarm_docker);
     }
 
-    public function standaloneDockers()
+    public function standaloneDockers(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(StandaloneDocker::class);
     }
 
-    public function swarmDockers()
+    public function swarmDockers(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(SwarmDocker::class);
     }
 
-    public function privateKey()
+    public function privateKey(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(PrivateKey::class);
     }
 
-    public function cloudProviderToken()
+    public function cloudProviderToken(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(CloudProviderToken::class);
     }
 
-    public function sslCertificates()
+    public function sslCertificates(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(SslCertificate::class);
     }
@@ -964,9 +980,36 @@ $schema://$host {
         return 'mux_'.$this->uuid;
     }
 
-    public function team()
+    public function team(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Team::class);
+    }
+
+    public function organization(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Organization::class);
+    }
+
+    public function terraformDeployment(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(TerraformDeployment::class);
+    }
+
+    public function cloudProviderCredential(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(CloudProviderCredential::class, 'provider_credential_id');
+    }
+
+    public function isProvisionedByTerraform()
+    {
+        return $this->terraformDeployment !== null;
+    }
+
+    public function canBeManaged()
+    {
+        // Check if server is reachable and user has permissions
+        return $this->settings->is_reachable &&
+               auth()->user()->canPerformAction('manage_server', $this);
     }
 
     public function isProxyShouldRun()
