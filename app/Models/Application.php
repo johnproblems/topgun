@@ -108,7 +108,21 @@ use Visus\Cuid2\Cuid2;
         'http_basic_auth_password' => ['type' => 'string', 'nullable' => true, 'description' => 'Password for HTTP Basic Authentication'],
     ]
 )]
-
+/**
+ * @property-read \App\Models\ApplicationSetting $settings
+ * @property-read \App\Models\Environment $environment
+ * @property-read \App\Models\PrivateKey|null $private_key
+ * @property-read \App\Models\StandaloneDocker|\App\Models\SwarmDocker $destination
+ * @property-read \App\Models\GithubApp|\App\Models\GitlabApp|\App\Models\GiteaApp|null $source
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ApplicationPreview> $previews
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EnvironmentVariable> $environment_variables
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EnvironmentVariable> $environment_variables_preview
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\LocalPersistentVolume> $persistentStorages
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\LocalFileVolume> $fileStorages
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Server> $additional_servers
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\StandaloneDocker> $additional_networks
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ScheduledTask> $scheduled_tasks
+ */
 class Application extends BaseModel
 {
     use ClearsGlobalSearchCache, HasConfiguration, HasFactory, HasSafeStringAttribute, SoftDeletes;
