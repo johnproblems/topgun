@@ -15,6 +15,23 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use OpenApi\Attributes as OA;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string|null $description
+ * @property bool $personal_team
+ * @property bool $show_boarding
+ * @property int|null $custom_server_limit
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $members
+ * @property-read \App\Models\Subscription|null $subscription
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Project> $projects
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Server> $servers
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\PrivateKey> $privateKeys
+ * @property-read array $limits
+ * @property-read object|null $pivot
+ */
 #[OA\Schema(
     description: 'Team model',
     type: 'object',

@@ -17,6 +17,36 @@ use Spatie\Activitylog\Models\Activity;
 use Spatie\Url\Url;
 use Visus\Cuid2\Cuid2;
 
+/**
+ * @property int $id
+ * @property string $uuid
+ * @property string $name
+ * @property string|null $description
+ * @property int $environment_id
+ * @property int $server_id
+ * @property string|null $docker_compose_raw
+ * @property string|null $docker_compose
+ * @property string|null $destination_type
+ * @property int|null $destination_id
+ * @property bool $connect_to_docker_network
+ * @property bool $is_container_label_escape_enabled
+ * @property bool $is_container_label_readonly_enabled
+ * @property string|null $config_hash
+ * @property string|null $service_type
+ * @property string|null $compose_parsing_version
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\Models\Server $server
+ * @property-read \App\Models\Environment $environment
+ * @property-read \App\Models\StandaloneDocker|\App\Models\SwarmDocker|null $destination
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ServiceApplication> $applications
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ServiceDatabase> $databases
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EnvironmentVariable> $environment_variables
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ScheduledTask> $scheduled_tasks
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\LocalPersistentVolume> $persistentStorages
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\LocalFileVolume> $fileStorages
+ */
 #[OA\Schema(
     description: 'Service model',
     type: 'object',

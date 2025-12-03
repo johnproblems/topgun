@@ -7,7 +7,30 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property-read WhiteLabelConfig|null $whiteLabelConfig
+ * @property int $id
+ * @property string $uuid
+ * @property string $name
+ * @property string|null $slug
+ * @property bool $whitelabel_public_access
+ * @property string|null $hierarchy_type
+ * @property int|null $hierarchy_level
+ * @property int|null $parent_organization_id
+ * @property array|null $branding_config
+ * @property array|null $feature_flags
+ * @property bool $is_active
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Organization|null $parent
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Organization> $children
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
+ * @property-read \App\Models\EnterpriseLicense|null $activeLicense
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EnterpriseLicense> $licenses
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Server> $servers
+ * @property-read \App\Models\WhiteLabelConfig|null $whiteLabelConfig
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CloudProviderCredential> $cloudProviderCredentials
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TerraformDeployment> $terraformDeployments
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Application> $applications
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Domain> $domains
  */
 class Organization extends Model
 {

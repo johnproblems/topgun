@@ -6,6 +6,13 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\Yaml\Yaml;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $mount_path
+ * @property string|null $host_path
+ * @property Application|Service|ServiceApplication|ServiceDatabase|StandalonePostgresql|StandaloneRedis|StandaloneMongodb|StandaloneMysql|StandaloneMariadb|null $resource
+ */
 class LocalPersistentVolume extends Model
 {
     protected $guarded = [];

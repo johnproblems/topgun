@@ -18,6 +18,24 @@ use OpenApi\Attributes as OA;
         'description' => ['type' => 'string'],
     ]
 )]
+/**
+ * @property int $id
+ * @property string $uuid
+ * @property string $name
+ * @property int $project_id
+ * @property Project $project
+ * @property \Illuminate\Database\Eloquent\Collection<int, SharedEnvironmentVariable> $environment_variables
+ * @property \Illuminate\Database\Eloquent\Collection<int, Application> $applications
+ * @property \Illuminate\Database\Eloquent\Collection<int, StandalonePostgresql> $postgresqls
+ * @property \Illuminate\Database\Eloquent\Collection<int, StandaloneRedis> $redis
+ * @property \Illuminate\Database\Eloquent\Collection<int, StandaloneMongodb> $mongodbs
+ * @property \Illuminate\Database\Eloquent\Collection<int, StandaloneMysql> $mysqls
+ * @property \Illuminate\Database\Eloquent\Collection<int, StandaloneMariadb> $mariadbs
+ * @property \Illuminate\Database\Eloquent\Collection<int, StandaloneKeydb> $keydbs
+ * @property \Illuminate\Database\Eloquent\Collection<int, StandaloneDragonfly> $dragonflies
+ * @property \Illuminate\Database\Eloquent\Collection<int, StandaloneClickhouse> $clickhouses
+ * @property \Illuminate\Database\Eloquent\Collection<int, Service> $services
+ */
 class Environment extends BaseModel
 {
     use ClearsGlobalSearchCache;

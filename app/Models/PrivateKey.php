@@ -27,6 +27,22 @@ use phpseclib3\Crypt\PublicKeyLoader;
         'updated_at' => ['type' => 'string'],
     ],
 )]
+/**
+ * @property int $id
+ * @property string $uuid
+ * @property string $name
+ * @property string|null $description
+ * @property string $private_key
+ * @property string $public_key
+ * @property string|null $fingerprint
+ * @property bool $is_git_related
+ * @property int $team_id
+ * @property Team $team
+ * @property \Illuminate\Database\Eloquent\Collection<int, Server> $servers
+ * @property \Illuminate\Database\Eloquent\Collection<int, GithubApp> $githubApps
+ * @property \Illuminate\Database\Eloquent\Collection<int, GitlabApp> $gitlabApps
+ * @property \Illuminate\Database\Eloquent\Collection<int, Application> $applications
+ */
 class PrivateKey extends BaseModel
 {
     use HasSafeStringAttribute, WithRateLimiting;

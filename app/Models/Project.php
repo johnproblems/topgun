@@ -23,6 +23,19 @@ use Visus\Cuid2\Cuid2;
         ),
     ]
 )]
+/**
+ * @property int $id
+ * @property string $uuid
+ * @property string $name
+ * @property string|null $description
+ * @property int $team_id
+ * @property \Illuminate\Database\Eloquent\Collection<int, Environment> $environments
+ * @property \Illuminate\Database\Eloquent\Collection<int, SharedEnvironmentVariable> $environment_variables
+ * @property ProjectSetting|null $settings
+ * @property Team $team
+ * @property \Illuminate\Database\Eloquent\Collection<int, Service> $services
+ * @property \Illuminate\Database\Eloquent\Collection<int, Application> $applications
+ */
 class Project extends BaseModel
 {
     use ClearsGlobalSearchCache;
