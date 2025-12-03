@@ -8,6 +8,16 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property-read \App\Models\Environment $environment
+ * @property-read \App\Models\StandaloneDocker|\App\Models\SwarmDocker $destination
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\LocalPersistentVolume> $persistentStorages
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EnvironmentVariable> $runtime_environment_variables
+ * @property-read string $internal_db_url
+ * @property-read string|null $external_db_url
+ * @property string|null $ssl_mode SSL mode for connection
+ * @property-read bool $server_status Server functional status
+ */
 class StandaloneKeydb extends BaseModel
 {
     use ClearsGlobalSearchCache, HasFactory, HasSafeStringAttribute, SoftDeletes;

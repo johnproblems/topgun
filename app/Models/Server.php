@@ -89,6 +89,10 @@ use Visus\Cuid2\Cuid2;
  * @property \App\Models\CloudProviderToken|null $cloudProviderToken
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\SslCertificate> $sslCertificates
  * @property \Illuminate\Database\Eloquent\Collection<int, \App\Models\Service> $services
+ * @property-read string $getIp Computed IP address (localhost returns base_ip in dev)
+ * @property int $port Server SSH port
+ * @property string $user Server SSH user
+ * @property string $ip Server IP address
  */
 #[OA\Schema(
     description: 'Server model',

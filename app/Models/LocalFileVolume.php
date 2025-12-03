@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Symfony\Component\Yaml\Yaml;
 
+/**
+ * @property Application|Service|ServiceApplication|ServiceDatabase $resource
+ * @property-read Service|null $service
+ */
 class LocalFileVolume extends BaseModel
 {
     protected $casts = [

@@ -6,6 +6,23 @@ use App\Traits\HasSafeStringAttribute;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/**
+ * @property int $id
+ * @property string $uuid
+ * @property string $name
+ * @property string $frequency
+ * @property string $command
+ * @property bool $enabled
+ * @property int|null $timeout
+ * @property int|null $application_id
+ * @property int|null $service_id
+ * @property int|null $database_id
+ * @property Application|null $application
+ * @property Service|null $service
+ * @property StandalonePostgresql|StandaloneRedis|StandaloneMongodb|StandaloneMysql|StandaloneMariadb|null $database
+ * @property ScheduledTaskExecution|null $latest_log
+ * @property \Illuminate\Database\Eloquent\Collection<int, ScheduledTaskExecution> $executions
+ */
 class ScheduledTask extends BaseModel
 {
     use HasSafeStringAttribute;

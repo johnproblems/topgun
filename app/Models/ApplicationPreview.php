@@ -6,6 +6,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Url\Url;
 use Visus\Cuid2\Cuid2;
 
+/**
+ * @property Application $application
+ * @property int $pull_request_id
+ * @property string|null $fqdn
+ * @property string|null $status
+ * @property string|null $docker_compose_domains
+ * @property \Illuminate\Database\Eloquent\Collection<int, LocalPersistentVolume> $persistentStorages
+ */
 class ApplicationPreview extends BaseModel
 {
     use SoftDeletes;

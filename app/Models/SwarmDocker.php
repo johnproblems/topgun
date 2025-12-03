@@ -2,6 +2,19 @@
 
 namespace App\Models;
 
+/**
+ * @property Server $server
+ * @property \Illuminate\Database\Eloquent\Collection<int, Application> $applications
+ * @property \Illuminate\Database\Eloquent\Collection<int, StandalonePostgresql> $postgresqls
+ * @property \Illuminate\Database\Eloquent\Collection<int, StandaloneRedis> $redis
+ * @property \Illuminate\Database\Eloquent\Collection<int, StandaloneKeydb> $keydbs
+ * @property \Illuminate\Database\Eloquent\Collection<int, StandaloneDragonfly> $dragonflies
+ * @property \Illuminate\Database\Eloquent\Collection<int, StandaloneClickhouse> $clickhouses
+ * @property \Illuminate\Database\Eloquent\Collection<int, StandaloneMongodb> $mongodbs
+ * @property \Illuminate\Database\Eloquent\Collection<int, StandaloneMysql> $mysqls
+ * @property \Illuminate\Database\Eloquent\Collection<int, StandaloneMariadb> $mariadbs
+ * @property \Illuminate\Database\Eloquent\Collection<int, Service> $services
+ */
 class SwarmDocker extends BaseModel
 {
     protected $guarded = [];

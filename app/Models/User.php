@@ -21,6 +21,28 @@ use Laravel\Sanctum\HasApiTokens;
 use Laravel\Sanctum\NewAccessToken;
 use OpenApi\Attributes as OA;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property string|null $password
+ * @property string|null $remember_token
+ * @property \Illuminate\Support\Carbon|null $email_verified_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $two_factor_confirmed_at
+ * @property bool $force_password_reset
+ * @property bool $marketing_emails
+ * @property bool $show_boarding
+ * @property string|null $pending_email
+ * @property string|null $email_change_code
+ * @property \Illuminate\Support\Carbon|null $email_change_code_expires_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Team> $teams
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Organization> $organizations
+ * @property-read \App\Models\Organization|null $currentOrganization
+ * @property-read \App\Models\Team|null $currentTeam
+ * @property-read object|null $pivot
+ */
 #[OA\Schema(
     description: 'User model',
     type: 'object',
