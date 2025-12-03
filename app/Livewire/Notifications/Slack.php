@@ -17,7 +17,7 @@ class Slack extends Component
     protected $listeners = ['refresh' => '$refresh'];
 
     #[Locked]
-    public Team $team;
+    public ?Team $team = null;
 
     #[Locked]
     public SlackNotificationSettings $settings;

@@ -13,7 +13,7 @@ class Discord extends Component
 {
     use AuthorizesRequests;
 
-    public Team $team;
+    public ?Team $team = null;
 
     public DiscordNotificationSettings $settings;
 
