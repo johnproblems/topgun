@@ -1,0 +1,414 @@
+# GitHub Copilot Setup Steps for Coolify Enterprise Transformation
+# This file helps GitHub Copilot understand how to set up and work with this project
+
+name: "Coolify Enterprise Transformation"
+description: "Enterprise-grade cloud deployment platform with multi-tenant organization hierarchy, Terraform integration, and modern Vue.js frontend"
+
+# Prerequisites
+prerequisites:
+  - name: "PHP"
+    version: "8.4+"
+    check: "php --version"
+    install: "Install from https://www.php.net/downloads or use your system package manager"
+  
+  - name: "Composer"
+    version: "latest"
+    check: "composer --version"
+    install: "curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer"
+  
+  - name: "Node.js"
+    version: "20+"
+    check: "node --version"
+    install: "Install from https://nodejs.org/ or use nvm: nvm install 20"
+  
+  - name: "npm"
+    version: "10+"
+    check: "npm --version"
+    install: "Comes with Node.js"
+  
+  - name: "PostgreSQL"
+    version: "15+"
+    check: "psql --version"
+    install: "Install from https://www.postgresql.org/download/ or use Docker"
+  
+  - name: "Redis"
+    version: "7+"
+    check: "redis-cli --version"
+    install: "Install from https://redis.io/download or use Docker"
+  
+  - name: "Docker"
+    version: "latest"
+    check: "docker --version"
+    install: "Install from https://docs.docker.com/get-docker/"
+  
+  - name: "Terraform (Optional)"
+    version: "latest"
+    check: "terraform --version"
+    install: "Install from https://www.terraform.io/downloads"
+
+# Setup Steps
+setup:
+  - step: "Clone the repository"
+    commands:
+      - "git clone <repository-url>"
+      - "cd topgun"
+  
+  - step: "Install PHP dependencies"
+    commands:
+      - "composer install"
+    description: "Install Laravel and all PHP packages"
+    time_estimate: "2-5 minutes"
+  
+  - step: "Install Node.js dependencies"
+    commands:
+      - "npm install"
+    description: "Install Vue.js, Vite, Tailwind CSS, and frontend packages"
+    time_estimate: "1-3 minutes"
+  
+  - step: "Configure environment"
+    commands:
+      - "cp .env.example .env"
+      - "php artisan key:generate"
+    description: "Create environment configuration and generate application key"
+    notes:
+      - "Edit .env to configure database, Redis, and other services"
+      - "For development, you can use .env.development.example as reference"
+      - "Set DB_CONNECTION=pgsql, DB_HOST, DB_PORT, DB_DATABASE, DB_USERNAME, DB_PASSWORD"
+      - "Set REDIS_HOST, REDIS_PASSWORD, REDIS_PORT"
+  
+  - step: "Set up database"
+    commands:
+      - "php artisan migrate"
+    description: "Run database migrations to create all tables"
+    prerequisites:
+      - "PostgreSQL must be running and accessible"
+      - "Database credentials in .env must be correct"
+  
+  - step: "Seed enterprise data (optional)"
+    commands:
+      - "php artisan db:seed --class=EnterpriseSeeder"
+    description: "Populate database with sample organizations, licenses, and test data"
+    notes:
+      - "This creates test accounts and sample enterprise structures"
+      - "Default test account: test@example.com / password"
+  
+  - step: "Build frontend assets"
+    commands:
+      - "npm run dev"
+    description: "Start Vite development server with hot module replacement"
+    notes:
+      - "Keep this running in a separate terminal for frontend development"
+      - "For production build, use: npm run build"
+
+# Development Workflow
+development:
+  - step: "Start the application"
+    commands:
+      - "php artisan serve"
+    description: "Start Laravel development server"
+    url: "http://localhost:8000"
+    notes:
+      - "Default login: test@example.com / password"
+  
+  - step: "Start queue worker (separate terminal)"
+    commands:
+      - "php artisan queue:work"
+    description: "Process background jobs and queues"
+    notes:
+      - "Required for deployment jobs, server checks, and async operations"
+  
+  - step: "Start WebSocket server (separate terminal)"
+    commands:
+      - "php artisan reverb:start"
+    description: "Enable real-time features via WebSockets"
+    notes:
+      - "Required for live updates and notifications"
+  
+  - step: "Start Horizon (alternative to queue:work)"
+    commands:
+      - "php artisan horizon"
+    description: "Advanced queue monitoring and processing"
+    url: "http://localhost:8000/horizon"
+    notes:
+      - "Provides queue metrics and monitoring dashboard"
+      - "Only accessible when logged in as root user"
+
+# Alternative Docker-based Development
+docker_development:
+  - step: "Using Spin (recommended)"
+    commands:
+      - "spin up"
+    description: "Start complete development environment with Docker"
+    notes:
+      - "Requires Spin: https://serversideup.net/open-source/spin/docs/installation"
+      - "Includes PostgreSQL, Redis, Mailpit, MinIO, and testing environment"
+      - "Access application at http://localhost:8000"
+  
+  - step: "Using dev.sh script"
+    commands:
+      - "./dev.sh start"
+    description: "Start production-like development environment"
+    notes:
+      - "Includes hot-reloading for frontend and backend"
+      - "Run './dev.sh watch' in separate terminal for backend hot-reload"
+      - "Run './dev.sh help' for all available commands"
+
+# Code Quality Tools
+code_quality:
+  - name: "Format code"
+    command: "./vendor/bin/pint"
+    description: "Auto-format PHP code to PSR-12 standards"
+  
+  - name: "Static analysis"
+    command: "./vendor/bin/phpstan analyse"
+    description: "Check for type errors and code issues"
+  
+  - name: "Code modernization"
+    command: "./vendor/bin/rector process --dry-run"
+    description: "Suggest modern PHP improvements"
+  
+  - name: "Run tests"
+    command: "./vendor/bin/pest"
+    description: "Execute all Pest test suites"
+    options:
+      - "./vendor/bin/pest --coverage   # With coverage report"
+      - "./vendor/bin/pest --filter=OrganizationTest   # Specific test"
+  
+  - name: "Browser tests"
+    command: "php artisan dusk"
+    description: "Run Laravel Dusk browser tests"
+
+# Testing
+testing:
+  setup:
+    - "Copy .env.testing for test configuration"
+    - "Create separate test database"
+  commands:
+    - "./vendor/bin/pest                           # Run all tests"
+    - "./vendor/bin/pest tests/Enterprise/Feature/ # Enterprise feature tests"
+    - "./vendor/bin/pest tests/Enterprise/Unit/    # Enterprise unit tests"
+    - "./vendor/bin/pest --coverage                # With coverage"
+
+# Useful Development URLs
+urls:
+  - name: "Application"
+    url: "http://localhost:8000"
+    description: "Main Coolify application"
+  
+  - name: "Vite Dev Server"
+    url: "http://localhost:5173"
+    description: "Frontend hot-reload server"
+  
+  - name: "Horizon Dashboard"
+    url: "http://localhost:8000/horizon"
+    description: "Queue monitoring (requires root login)"
+  
+  - name: "Mailpit"
+    url: "http://localhost:8025"
+    description: "Email testing tool (when using Docker)"
+  
+  - name: "Telescope"
+    url: "http://localhost:8000/telescope"
+    description: "Debugging and monitoring (set TELESCOPE_ENABLED=true in .env)"
+
+# Project Structure
+structure:
+  backend:
+    - "app/Actions/Enterprise/        - Enterprise business logic"
+    - "app/Models/                    - Eloquent models (enhanced with organization support)"
+    - "app/Services/Enterprise/       - Core enterprise services (Licensing, Terraform, Payment, etc.)"
+    - "app/Livewire/                  - Livewire components (existing)"
+    - "app/Http/Controllers/Enterprise/ - Enterprise HTTP controllers"
+  
+  frontend:
+    - "resources/js/Components/Enterprise/ - Vue.js enterprise components"
+    - "resources/js/Pages/Enterprise/      - Inertia.js pages"
+    - "resources/views/livewire/           - Livewire blade views"
+  
+  database:
+    - "database/migrations/                - Database schema evolution"
+    - "database/seeders/                   - Data seeding (including EnterpriseSeeder)"
+  
+  tests:
+    - "tests/Enterprise/Feature/           - Enterprise feature tests"
+    - "tests/Enterprise/Unit/              - Enterprise unit tests"
+    - "tests/Enterprise/Browser/           - Browser tests for Vue components"
+
+# Key Technologies
+technologies:
+  backend:
+    - "Laravel 12          - Core PHP framework"
+    - "PostgreSQL 15       - Primary database"
+    - "Redis 7             - Caching and queues"
+    - "Livewire 3.6        - Server-side components"
+    - "Laravel Horizon     - Queue monitoring"
+    - "Laravel Sanctum     - API authentication"
+  
+  frontend:
+    - "Vue.js 3.5          - Reactive enterprise components"
+    - "Inertia.js          - SPA without API complexity"
+    - "Alpine.js           - Lightweight client-side interactivity"
+    - "Tailwind CSS 4.1    - Utility-first styling"
+    - "Vite 6.4            - Fast build tool"
+  
+  enterprise:
+    - "Terraform           - Cloud infrastructure provisioning"
+    - "Docker              - Container orchestration"
+    - "Stripe/PayPal       - Payment processing"
+
+# Important Files
+important_files:
+  - path: "CLAUDE.md"
+    description: "Comprehensive development guidelines and architecture overview"
+  
+  - path: "README.md"
+    description: "Project overview and quick start guide"
+  
+  - path: "CONTRIBUTING.md"
+    description: "Contribution guidelines and setup instructions"
+  
+  - path: ".kiro/specs/coolify-enterprise-transformation/requirements.md"
+    description: "Detailed enterprise transformation requirements"
+  
+  - path: ".kiro/specs/coolify-enterprise-transformation/design.md"
+    description: "Architecture and design decisions"
+  
+  - path: ".kiro/specs/coolify-enterprise-transformation/tasks.md"
+    description: "Implementation plan and task breakdown"
+  
+  - path: "composer.json"
+    description: "PHP dependencies"
+  
+  - path: "package.json"
+    description: "Node.js dependencies"
+  
+  - path: ".env.example"
+    description: "Environment configuration template"
+
+# Environment Variables
+environment_variables:
+  required:
+    - "APP_KEY                    - Application encryption key (auto-generated)"
+    - "DB_CONNECTION=pgsql        - Database driver"
+    - "DB_HOST=127.0.0.1          - Database host"
+    - "DB_PORT=5432               - Database port"
+    - "DB_DATABASE                - Database name"
+    - "DB_USERNAME                - Database username"
+    - "DB_PASSWORD                - Database password"
+    - "REDIS_HOST=127.0.0.1       - Redis host"
+    - "REDIS_PORT=6379            - Redis port"
+  
+  enterprise:
+    - "TERRAFORM_BINARY_PATH                  - Path to Terraform binary"
+    - "LICENSE_ENCRYPTION_KEY                 - License encryption key"
+    - "ORGANIZATION_DEFAULT_QUOTAS            - Default resource quotas"
+    - "PAYMENT_STRIPE_SECRET_KEY              - Stripe API key"
+    - "PAYMENT_STRIPE_PUBLISHABLE_KEY         - Stripe publishable key"
+    - "PAYMENT_PAYPAL_CLIENT_ID               - PayPal client ID"
+    - "PAYMENT_PAYPAL_CLIENT_SECRET           - PayPal secret"
+
+# Common Tasks
+common_tasks:
+  - task: "Create a new migration"
+    command: "php artisan make:migration create_table_name"
+  
+  - task: "Create a new model"
+    command: "php artisan make:model ModelName -m"
+  
+  - task: "Create a new Livewire component"
+    command: "php artisan make:livewire ComponentName"
+  
+  - task: "Create a new service"
+    steps:
+      - "Create interface in app/Contracts/"
+      - "Create implementation in app/Services/Enterprise/"
+      - "Register in service provider"
+  
+  - task: "Create a new Vue component"
+    steps:
+      - "Create component in resources/js/Components/Enterprise/"
+      - "Follow existing component patterns"
+      - "Import and use in Inertia.js pages"
+  
+  - task: "Reset database"
+    command: "php artisan migrate:fresh --seed"
+    warning: "This will delete all data!"
+  
+  - task: "Clear all caches"
+    commands:
+      - "php artisan cache:clear"
+      - "php artisan config:clear"
+      - "php artisan route:clear"
+      - "php artisan view:clear"
+
+# Troubleshooting
+troubleshooting:
+  - problem: "Database connection error"
+    solutions:
+      - "Verify PostgreSQL is running: systemctl status postgresql"
+      - "Check credentials in .env match PostgreSQL user"
+      - "Ensure database exists: createdb coolify_enterprise"
+      - "Test connection: psql -U postgres -d coolify_enterprise"
+  
+  - problem: "Redis connection error"
+    solutions:
+      - "Verify Redis is running: redis-cli ping"
+      - "Check REDIS_HOST and REDIS_PORT in .env"
+      - "Start Redis if not running: redis-server"
+  
+  - problem: "npm install fails"
+    solutions:
+      - "Delete node_modules and package-lock.json"
+      - "Clear npm cache: npm cache clean --force"
+      - "Try npm install again"
+      - "Check Node.js version: node --version (should be 20+)"
+  
+  - problem: "composer install fails"
+    solutions:
+      - "Check PHP version: php --version (should be 8.4+)"
+      - "Update Composer: composer self-update"
+      - "Clear Composer cache: composer clear-cache"
+      - "Try composer install --ignore-platform-reqs (with caution)"
+  
+  - problem: "Frontend not hot-reloading"
+    solutions:
+      - "Ensure npm run dev is running"
+      - "Check Vite config in vite.config.js"
+      - "Clear browser cache and hard reload"
+      - "Restart npm run dev"
+  
+  - problem: "Queue jobs not processing"
+    solutions:
+      - "Ensure queue:work or horizon is running"
+      - "Check Redis connection (queues use Redis)"
+      - "View failed jobs: php artisan queue:failed"
+      - "Restart queue worker"
+
+# Additional Resources
+resources:
+  documentation:
+    - "Laravel Documentation: https://laravel.com/docs"
+    - "Vue.js Documentation: https://vuejs.org/guide/"
+    - "Inertia.js Documentation: https://inertiajs.com/"
+    - "Tailwind CSS Documentation: https://tailwindcss.com/docs"
+    - "Terraform Documentation: https://www.terraform.io/docs"
+  
+  community:
+    - "Coolify Discord: https://coollabs.io/discord"
+    - "GitHub Issues: https://github.com/johnproblems/topgun/issues"
+  
+  guides:
+    - "See CLAUDE.md for comprehensive development patterns"
+    - "See CONTRIBUTING.md for contribution workflow"
+    - "See README.md for project overview"
+
+# Notes for GitHub Copilot
+notes:
+  - "This is an enterprise transformation of Coolify, not standard Coolify development"
+  - "Focus on multi-tenant organization hierarchy and enterprise features"
+  - "Follow existing patterns in CLAUDE.md and .kiro/specs/ documentation"
+  - "Use Vue.js + Inertia.js for new enterprise UI components"
+  - "Maintain compatibility with existing Livewire components"
+  - "Always run tests after making changes: ./vendor/bin/pest"
+  - "Format code before committing: ./vendor/bin/pint"
+  - "Check static analysis: ./vendor/bin/phpstan analyse"
