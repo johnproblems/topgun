@@ -107,9 +107,11 @@ The setup process automatically:
 5. ✅ Installs Composer dependencies
 6. ✅ Installs npm dependencies
 7. ✅ Runs database migrations
-8. ✅ Links storage directories
-9. ✅ Sets up git hooks
-10. ✅ Configures development environment
+8. ✅ **Sets up testing environment** (separate test database)
+9. ✅ **Configures phpunit.xml** for container environment
+10. ✅ Links storage directories
+11. ✅ Sets up git hooks
+12. ✅ Configures development environment
 
 ## 🎮 Using the Dev Container
 
@@ -146,16 +148,38 @@ php artisan dusk
 
 ### Code Quality
 
+All code quality tools are pre-configured and ready to use:
+
 ```bash
 # Format code (PSR-12)
 ./vendor/bin/pint
 
-# Static analysis
+# Check formatting without changes
+./vendor/bin/pint --test
+
+# Static analysis (PHPStan)
 ./vendor/bin/phpstan analyse
 
-# Code modernization suggestions
+# Static analysis with verbose output
+./vendor/bin/phpstan analyse -v
+
+# Code modernization suggestions (Rector)
 ./vendor/bin/rector process --dry-run
+
+# Apply Rector changes
+./vendor/bin/rector process
+
+# Run all code quality checks
+./vendor/bin/pint --test && ./vendor/bin/phpstan analyse && ./vendor/bin/pest
 ```
+
+**VS Code Tasks**: Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on Mac) → "Tasks: Run Task" to access:
+- Pint: Format Code
+- Pint: Check Formatting
+- PHPStan: Analyze
+- Rector: Check (Dry Run)
+- Pest: Run All Tests
+- Code Quality: Full Check (runs all checks in sequence)
 
 ### Database Operations
 
