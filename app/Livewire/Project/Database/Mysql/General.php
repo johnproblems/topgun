@@ -124,7 +124,7 @@ class General extends Component
         'sslMode' => 'SSL Mode',
     ];
 
-    public function mount()
+    public function mount(): void
     {
         try {
             $this->authorize('view', $this->database);
@@ -142,7 +142,7 @@ class General extends Component
                 $this->certificateValidUntil = $existingCert->valid_until;
             }
         } catch (Exception $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
@@ -190,7 +190,7 @@ class General extends Component
         }
     }
 
-    public function instantSaveAdvanced()
+    public function instantSaveAdvanced(): void
     {
         try {
             $this->authorize('update', $this->database);
@@ -205,11 +205,11 @@ class General extends Component
             $this->dispatch('success', 'Database updated.');
             $this->dispatch('success', 'You need to restart the service for the changes to take effect.');
         } catch (Exception $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
-    public function submit()
+    public function submit(): void
     {
         try {
             $this->authorize('update', $this->database);
@@ -220,7 +220,7 @@ class General extends Component
             $this->syncData(true);
             $this->dispatch('success', 'Database updated.');
         } catch (Exception $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         } finally {
             if (is_null($this->database->config_hash)) {
                 $this->database->isConfigurationChanged(true);
@@ -230,7 +230,7 @@ class General extends Component
         }
     }
 
-    public function instantSave()
+    public function instantSave(): void
     {
         try {
             $this->authorize('update', $this->database);
@@ -258,7 +258,7 @@ class General extends Component
         } catch (\Throwable $e) {
             $this->isPublic = ! $this->isPublic;
 
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
@@ -267,7 +267,7 @@ class General extends Component
         $this->instantSaveSSL();
     }
 
-    public function instantSaveSSL()
+    public function instantSaveSSL(): void
     {
         try {
             $this->authorize('update', $this->database);
@@ -275,11 +275,11 @@ class General extends Component
             $this->syncData(true);
             $this->dispatch('success', 'SSL configuration updated.');
         } catch (Exception $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
-    public function regenerateSslCertificate()
+    public function regenerateSslCertificate(): void
     {
         try {
             $this->authorize('update', $this->database);
@@ -309,7 +309,7 @@ class General extends Component
 
             $this->dispatch('success', 'SSL certificates have been regenerated. Please restart the database for changes to take effect.');
         } catch (Exception $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
@@ -319,7 +319,7 @@ class General extends Component
         $this->syncData();
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.project.database.mysql.general');
     }

@@ -41,12 +41,12 @@ class DeploymentNavbar extends Component
         $this->dispatch('refreshQueue');
     }
 
-    public function force_start()
+    public function force_start(): void
     {
         try {
             force_start_deployment($this->application_deployment_queue);
         } catch (\Throwable $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
@@ -72,7 +72,7 @@ class DeploymentNavbar extends Component
         return $markdown;
     }
 
-    public function cancel()
+    public function cancel(): void
     {
         $deployment_uuid = $this->application_deployment_queue->deployment_uuid;
         $kill_command = "docker rm -f {$deployment_uuid}";
@@ -83,6 +83,9 @@ class DeploymentNavbar extends Component
         $this->application_deployment_queue->update([
             'status' => ApplicationDeploymentStatus::CANCELLED_BY_USER->value,
         ]);
+
+        // Initialize server variable before try block to ensure it's available in finally block
+        $server = null;
 
         try {
             if ($this->application->settings->is_build_server_enabled) {
@@ -133,12 +136,14 @@ class DeploymentNavbar extends Component
             }
         } catch (\Throwable $e) {
             // Still mark as cancelled even if cleanup fails
-            return handleError($e, $this);
+            handleError($e, $this);
         } finally {
             $this->application_deployment_queue->update([
                 'current_process_id' => null,
             ]);
-            next_after_cancel($server);
+            if ($server) {
+                next_after_cancel($server);
+            }
         }
     }
 }

@@ -25,12 +25,8 @@ class PreviewsCompose extends Component
         $this->domain = data_get($this->service, 'domain');
     }
 
-    public function render()
-    {
-        return view('livewire.project.application.previews-compose');
-    }
 
-    public function save()
+    public function save(): void
     {
         try {
             $this->authorize('update', $this->preview->application);
@@ -44,11 +40,11 @@ class PreviewsCompose extends Component
             $this->dispatch('update_links');
             $this->dispatch('success', 'Domain saved.');
         } catch (\Throwable $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
-    public function generate()
+    public function generate(): void
     {
         try {
             $this->authorize('update', $this->preview->application);
@@ -115,7 +111,12 @@ class PreviewsCompose extends Component
             $this->dispatch('update_links');
             $this->dispatch('success', 'Domain generated.');
         } catch (\Throwable $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
+    }
+
+    public function render(): \Illuminate\View\View
+    {
+        return view('livewire.project.application.previews-compose');
     }
 }

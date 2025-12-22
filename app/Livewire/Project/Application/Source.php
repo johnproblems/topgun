@@ -36,7 +36,7 @@ class Source extends Component
     #[Locked]
     public $sources;
 
-    public function mount()
+    public function mount(): void
     {
         try {
             $this->syncData();
@@ -99,7 +99,7 @@ class Source extends Component
         })->sortBy('name');
     }
 
-    public function setPrivateKey(int $privateKeyId)
+    public function setPrivateKey(int $privateKeyId): void
     {
         try {
             $this->authorize('update', $this->application);
@@ -110,11 +110,11 @@ class Source extends Component
             $this->privateKeyName = $this->application->private_key->name;
             $this->dispatch('success', 'Private key updated!');
         } catch (\Throwable $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
-    public function submit()
+    public function submit(): void
     {
 
         try {
@@ -125,11 +125,11 @@ class Source extends Component
             $this->syncData(true);
             $this->dispatch('success', 'Application source updated!');
         } catch (\Throwable $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
-    public function changeSource($sourceId, $sourceType)
+    public function changeSource($sourceId, $sourceType): void
     {
 
         try {
@@ -154,7 +154,7 @@ class Source extends Component
             $this->getSources();
             $this->dispatch('success', 'Source updated!');
         } catch (\Throwable $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 }

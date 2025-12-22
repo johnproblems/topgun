@@ -138,7 +138,7 @@ class Show extends Component
         );
     }
 
-    public function mount(string $server_uuid)
+    public function mount(string $server_uuid): void
     {
         try {
             $this->server = Server::ownedByCurrentTeam()->whereUuid($server_uuid)->firstOrFail();
@@ -151,7 +151,7 @@ class Show extends Component
             $this->isValidating = $this->server->is_validating ?? false;
 
         } catch (\Throwable $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
@@ -249,7 +249,7 @@ class Show extends Component
         }
     }
 
-    public function validateServer($install = true)
+    public function validateServer($install = true): void
     {
         try {
             $this->authorize('update', $this->server);
@@ -257,7 +257,7 @@ class Show extends Component
             $this->server->save();
             $this->dispatch('init', $install);
         } catch (\Throwable $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
@@ -278,7 +278,7 @@ class Show extends Component
         }
     }
 
-    public function restartSentinel()
+    public function restartSentinel(): void
     {
         try {
             $this->authorize('manageSentinel', $this->server);
@@ -286,32 +286,32 @@ class Show extends Component
             $this->server->restartSentinel($customImage);
             $this->dispatch('info', 'Restarting Sentinel.');
         } catch (\Throwable $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
 
     }
 
-    public function updatedIsSentinelDebugEnabled($value)
+    public function updatedIsSentinelDebugEnabled($value): void
     {
         try {
             $this->submit();
             $this->restartSentinel();
         } catch (\Throwable $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
-    public function updatedIsMetricsEnabled($value)
+    public function updatedIsMetricsEnabled($value): void
     {
         try {
             $this->submit();
             $this->restartSentinel();
         } catch (\Throwable $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
-    public function updatedIsBuildServer($value)
+    public function updatedIsBuildServer($value): void
     {
         try {
             $this->authorize('update', $this->server);
@@ -326,11 +326,11 @@ class Show extends Component
             // Dispatch event to refresh the navbar
             $this->dispatch('refreshServerShow');
         } catch (\Throwable $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
-    public function updatedIsSentinelEnabled($value)
+    public function updatedIsSentinelEnabled($value): void
     {
         try {
             $this->authorize('manageSentinel', $this->server);
@@ -350,31 +350,31 @@ class Show extends Component
             }
             $this->submit();
         } catch (\Throwable $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
-    public function regenerateSentinelToken()
+    public function regenerateSentinelToken(): void
     {
         try {
             $this->authorize('manageSentinel', $this->server);
             $this->server->settings->generateSentinelToken();
             $this->dispatch('success', 'Token regenerated. Restarting Sentinel.');
         } catch (\Throwable $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
-    public function instantSave()
+    public function instantSave(): void
     {
         try {
             $this->syncData(true);
         } catch (\Throwable $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
-    public function checkHetznerServerStatus(bool $manual = false)
+    public function checkHetznerServerStatus(bool $manual = false): void
     {
         try {
             if (! $this->server->hetzner_server_id || ! $this->server->cloudProviderToken) {
@@ -413,7 +413,7 @@ class Show extends Component
                 }
             }
         } catch (\Throwable $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
@@ -434,7 +434,7 @@ class Show extends Component
         $this->dispatch('refreshServer');
     }
 
-    public function startHetznerServer()
+    public function startHetznerServer(): void
     {
         try {
             if (! $this->server->hetzner_server_id || ! $this->server->cloudProviderToken) {
@@ -451,21 +451,21 @@ class Show extends Component
             $this->hetznerServerManuallyStarted = true; // Set flag to trigger auto-validation when running
             $this->dispatch('success', 'Hetzner server is starting...');
         } catch (\Throwable $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
-    public function submit()
+    public function submit(): void
     {
         try {
             $this->syncData(true);
             $this->dispatch('success', 'Server settings updated.');
         } catch (\Throwable $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.server.show');
     }

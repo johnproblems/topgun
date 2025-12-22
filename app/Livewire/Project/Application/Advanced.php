@@ -82,12 +82,12 @@ class Advanced extends Component
     #[Validate(['boolean'])]
     public bool $isConnectToDockerNetworkEnabled = false;
 
-    public function mount()
+    public function mount(): void
     {
         try {
             $this->syncData();
         } catch (\Throwable $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
@@ -157,7 +157,7 @@ class Advanced extends Component
         $this->application->save();
     }
 
-    public function instantSave()
+    public function instantSave(): void
     {
         try {
             $this->authorize('update', $this->application);
@@ -192,11 +192,11 @@ class Advanced extends Component
             $this->dispatch('success', 'Settings saved.');
             $this->dispatch('configurationChanged');
         } catch (\Throwable $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
-    public function submit()
+    public function submit(): void
     {
         try {
             $this->authorize('update', $this->application);
@@ -211,11 +211,11 @@ class Advanced extends Component
             $this->syncData(true);
             $this->dispatch('success', 'Settings saved.');
         } catch (\Throwable $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
-    public function saveCustomName()
+    public function saveCustomName(): void
     {
         try {
             $this->authorize('update', $this->application);
@@ -248,11 +248,11 @@ class Advanced extends Component
             $this->syncData(true);
             $this->dispatch('success', 'Custom name saved.');
         } catch (\Throwable $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.project.application.advanced');
     }

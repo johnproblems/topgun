@@ -29,7 +29,7 @@ class Index extends Component
 
     protected $listeners = ['generateDockerCompose', 'refreshScheduledBackups' => '$refresh'];
 
-    public function mount()
+    public function mount(): void
     {
         try {
             $this->services = collect([]);
@@ -50,21 +50,21 @@ class Index extends Component
             }
             $this->s3s = currentTeam()->s3s;
         } catch (\Throwable $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
-    public function generateDockerCompose()
+    public function generateDockerCompose(): void
     {
         try {
             $this->authorize('update', $this->service);
             $this->service->parse();
         } catch (\Throwable $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.project.service.index');
     }
