@@ -36,7 +36,7 @@ class Source extends Component
     #[Locked]
     public $sources;
 
-    public function mount()
+    public function mount(): void
     {
         try {
             $this->syncData();
@@ -47,22 +47,22 @@ class Source extends Component
         }
     }
 
-    public function updatedGitRepository()
+    public function updatedGitRepository(): void
     {
         $this->gitRepository = trim($this->gitRepository);
     }
 
-    public function updatedGitBranch()
+    public function updatedGitBranch(): void
     {
         $this->gitBranch = trim($this->gitBranch);
     }
 
-    public function updatedGitCommitSha()
+    public function updatedGitCommitSha(): void
     {
         $this->gitCommitSha = trim($this->gitCommitSha);
     }
 
-    public function syncData(bool $toModel = false)
+    public function syncData(bool $toModel = false): void
     {
         if ($toModel) {
             $this->validate();
@@ -84,14 +84,14 @@ class Source extends Component
         }
     }
 
-    private function getPrivateKeys()
+    private function getPrivateKeys(): void
     {
         $this->privateKeys = PrivateKey::whereTeamId(currentTeam()->id)->get()->reject(function ($key) {
             return $key->id == $this->privateKeyId;
         });
     }
 
-    private function getSources()
+    private function getSources(): void
     {
         // filter the current source out
         $this->sources = currentTeam()->sources()->whereNotNull('app_id')->reject(function ($source) {
@@ -99,7 +99,7 @@ class Source extends Component
         })->sortBy('name');
     }
 
-    public function setPrivateKey(int $privateKeyId)
+    public function setPrivateKey(int $privateKeyId): void
     {
         try {
             $this->authorize('update', $this->application);
@@ -114,7 +114,7 @@ class Source extends Component
         }
     }
 
-    public function submit()
+    public function submit(): void
     {
 
         try {
@@ -129,7 +129,7 @@ class Source extends Component
         }
     }
 
-    public function changeSource($sourceId, $sourceType)
+    public function changeSource($sourceId, $sourceType): void
     {
 
         try {

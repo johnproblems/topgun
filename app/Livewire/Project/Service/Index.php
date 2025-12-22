@@ -54,7 +54,7 @@ class Index extends Component
         }
     }
 
-    public function generateDockerCompose()
+    public function generateDockerCompose(): void
     {
         try {
             $this->authorize('update', $this->service);
@@ -64,7 +64,7 @@ class Index extends Component
         }
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.project.service.index');
     }

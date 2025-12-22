@@ -21,19 +21,19 @@ class DeploymentNavbar extends Component
 
     protected $listeners = ['deploymentFinished'];
 
-    public function mount()
+    public function mount(): void
     {
         $this->application = Application::ownedByCurrentTeam()->find($this->application_deployment_queue->application_id);
         $this->server = $this->application->destination->server;
         $this->is_debug_enabled = $this->application->settings->is_debug_enabled;
     }
 
-    public function deploymentFinished()
+    public function deploymentFinished(): void
     {
         $this->application_deployment_queue->refresh();
     }
 
-    public function show_debug()
+    public function show_debug(): void
     {
         $this->application->settings->is_debug_enabled = ! $this->application->settings->is_debug_enabled;
         $this->application->settings->save();
@@ -41,12 +41,12 @@ class DeploymentNavbar extends Component
         $this->dispatch('refreshQueue');
     }
 
-    public function force_start()
+    public function force_start(): void
     {
         try {
             force_start_deployment($this->application_deployment_queue);
         } catch (\Throwable $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
@@ -72,7 +72,7 @@ class DeploymentNavbar extends Component
         return $markdown;
     }
 
-    public function cancel()
+    public function cancel(): void
     {
         $deployment_uuid = $this->application_deployment_queue->deployment_uuid;
         $kill_command = "docker rm -f {$deployment_uuid}";
@@ -133,7 +133,7 @@ class DeploymentNavbar extends Component
             }
         } catch (\Throwable $e) {
             // Still mark as cancelled even if cleanup fails
-            return handleError($e, $this);
+            handleError($e, $this);
         } finally {
             $this->application_deployment_queue->update([
                 'current_process_id' => null,

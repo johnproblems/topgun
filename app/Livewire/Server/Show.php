@@ -138,7 +138,7 @@ class Show extends Component
         );
     }
 
-    public function mount(string $server_uuid)
+    public function mount(string $server_uuid): void
     {
         try {
             $this->server = Server::ownedByCurrentTeam()->whereUuid($server_uuid)->firstOrFail();
@@ -164,7 +164,7 @@ class Show extends Component
             ->toArray();
     }
 
-    public function syncData(bool $toModel = false)
+    public function syncData(bool $toModel = false): void
     {
         if ($toModel) {
             $this->validate();
@@ -234,12 +234,12 @@ class Show extends Component
         }
     }
 
-    public function refresh()
+    public function refresh(): void
     {
         $this->syncData();
     }
 
-    public function handleSentinelRestarted($event)
+    public function handleSentinelRestarted($event): void
     {
         // Only refresh if the event is for this server
         if (isset($event['serverUuid']) && $event['serverUuid'] === $this->server->uuid) {
@@ -249,7 +249,7 @@ class Show extends Component
         }
     }
 
-    public function validateServer($install = true)
+    public function validateServer($install = true): void
     {
         try {
             $this->authorize('update', $this->server);
@@ -261,7 +261,7 @@ class Show extends Component
         }
     }
 
-    public function checkLocalhostConnection()
+    public function checkLocalhostConnection(): void
     {
         $this->syncData(true);
         ['uptime' => $uptime, 'error' => $error] = $this->server->validateConnection();
@@ -278,7 +278,7 @@ class Show extends Component
         }
     }
 
-    public function restartSentinel()
+    public function restartSentinel(): void
     {
         try {
             $this->authorize('manageSentinel', $this->server);
@@ -291,7 +291,7 @@ class Show extends Component
 
     }
 
-    public function updatedIsSentinelDebugEnabled($value)
+    public function updatedIsSentinelDebugEnabled($value): void
     {
         try {
             $this->submit();
@@ -301,7 +301,7 @@ class Show extends Component
         }
     }
 
-    public function updatedIsMetricsEnabled($value)
+    public function updatedIsMetricsEnabled($value): void
     {
         try {
             $this->submit();
@@ -311,7 +311,7 @@ class Show extends Component
         }
     }
 
-    public function updatedIsBuildServer($value)
+    public function updatedIsBuildServer($value): void
     {
         try {
             $this->authorize('update', $this->server);
@@ -330,7 +330,7 @@ class Show extends Component
         }
     }
 
-    public function updatedIsSentinelEnabled($value)
+    public function updatedIsSentinelEnabled($value): void
     {
         try {
             $this->authorize('manageSentinel', $this->server);
@@ -354,7 +354,7 @@ class Show extends Component
         }
     }
 
-    public function regenerateSentinelToken()
+    public function regenerateSentinelToken(): void
     {
         try {
             $this->authorize('manageSentinel', $this->server);
@@ -365,7 +365,7 @@ class Show extends Component
         }
     }
 
-    public function instantSave()
+    public function instantSave(): void
     {
         try {
             $this->syncData(true);
@@ -374,7 +374,7 @@ class Show extends Component
         }
     }
 
-    public function checkHetznerServerStatus(bool $manual = false)
+    public function checkHetznerServerStatus(bool $manual = false): void
     {
         try {
             if (! $this->server->hetzner_server_id || ! $this->server->cloudProviderToken) {
@@ -417,7 +417,7 @@ class Show extends Component
         }
     }
 
-    public function handleServerValidated($event = null)
+    public function handleServerValidated($event = null): void
     {
         // Check if event is for this server
         if ($event && isset($event['serverUuid']) && $event['serverUuid'] !== $this->server->uuid) {
@@ -434,7 +434,7 @@ class Show extends Component
         $this->dispatch('refreshServer');
     }
 
-    public function startHetznerServer()
+    public function startHetznerServer(): void
     {
         try {
             if (! $this->server->hetzner_server_id || ! $this->server->cloudProviderToken) {
@@ -455,7 +455,7 @@ class Show extends Component
         }
     }
 
-    public function submit()
+    public function submit(): void
     {
         try {
             $this->syncData(true);
@@ -465,7 +465,7 @@ class Show extends Component
         }
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.server.show');
     }

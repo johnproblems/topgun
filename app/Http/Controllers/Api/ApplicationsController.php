@@ -91,7 +91,7 @@ class ApplicationsController extends Controller
             ),
         ]
     )]
-    public function applications(Request $request)
+    public function applications(Request $request): \Illuminate\Http\JsonResponse
     {
         $teamId = getTeamIdFromToken();
         if (is_null($teamId)) {
@@ -253,7 +253,7 @@ class ApplicationsController extends Controller
             ),
         ]
     )]
-    public function create_public_application(Request $request)
+    public function create_public_application(Request $request): \Illuminate\Http\JsonResponse
     {
         return $this->create_application($request, 'public');
     }
@@ -403,7 +403,7 @@ class ApplicationsController extends Controller
             ),
         ]
     )]
-    public function create_private_gh_app_application(Request $request)
+    public function create_private_gh_app_application(Request $request): \Illuminate\Http\JsonResponse
     {
         return $this->create_application($request, 'private-gh-app');
     }
@@ -553,7 +553,7 @@ class ApplicationsController extends Controller
             ),
         ]
     )]
-    public function create_private_deploy_key_application(Request $request)
+    public function create_private_deploy_key_application(Request $request): \Illuminate\Http\JsonResponse
     {
         return $this->create_application($request, 'private-deploy-key');
     }
@@ -687,7 +687,7 @@ class ApplicationsController extends Controller
             ),
         ]
     )]
-    public function create_dockerfile_application(Request $request)
+    public function create_dockerfile_application(Request $request): \Illuminate\Http\JsonResponse
     {
         return $this->create_application($request, 'dockerfile');
     }
@@ -818,7 +818,7 @@ class ApplicationsController extends Controller
             ),
         ]
     )]
-    public function create_dockerimage_application(Request $request)
+    public function create_dockerimage_application(Request $request): \Illuminate\Http\JsonResponse
     {
         return $this->create_application($request, 'dockerimage');
     }
@@ -912,7 +912,7 @@ class ApplicationsController extends Controller
             ),
         ]
     )]
-    public function create_dockercompose_application(Request $request)
+    public function create_dockercompose_application(Request $request): \Illuminate\Http\JsonResponse
     {
         return $this->create_application($request, 'dockercompose');
     }
@@ -1722,7 +1722,7 @@ class ApplicationsController extends Controller
             ),
         ]
     )]
-    public function application_by_uuid(Request $request)
+    public function application_by_uuid(Request $request): \Illuminate\Http\JsonResponse
     {
         $teamId = getTeamIdFromToken();
         if (is_null($teamId)) {
@@ -1804,7 +1804,7 @@ class ApplicationsController extends Controller
             ),
         ]
     )]
-    public function logs_by_uuid(Request $request)
+    public function logs_by_uuid(Request $request): \Illuminate\Http\JsonResponse
     {
         $teamId = getTeamIdFromToken();
         if (is_null($teamId)) {
@@ -1899,7 +1899,7 @@ class ApplicationsController extends Controller
             ),
         ]
     )]
-    public function delete_by_uuid(Request $request)
+    public function delete_by_uuid(Request $request): \Illuminate\Http\JsonResponse
     {
         $teamId = getTeamIdFromToken();
         if (is_null($teamId)) {

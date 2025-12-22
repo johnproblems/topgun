@@ -20,17 +20,17 @@ class PreviewsCompose extends Component
 
     public ?string $domain = null;
 
-    public function mount()
+    public function mount(): void
     {
         $this->domain = data_get($this->service, 'domain');
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.project.application.previews-compose');
     }
 
-    public function save()
+    public function save(): void
     {
         try {
             $this->authorize('update', $this->preview->application);
@@ -48,7 +48,7 @@ class PreviewsCompose extends Component
         }
     }
 
-    public function generate()
+    public function generate(): void
     {
         try {
             $this->authorize('update', $this->preview->application);

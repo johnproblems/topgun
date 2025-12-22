@@ -82,7 +82,7 @@ class Advanced extends Component
     #[Validate(['boolean'])]
     public bool $isConnectToDockerNetworkEnabled = false;
 
-    public function mount()
+    public function mount(): void
     {
         try {
             $this->syncData();
@@ -157,7 +157,7 @@ class Advanced extends Component
         $this->application->save();
     }
 
-    public function instantSave()
+    public function instantSave(): void
     {
         try {
             $this->authorize('update', $this->application);
@@ -196,7 +196,7 @@ class Advanced extends Component
         }
     }
 
-    public function submit()
+    public function submit(): void
     {
         try {
             $this->authorize('update', $this->application);
@@ -215,7 +215,7 @@ class Advanced extends Component
         }
     }
 
-    public function saveCustomName()
+    public function saveCustomName(): void
     {
         try {
             $this->authorize('update', $this->application);
@@ -252,7 +252,7 @@ class Advanced extends Component
         }
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.project.application.advanced');
     }
