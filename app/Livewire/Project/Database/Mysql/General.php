@@ -58,7 +58,7 @@ class General extends Component
 
     public ?Carbon $certificateValidUntil = null;
 
-    public function getListeners()
+    public function getListeners(): array
     {
         $userId = Auth::id();
 
@@ -124,7 +124,7 @@ class General extends Component
         'sslMode' => 'SSL Mode',
     ];
 
-    public function mount()
+    public function mount(): void
     {
         try {
             $this->authorize('view', $this->database);
@@ -146,7 +146,7 @@ class General extends Component
         }
     }
 
-    public function syncData(bool $toModel = false)
+    public function syncData(bool $toModel = false): void
     {
         if ($toModel) {
             $this->validate();
@@ -190,7 +190,7 @@ class General extends Component
         }
     }
 
-    public function instantSaveAdvanced()
+    public function instantSaveAdvanced(): void
     {
         try {
             $this->authorize('update', $this->database);
@@ -209,7 +209,7 @@ class General extends Component
         }
     }
 
-    public function submit()
+    public function submit(): void
     {
         try {
             $this->authorize('update', $this->database);
@@ -230,7 +230,7 @@ class General extends Component
         }
     }
 
-    public function instantSave()
+    public function instantSave(): void
     {
         try {
             $this->authorize('update', $this->database);

@@ -29,19 +29,19 @@ class EditCompose extends Component
         'isContainerLabelEscapeEnabled' => 'required',
     ];
 
-    public function envsUpdated()
+    public function envsUpdated(): void
     {
         $this->dispatch('saveCompose', $this->dockerComposeRaw);
         $this->refreshEnvs();
     }
 
-    public function refreshEnvs()
+    public function refreshEnvs(): void
     {
         $this->service = Service::ownedByCurrentTeam()->find($this->serviceId);
         $this->syncData(false);
     }
 
-    public function mount()
+    public function mount(): void
     {
         $this->service = Service::ownedByCurrentTeam()->find($this->serviceId);
         $this->syncData(false);
@@ -60,7 +60,7 @@ class EditCompose extends Component
         }
     }
 
-    public function validateCompose()
+    public function validateCompose(): void
     {
         $isValid = validateComposeFile($this->dockerComposeRaw, $this->service->server_id);
         if ($isValid !== 'OK') {
@@ -70,14 +70,14 @@ class EditCompose extends Component
         }
     }
 
-    public function saveEditedCompose()
+    public function saveEditedCompose(): void
     {
         $this->dispatch('info', 'Saving new docker compose...');
         $this->dispatch('saveCompose', $this->dockerComposeRaw);
         $this->dispatch('refreshStorages');
     }
 
-    public function instantSave()
+    public function instantSave(): void
     {
         $this->validate([
             'isContainerLabelEscapeEnabled' => 'required',
@@ -87,7 +87,7 @@ class EditCompose extends Component
         $this->dispatch('success', 'Service updated successfully');
     }
 
-    public function render()
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.project.service.edit-compose');
     }
