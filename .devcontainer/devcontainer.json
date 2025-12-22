@@ -1,0 +1,302 @@
+{
+  "name": "Coolify Enterprise Development",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "workspace",
+  "workspaceFolder": "/workspace",
+  
+  "forwardPorts": [
+    8000,
+    5173,
+    6001,
+    6002,
+    5432,
+    6379,
+    8025,
+    1025,
+    9000,
+    9001
+  ],
+  
+  "portsAttributes": {
+    "8000": {
+      "label": "Laravel App",
+      "onAutoForward": "notify"
+    },
+    "5173": {
+      "label": "Vite Dev Server",
+      "onAutoForward": "notify"
+    },
+    "6001": {
+      "label": "WebSocket Server",
+      "onAutoForward": "silent"
+    },
+    "5432": {
+      "label": "PostgreSQL",
+      "onAutoForward": "silent"
+    },
+    "6379": {
+      "label": "Redis",
+      "onAutoForward": "silent"
+    },
+    "8025": {
+      "label": "Mailpit Web",
+      "onAutoForward": "notify"
+    },
+    "9001": {
+      "label": "MinIO Console",
+      "onAutoForward": "silent"
+    }
+  },
+  
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "bmewburn.vscode-intelephense-client",
+        "xdebug.php-debug",
+        "zobo.php-intellisense",
+        "amirrizal.laravel-extra-intellisense",
+        "onecentlin.laravel-blade",
+        "onecentlin.laravel5-snippets",
+        "onecentlin.laravel-extension-pack",
+        "shufo.vscode-blade-formatter",
+        "stef-k.laravel-goto-controller",
+        "austenc.laravel-blade-spacer",
+        "vue.volar",
+        "vue.vscode-typescript-vue-plugin",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "m1guelpf.better-pest",
+        "recca0120.vscode-phpunit",
+        "ckolkman.vscode-postgres",
+        "mtxr.sqltools",
+        "mtxr.sqltools-driver-pg",
+        "ms-azuretools.vscode-docker",
+        "ms-vscode-remote.remote-containers",
+        "hashicorp.terraform",
+        "hashicorp.hcl",
+        "github.vscode-pull-request-github",
+        "eamodio.gitlens",
+        "donjayamanne.githistory",
+        "mhutchie.git-graph",
+        "github.copilot",
+        "github.copilot-chat",
+        "editorconfig.editorconfig",
+        "shevaua.phpcs",
+        "valeryanm.vscode-phpsab",
+        "ikappas.composer",
+        "christian-kohler.path-intellisense",
+        "visualstudioexptteam.vscodeintellicode",
+        "gruntfuggly.todo-tree",
+        "wayou.vscode-todo-highlight",
+        "aaron-bond.better-comments",
+        "mikestead.dotenv",
+        "adpyke.codesnap",
+        "redhat.vscode-yaml",
+        "tamasfe.even-better-toml",
+        "yzhang.markdown-all-in-one",
+        "davidanson.vscode-markdownlint",
+        "humao.rest-client",
+        "rangav.vscode-thunder-client",
+        "formulahendry.auto-rename-tag",
+        "wix.vscode-import-cost",
+        "naumovs.color-highlight",
+        "pranaygp.vscode-css-peek",
+        "ritwickdey.liveserver"
+      ],
+      
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.formatOnPaste": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit",
+          "source.organizeImports": "explicit"
+        },
+        "editor.tabSize": 4,
+        "editor.insertSpaces": true,
+        "editor.wordWrap": "on",
+        "editor.minimap.enabled": true,
+        "editor.suggestSelection": "first",
+        "editor.inlineSuggest.enabled": true,
+        "editor.quickSuggestions": {
+          "strings": true
+        },
+        
+        "files.associations": {
+          "*.blade.php": "blade",
+          "*.env*": "dotenv",
+          ".php_cs": "php",
+          ".php_cs.dist": "php"
+        },
+        "files.exclude": {
+          "**/.git": true,
+          "**/.DS_Store": true,
+          "**/node_modules": true,
+          "**/vendor": true,
+          "**/.phpunit.result.cache": true
+        },
+        
+        "php.suggest.basic": false,
+        "php.validate.enable": true,
+        "php.validate.executablePath": "/usr/local/bin/php",
+        
+        "intelephense.environment.phpVersion": "8.4.0",
+        "intelephense.files.maxSize": 5000000,
+        "intelephense.telemetry.enabled": false,
+        "intelephense.format.enable": false,
+        
+        "blade.format.enable": true,
+        "[blade]": {
+          "editor.defaultFormatter": "shufo.vscode-blade-formatter",
+          "editor.autoClosingBrackets": "always"
+        },
+        
+        "[php]": {
+          "editor.defaultFormatter": "bmewburn.vscode-intelephense-client",
+          "editor.formatOnSave": false
+        },
+        
+        "[vue]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[json]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[jsonc]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        
+        "prettier.semi": true,
+        "prettier.singleQuote": true,
+        "prettier.trailingComma": "es5",
+        "prettier.tabWidth": 2,
+        
+        "eslint.validate": [
+          "javascript",
+          "javascriptreact",
+          "typescript",
+          "typescriptreact",
+          "vue"
+        ],
+        
+        "tailwindCSS.includeLanguages": {
+          "blade": "html",
+          "vue": "html",
+          "javascript": "javascript"
+        },
+        "tailwindCSS.emmetCompletions": true,
+        
+        "git.autofetch": true,
+        "git.confirmSync": false,
+        "git.enableSmartCommit": true,
+        
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "terminal.integrated.fontSize": 14,
+        "terminal.integrated.scrollback": 10000,
+        
+        "search.exclude": {
+          "**/node_modules": true,
+          "**/vendor": true,
+          "**/public/build": true,
+          "**/storage": true,
+          "**/.phpunit.result.cache": true
+        },
+        
+        "github.copilot.enable": {
+          "*": true,
+          "yaml": true,
+          "plaintext": true,
+          "markdown": true,
+          "blade": true,
+          "php": true,
+          "vue": true,
+          "javascript": true
+        },
+        
+        "pest.enable": true,
+        "pest.files": [
+          "tests/**/*.php"
+        ],
+        
+        "sqltools.connections": [
+          {
+            "name": "PostgreSQL",
+            "driver": "PostgreSQL",
+            "server": "postgres",
+            "port": 5432,
+            "database": "coolify",
+            "username": "coolify",
+            "password": "password"
+          }
+        ],
+        
+        "docker.dockerPath": "/usr/bin/docker",
+        "docker.dockerComposePath": "/usr/bin/docker-compose",
+        
+        "files.autoSave": "onFocusChange",
+        
+        "breadcrumbs.enabled": true,
+        
+        "explorer.confirmDelete": false,
+        "explorer.confirmDragAndDrop": false
+      }
+    }
+  },
+  
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "installOhMyZsh": true,
+      "configureZshAsDefaultShell": true,
+      "username": "vscode",
+      "userUid": "1000",
+      "userGid": "1000"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest",
+      "dockerDashComposeVersion": "v2"
+    },
+    "ghcr.io/devcontainers/features/terraform:1": {
+      "version": "latest"
+    }
+  },
+  
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  
+  "postStartCommand": "bash .devcontainer/start.sh",
+  
+  "shutdownAction": "stopCompose",
+  
+  "remoteUser": "vscode",
+  
+  "mounts": [
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind",
+    "source=coolify-composer-cache,target=/home/vscode/.composer,type=volume",
+    "source=coolify-npm-cache,target=/home/vscode/.npm,type=volume",
+    "source=coolify-vscode-extensions,target=/home/vscode/.vscode-server/extensions,type=volume"
+  ],
+  
+  "containerEnv": {
+    "PHP_VERSION": "8.4",
+    "NODE_VERSION": "20",
+    "COMPOSER_ALLOW_SUPERUSER": "1",
+    "COMPOSER_NO_INTERACTION": "1"
+  },
+  
+  "overrideCommand": true,
+  
+  "updateRemoteUserUID": true
+}
