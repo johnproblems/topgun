@@ -1,0 +1,59 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Listen for Xdebug",
+      "type": "php",
+      "request": "launch",
+      "port": 9003,
+      "pathMappings": {
+        "/workspace": "${workspaceFolder}"
+      },
+      "log": true
+    },
+    {
+      "name": "Launch Currently Open Script",
+      "type": "php",
+      "request": "launch",
+      "program": "${file}",
+      "cwd": "${workspaceFolder}",
+      "port": 9003
+    },
+    {
+      "name": "Debug Pest Test",
+      "type": "php",
+      "request": "launch",
+      "program": "${workspaceFolder}/vendor/bin/pest",
+      "args": [
+        "${file}"
+      ],
+      "cwd": "${workspaceFolder}",
+      "port": 9003,
+      "env": {
+        "XDEBUG_MODE": "debug"
+      }
+    },
+    {
+      "name": "Debug Artisan Command",
+      "type": "php",
+      "request": "launch",
+      "program": "${workspaceFolder}/artisan",
+      "args": [
+        "${input:artisanCommand}"
+      ],
+      "cwd": "${workspaceFolder}",
+      "port": 9003,
+      "env": {
+        "XDEBUG_MODE": "debug"
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "artisanCommand",
+      "type": "promptString",
+      "description": "Enter artisan command (e.g., migrate, queue:work)",
+      "default": "list"
+    }
+  ]
+}

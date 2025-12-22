@@ -43,7 +43,21 @@ This project transforms the open-source Coolify platform into a comprehensive **
 
 ## Quick Start
 
-### Prerequisites
+### 🚀 Option 1: Dev Container (Recommended)
+
+**The fastest way to get started!** Use our pre-configured development container with all tools and services included:
+
+1. Install [VS Code](https://code.visualstudio.com/) and [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension
+2. Open this folder in VS Code
+3. Click "Reopen in Container" when prompted
+4. Wait for automatic setup to complete
+5. Start coding immediately! ✨
+
+See [DEVCONTAINER.md](DEVCONTAINER.md) for full documentation.
+
+### Option 2: Manual Installation
+
+#### Prerequisites
 - PHP 8.4+
 - Node.js 20+
 - PostgreSQL 15+
@@ -51,7 +65,7 @@ This project transforms the open-source Coolify platform into a comprehensive **
 - Docker & Docker Compose
 - Terraform (for infrastructure provisioning)
 
-### Installation
+#### Installation
 
 ```bash
 # Clone the repository

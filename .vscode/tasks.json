@@ -1,0 +1,177 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Pint: Format Code",
+      "type": "shell",
+      "command": "./vendor/bin/pint",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Pint: Check Formatting",
+      "type": "shell",
+      "command": "./vendor/bin/pint --test",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "PHPStan: Analyze",
+      "type": "shell",
+      "command": "./vendor/bin/phpstan analyse",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "PHPStan: Analyze (Verbose)",
+      "type": "shell",
+      "command": "./vendor/bin/phpstan analyse -v",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Rector: Check (Dry Run)",
+      "type": "shell",
+      "command": "./vendor/bin/rector process --dry-run",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Rector: Apply Changes",
+      "type": "shell",
+      "command": "./vendor/bin/rector process",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Pest: Run All Tests",
+      "type": "shell",
+      "command": "./vendor/bin/pest",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Pest: Run Tests with Coverage",
+      "type": "shell",
+      "command": "./vendor/bin/pest --coverage",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Pest: Enterprise Feature Tests",
+      "type": "shell",
+      "command": "./vendor/bin/pest tests/Enterprise/Feature/",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Pest: Enterprise Unit Tests",
+      "type": "shell",
+      "command": "./vendor/bin/pest tests/Enterprise/Unit/",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Laravel: Serve",
+      "type": "shell",
+      "command": "php artisan serve",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Laravel: Queue Worker",
+      "type": "shell",
+      "command": "php artisan queue:work",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Laravel: WebSocket Server",
+      "type": "shell",
+      "command": "php artisan reverb:start",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Vite: Dev Server",
+      "type": "shell",
+      "command": "npm run dev",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Code Quality: Full Check",
+      "dependsOn": [
+        "Pint: Check Formatting",
+        "PHPStan: Analyze",
+        "Pest: Run All Tests"
+      ],
+      "dependsOrder": "sequence",
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    }
+  ]
+}
