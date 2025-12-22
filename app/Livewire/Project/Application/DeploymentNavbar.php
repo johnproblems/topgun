@@ -46,7 +46,7 @@ class DeploymentNavbar extends Component
         try {
             force_start_deployment($this->application_deployment_queue);
         } catch (\Throwable $e) {
-            return handleError($e, $this);
+            handleError($e, $this);
         }
     }
 
@@ -133,7 +133,7 @@ class DeploymentNavbar extends Component
             }
         } catch (\Throwable $e) {
             // Still mark as cancelled even if cleanup fails
-            return handleError($e, $this);
+            handleError($e, $this);
         } finally {
             $this->application_deployment_queue->update([
                 'current_process_id' => null,
