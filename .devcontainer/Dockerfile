@@ -121,17 +121,9 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | d
     && rm -rf /var/lib/apt/lists/* \
     && gh --version
 
-# Install GitHub Copilot CLI
-RUN npm install -g @github/copilot
-
-# Install Google Gemini CLI
-RUN npm install -g @google/gemini-cli
-
-# Install Claude Code (Anthropic's official CLI)
-RUN npm install -g @anthropic-ai/claude-code
-
-# Install useful development tools and yq
-RUN apt-get update && apt-get install -y \
+# Install AI CLI tools and dev tools in one layer
+RUN npm install -g @github/copilot @google/gemini-cli @anthropic-ai/claude-code \
+    && apt-get update && apt-get install -y \
     jq \
     make \
     build-essential \
