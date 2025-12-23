@@ -69,113 +69,56 @@ RUN echo "memory_limit = 512M" >> /etc/php/8.4/cli/php.ini \
     && echo "post_max_size = 100M" >> /etc/php/8.4/cli/php.ini \
     && echo "max_execution_time = 300" >> /etc/php/8.4/cli/php.ini
 
-# Install Composer
+# Install Composer, Node.js, and npm packages
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
-    && composer --version
-
-# Install Node.js 20 LTS
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
-    && npm --version \
-    && node --version
-
-# Install global npm packages
-RUN npm install -g npm@latest \
-    && npm install -g yarn \
-    && npm install -g pnpm
-
-# Install PostgreSQL client
-RUN apt-get update && apt-get install -y postgresql-client \
+    && npm install -g npm@latest yarn pnpm \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Redis client
-RUN apt-get update && apt-get install -y redis-tools \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Docker CLI
-RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg \
+# Install database clients, Docker, Terraform, and GitHub CLI
+RUN apt-get update && apt-get install -y postgresql-client redis-tools \
+    && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg \
     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null \
-    && apt-get update \
-    && apt-get install -y docker-ce-cli docker-compose-plugin \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Terraform
-RUN wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg \
+    && wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg \
     && echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/hashicorp.list \
-    && apt-get update \
-    && apt-get install -y terraform \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && terraform --version
-
-# Install GitHub CLI
-RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
     && chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
     && apt-get update \
-    && apt-get install -y gh \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && gh --version
-
-# Install AI CLI tools and dev tools in one layer
-RUN npm install -g @github/copilot @google/gemini-cli @anthropic-ai/claude-code \
-    && apt-get update && apt-get install -y \
-    jq \
-    make \
-    build-essential \
-    python3 \
-    python3-pip \
+    && apt-get install -y docker-ce-cli docker-compose-plugin terraform gh jq make build-essential python3 python3-pip \
     && wget -q https://github.com/mikefarah/yq/releases/download/v4.40.5/yq_linux_amd64 -O /usr/bin/yq \
     && chmod +x /usr/bin/yq \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Create non-root user
+# Install AI CLI tools and additional npm tools
+RUN npm install -g @github/copilot @google/gemini-cli @anthropic-ai/claude-code tldr http-server
+
+# Create non-root user and setup
 RUN groupadd --gid $USER_GID $USERNAME \
     && useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME \
     && echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USERNAME \
-    && chmod 0440 /etc/sudoers.d/$USERNAME
-
-# Add user to docker group
-RUN groupadd -f docker \
-    && usermod -aG docker $USERNAME
-
-# Set up command history
-RUN SNIPPET="export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" \
+    && chmod 0440 /etc/sudoers.d/$USERNAME \
+    && groupadd -f docker \
+    && usermod -aG docker $USERNAME \
     && mkdir /commandhistory \
     && touch /commandhistory/.bash_history \
     && chown -R $USERNAME:$USERNAME /commandhistory \
-    && echo "$SNIPPET" >> "/home/$USERNAME/.bashrc"
-
-# Install Laravel installer globally
-RUN composer global require laravel/installer \
+    && mkdir -p /workspace \
+    && chown -R $USERNAME:$USERNAME /workspace \
+    && echo "export PROMPT_COMMAND='history -a' && export HISTFILE=/commandhistory/.bash_history" >> "/home/$USERNAME/.bashrc" \
     && echo 'export PATH="$PATH:$HOME/.composer/vendor/bin"' >> /home/$USERNAME/.bashrc
-
-# Install commonly used Laravel/PHP tools
-RUN composer global require friendsofphp/php-cs-fixer \
-    && composer global require phpstan/phpstan \
-    && composer global require rector/rector \
-    && composer global require pestphp/pest
-
-# Set up zsh with oh-my-zsh (optional, will be installed by devcontainer feature)
-# This is handled by the devcontainer features
 
 # Configure git
 RUN git config --system core.autocrlf input \
     && git config --system pull.rebase false \
     && git config --system init.defaultBranch main
 
-# Install additional helpful tools
-RUN npm install -g tldr \
-    && npm install -g http-server
-
-# Create workspace directory
-RUN mkdir -p /workspace \
-    && chown -R $USERNAME:$USERNAME /workspace
+# Install Laravel and PHP tools as vscode user
+USER $USERNAME
+RUN composer global require laravel/installer friendsofphp/php-cs-fixer phpstan/phpstan rector/rector pestphp/pest
 
 # Switch to non-root user
 USER $USERNAME
