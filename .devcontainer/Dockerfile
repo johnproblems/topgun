@@ -122,13 +122,12 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | d
     && gh --version
 
 # Install GitHub Copilot CLI
-RUN npm install -g @githubnext/github-copilot-cli \
-    && echo 'eval "$(github-copilot-cli alias -- "$0")"' >> /etc/bash.bashrc
+RUN npm install -g @github/copilot
 
 # Install Google Gemini CLI
-RUN npm install -g @google/generative-ai-cli
+RUN npm install -g @google/gemini-cli
 
-# Install Claude Code (Anthropic's official CLI for code assistance)
+# Install Claude Code (Anthropic's official CLI)
 RUN npm install -g @anthropic-ai/claude-code
 
 # Install AWS CLI (for various cloud operations)
