@@ -85,7 +85,7 @@ RUN npm install -g npm@latest \
     && npm install -g pnpm
 
 # Install PostgreSQL client
-RUN apt-get update && apt-get install -y postgresql-client-16 \
+RUN apt-get update && apt-get install -y postgresql-client \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -125,23 +125,11 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | d
 RUN npm install -g @githubnext/github-copilot-cli \
     && echo 'eval "$(github-copilot-cli alias -- "$0")"' >> /etc/bash.bashrc
 
-# Install Google Gemini CLI (using official gcloud CLI)
-RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
-    && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - \
-    && apt-get update \
-    && apt-get install -y google-cloud-cli \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+# Install Google Gemini CLI
+RUN npm install -g @google/generative-ai-cli
 
-# Install Claude CLI (Anthropic's official CLI)
-# Note: As of now, there isn't an official Anthropic CLI for Claude
-# We'll install a community tool that interfaces with Claude API
-RUN npm install -g @anthropic-ai/sdk \
-    && echo "# Claude CLI installed via @anthropic-ai/sdk" >> /etc/bash.bashrc
-
-# Alternative: Install community Claude CLI tools
-RUN pip3 install --break-system-packages anthropic \
-    && pip3 install --break-system-packages claude-cli
+# Install Claude Code (Anthropic's official CLI for code assistance)
+RUN npm install -g @anthropic-ai/claude-code
 
 # Install AWS CLI (for various cloud operations)
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
@@ -152,13 +140,16 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2
 # Install useful development tools
 RUN apt-get update && apt-get install -y \
     jq \
-    yq \
     make \
     build-essential \
     python3 \
     python3-pip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+# Install yq (YAML processor)
+RUN wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq \
+    && chmod +x /usr/bin/yq
 
 # Create non-root user
 RUN groupadd --gid $USER_GID $USERNAME \
