@@ -130,25 +130,17 @@ RUN npm install -g @google/gemini-cli
 # Install Claude Code (Anthropic's official CLI)
 RUN npm install -g @anthropic-ai/claude-code
 
-# Install AWS CLI (for various cloud operations)
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
-    && unzip awscliv2.zip \
-    && ./aws/install \
-    && rm -rf awscliv2.zip aws
-
-# Install useful development tools
+# Install useful development tools and yq
 RUN apt-get update && apt-get install -y \
     jq \
     make \
     build-essential \
     python3 \
     python3-pip \
+    && wget -q https://github.com/mikefarah/yq/releases/download/v4.40.5/yq_linux_amd64 -O /usr/bin/yq \
+    && chmod +x /usr/bin/yq \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-
-# Install yq (YAML processor)
-RUN wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq \
-    && chmod +x /usr/bin/yq
 
 # Create non-root user
 RUN groupadd --gid $USER_GID $USERNAME \
