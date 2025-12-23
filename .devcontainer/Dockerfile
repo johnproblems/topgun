@@ -71,7 +71,7 @@ RUN echo "memory_limit = 512M" >> /etc/php/8.4/cli/php.ini \
 
 # Install Composer, Node.js, and npm packages
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
-    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && curl -fsSL https://deb.nodesource.com/setup_current.x | bash - \
     && apt-get install -y nodejs \
     && npm install -g npm@latest yarn pnpm \
     && apt-get clean \
@@ -93,7 +93,7 @@ RUN apt-get update && apt-get install -y postgresql-client redis-tools \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install AI CLI tools and additional npm tools
+# Install AI CLI tools and npm utilities
 RUN npm install -g @github/copilot @google/gemini-cli @anthropic-ai/claude-code tldr http-server
 
 # Create non-root user and setup
