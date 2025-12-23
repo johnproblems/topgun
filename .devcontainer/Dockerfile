@@ -87,14 +87,14 @@ RUN apt-get update && apt-get install -y postgresql-client redis-tools \
     && chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
     && apt-get update \
-    && apt-get install -y docker-ce-cli docker-compose-plugin terraform gh jq make build-essential python3 python3-pip \
+    && apt-get install -y docker-ce-cli docker-compose-plugin terraform gh jq \
     && wget -q https://github.com/mikefarah/yq/releases/download/v4.40.5/yq_linux_amd64 -O /usr/bin/yq \
     && chmod +x /usr/bin/yq \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install AI CLI tools and npm utilities
-RUN npm install -g @github/copilot @google/gemini-cli @anthropic-ai/claude-code tldr http-server
+# Install npm utilities
+RUN npm install -g tldr http-server
 
 # Create non-root user and setup
 RUN (groupadd --gid $USER_GID $USERNAME || true) \
