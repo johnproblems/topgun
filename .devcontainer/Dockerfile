@@ -97,7 +97,7 @@ RUN apt-get update && apt-get install -y postgresql-client redis-tools \
 RUN npm install -g @github/copilot @google/gemini-cli @anthropic-ai/claude-code tldr http-server
 
 # Create non-root user and setup
-RUN groupadd --gid $USER_GID $USERNAME \
+RUN (groupadd --gid $USER_GID $USERNAME || true) \
     && useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME \
     && echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$USERNAME \
     && chmod 0440 /etc/sudoers.d/$USERNAME \
